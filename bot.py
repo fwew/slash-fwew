@@ -24,7 +24,7 @@ test_env = [sndb0x, fbts, lnc, gfs]
 
 intents = disnake.Intents.default()
 fwew_bot = commands.Bot(command_prefix="?", help_command=None, sync_permissions=True,
-                        intents=intents, sync_commands_debug=True)  # , test_guilds=test_env)
+                        intents=intents, sync_commands_debug=True, test_guilds=test_env)
 
 
 @fwew_bot.event
@@ -157,6 +157,27 @@ async def version(inter):
     get version information
     """
     await inter.response.send_message(get_version())
+
+
+@fwew_bot.slash_command(name="name", description="generate Na'vi full names")
+async def name(inter,
+    s1=Param(name="first_name_num_syllables", description="first name number of syllables", gt=1, le=4),
+    s2=Param(name="family_name_num_syllables", description="family name number of syllables", gt=1, le=4),
+    s3=Param(name="parent_name_num_syllables", description="parent's name number of syllables", gt=1, le=4),
+    ending=commands.Param(description="'ite (daughter) or 'itan (son)", choices=["'ite", "'itan"]),
+    n=Param(description="number of names to generate", gt=0, le=50, default=1)):
+    """
+    generate full Na'vi name(s)
+
+    Parameters
+    ----------
+    first_name_num_syllables: first name number of syllables
+    family_name_num_syllables: family name number of syllables
+    parent_name_num_syllables: parent's name number of syllables
+    ending: 'ite (daughter) or 'itan (son)
+    n: number of names to generate
+    """
+    await inter.response.send_message(get_name(s1, s2, s3, ending, n))
 
 
 @fwew_bot.message_command(name="fwew translate", default_permission=True, guild_ids=test_env)
