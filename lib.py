@@ -3,7 +3,7 @@ import re
 import requests
 import random
 
-version = "1.3.0"
+version = "1.3.1"
 api_url = "http://localhost:10000/api"
 url_pattern = r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
 si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|alm|ìlm|ìly|aly|arm|ìrm|ìry|ary|ìsy|asy)?(eiy|äng|eng|uy|ats)?i"
@@ -610,7 +610,7 @@ k  → h
 p  → f
 ts → s
 t  → s
-'  → (disappears)
+'  → (disappears, except before ll or rr)
 ```"""
 
 
