@@ -24,7 +24,7 @@ test_env = [sndb0x, fbts, lnc, gfs]
 
 intents = disnake.Intents.default()
 fwew_bot = commands.Bot(command_prefix="?", help_command=None, sync_permissions=True,
-                        intents=intents, sync_commands_debug=True)  # , test_guilds=test_env)
+                        intents=intents, sync_commands_debug=True, test_guilds=[sndb0x])  # , test_guilds=test_env)
 
 
 @fwew_bot.event
@@ -41,20 +41,30 @@ async def on_ready():
 
 
 @fwew_bot.slash_command(name="fwew", description="search word(s) na'vi -> english")
-async def fwew(inter, words=Param(description="the na'vi word(s) to look up"), lang="en"):
+async def fwew(inter,
+               words=Param(description="the na'vi word(s) to look up"),
+               ipa=Param(description="set to true to show IPA",
+                         default=False, choices=["true", "false"]),
+               lang="en"):
     """
     search word(s) na'vi -> english
 
     Parameters
     ----------
     words: the na'vi word(s) to look up
+    ipa: set to true to show IPA
     lang: the two-letter language-code for results (default: en)
     """
-    await inter.response.send_message(get_fwew(lang, words))
+    showIPA = True if ipa == "true" else False
+    await inter.response.send_message(get_fwew(lang, words, showIPA))
 
 
 @fwew_bot.slash_command(name="search", description="search word(s) english -> na'vi")
-async def search(inter, words=Param(description="the english word(s) to look up"), lang="en"):
+async def search(inter,
+                 words=Param(description="the english word(s) to look up"),
+                 ipa=Param(description="set to true to show IPA",
+                           default=False, choices=["true", "false"]),
+                 lang="en"):
     """
     search words english -> na'vi
 
@@ -63,7 +73,8 @@ async def search(inter, words=Param(description="the english word(s) to look up"
     words: the english word(s) to look up
     lang: the two-letter language-code for results (default: en)
     """
-    await inter.response.send_message(get_fwew_reverse(lang, words))
+    showIPA = True if ipa == "true" else False
+    await inter.response.send_message(get_fwew_reverse(lang, words, showIPA))
 
 
 @fwew_bot.slash_command(name="source", description="look up the source of na'vi word(s)")
@@ -161,11 +172,15 @@ async def version(inter):
 
 @fwew_bot.slash_command(name="name", description="generate Na'vi full names")
 async def name(inter,
-    s1=Param(name="first_name_num_syllables", description="first name number of syllables", gt=1, le=4),
-    s2=Param(name="family_name_num_syllables", description="family name number of syllables", gt=1, le=4),
-    s3=Param(name="parent_name_num_syllables", description="parent's name number of syllables", gt=1, le=4),
-    ending=commands.Param(description="'ite (daughter) or 'itan (son)", choices=["'ite", "'itan"]),
-    n=Param(description="number of names to generate", gt=0, le=50, default=1)):
+               s1=Param(name="first_name_num_syllables",
+                        description="first name number of syllables", gt=1, le=4),
+               s2=Param(name="family_name_num_syllables",
+                        description="family name number of syllables", gt=1, le=4),
+               s3=Param(name="parent_name_num_syllables",
+                        description="parent's name number of syllables", gt=1, le=4),
+               ending=commands.Param(
+                   description="'ite (daughter) or 'itan (son)", choices=["'ite", "'itan"]),
+               n=Param(description="number of names to generate", gt=0, le=50, default=1)):
     """
     generate full Na'vi name(s)
 
