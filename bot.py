@@ -24,7 +24,7 @@ test_env = [sndb0x, fbts, lnc, gfs]
 
 intents = disnake.Intents.default()
 fwew_bot = commands.Bot(command_prefix="?", help_command=None, sync_permissions=True,
-                        intents=intents, sync_commands_debug=True, test_guilds=[sndb0x])  # , test_guilds=test_env)
+                        intents=intents, sync_commands_debug=True)  # , test_guilds=test_env)
 
 
 @fwew_bot.event
