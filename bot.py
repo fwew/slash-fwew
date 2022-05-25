@@ -77,6 +77,23 @@ async def search(inter,
     await inter.response.send_message(get_fwew_reverse(lang, words, showIPA))
 
 
+@fwew_bot.slash_command(name="profanity", description="get the list of Na'vi vulgar curse words / profanity")
+async def profanity(inter,
+                    ipa=Param(description="set to true to show IPA",
+                              default=False, choices=["true", "false"]),
+                    lang="en"):
+    """
+    get the list of Na'vi vulgar curse words / profanity
+
+    Parameters
+    ----------
+    ipa: set to true to show IPA
+    lang: the two-letter language-code for results (default: en)
+    """
+    showIPA = True if ipa == "true" else False
+    await inter.response.send_message(get_profanity(lang, showIPA))
+
+
 @fwew_bot.slash_command(name="source", description="look up the source of na'vi word(s)")
 async def source(inter, words=Param(description="the na'vi word(s) for which to find source")):
     """

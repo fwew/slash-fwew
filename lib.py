@@ -257,6 +257,11 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False) -> st
     return results
 
 
+def get_profanity(lang: str, showIPA: bool) -> str:
+    words = "kalweyaveng kurkung pela'ang pxasìk teylupil tsahey txanfwìngtu vonvä' wiya"
+    return get_fwew(lang, words, showIPA)
+
+
 def get_source(words: str) -> str:
     results = ""
     word_list = get_word_bundles(words)
