@@ -5,7 +5,7 @@ import requests
 from space_containing import *
 from name_gen import *
 
-version = "2.1.0"
+version = "2.1.1"
 api_url = "http://localhost:10000/api"
 url_pattern = r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
 si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|alm|ìlm|ìly|aly|arm|ìrm|ìry|ary|ìsy|asy)?(eiy|äng|eng|uy|ats)?i"
@@ -258,7 +258,7 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False) -> st
 
 
 def get_profanity(lang: str, showIPA: bool) -> str:
-    words = "kalweyaveng kurkung pela'ang pxasìk teylupil tsahey txanfwìngtu vonvä' wiya"
+    words = "skxawng kalweyaveng kurkung pela'ang pxasìk teylupil tsahey txanfwìngtu vonvä' wiya"
     return get_fwew(lang, words, showIPA)
 
 
