@@ -5,7 +5,7 @@ import requests
 from space_containing import *
 from name_gen import *
 
-version = "2.1.1"
+version = "2.2.0"
 api_url = "http://localhost:10000/api"
 url_pattern = r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
 si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|alm|ìlm|ìly|aly|arm|ìrm|ìry|ary|ìsy|asy)?(eiy|äng|eng|uy|ats)?i"
@@ -118,6 +118,23 @@ def format_audio(response_text: str) -> str:
         syllables = do_underline(w['Stressed'], w['Syllables'])
         results += f"[{i}] **{w['Navi']}** ({syllables}) :speaker: [click here to listen](https://s.learnnavi.org/audio/vocab/{w['ID']}.mp3)\n"
     return results
+
+
+def format_alphabet(letter: str, letters_dict: dict, names_dict: dict, i: int) -> str:
+    letter_id = -1
+    current_letter = ""
+    current_letter_name = ""
+    if letter in letters_dict:
+        letter_id = letters_dict[letter]
+        current_letter = letter
+        current_letter_name = list(names_dict.keys())[letter_id - 1]
+    elif letter in names_dict:
+        letter_id = names_dict[letter]
+        current_letter = list(letters_dict.keys())[letter_id - 1]
+        current_letter_name = letter
+    if letter_id == -1:
+        return f"[{i + 1}] **{letter}**: no results\n"
+    return f"[{i + 1}] **{current_letter}** ({current_letter_name}) :speaker: [click here to listen](https://s.learnnavi.org/audio/alphabet/{letter_id}.mp3)\n"
 
 
 def format(response_text: str, languageCode: str, showIPA: bool = False) -> str:
@@ -237,7 +254,6 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False) -> str:
     for i, word in enumerate(word_list):
         if i != 0:
             results += "\n"
-        word = word_list[i]
         res = requests.get(f"{api_url}/fwew/{word}")
         text = res.text
         results += format(text, languageCode, showIPA)
@@ -250,7 +266,6 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False) -> st
     for i, word in enumerate(word_list):
         if i != 0:
             results += "\n"
-        word = word_list[i]
         res = requests.get(f"{api_url}/fwew/r/{languageCode.lower()}/{word}")
         text = res.text
         results += format(text, languageCode, showIPA)
@@ -268,7 +283,6 @@ def get_source(words: str) -> str:
     for i, word in enumerate(word_list):
         if i != 0:
             results += "\n"
-        word = word_list[i]
         res = requests.get(f"{api_url}/fwew/{word}")
         text = res.text
         results += format_source(text)
@@ -281,10 +295,33 @@ def get_audio(words: str) -> str:
     for i, word in enumerate(word_list):
         if i != 0:
             results += "\n"
-        word = word_list[i]
         res = requests.get(f"{api_url}/fwew/{word}")
         text = res.text
         results += format_audio(text)
+    return results
+
+
+def get_alphabet(letters: str) -> str:
+    letters_dict = {
+        "'": 1, "a": 2, "aw": 3, "ay": 4, "ä": 5, "e": 6, "ew": 7, "ey": 8,
+        "f": 9, "h": 10, "i": 11, "ì": 12, "k": 13, "kx": 14, "l": 15, "ll": 16,
+        "m": 17, "n": 18, "ng": 19, "o": 20, "p": 21, "px": 22, "r": 23, "rr": 24,
+        "s": 25, "t": 26, "tx": 27, "ts": 28, "u": 29, "v": 30, "w": 31, "y": 32,
+        "z": 33,
+    }
+    names_dict = {
+        "tìftang": 1, "a": 2, "aw": 3, "ay": 4, "ä": 5, "e": 6, "ew": 7, "ey": 8,
+        "fä": 9, "hä": 10, "i": 11, "ì": 12, "kek": 13, "kxekx": 14, "lel": 15,
+        "'ll": 16, "mem": 17, "nen": 18, "ngeng": 19, "o": 20, "pep": 21,
+        "pxepx": 22, "rer": 23, "'rr": 24, "sä": 25, "tet": 26, "txetx": 27,
+        "tsä": 28, "u": 29, "vä": 30, "wä": 31, "yä": 32, "zä": 33
+    }
+    results = ""
+    letter_list = letters.split()
+    for i, letter in enumerate(letter_list):
+        if i != 0:
+            results += "\n"
+        results += format_alphabet(letter, letters_dict, names_dict, i)
     return results
 
 

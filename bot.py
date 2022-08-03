@@ -118,6 +118,18 @@ async def audio(inter, words=Param(description="the na'vi word(s) for which to g
     await inter.response.send_message(get_audio(words))
 
 
+@fwew_bot.slash_command(name="alphabet", description="get audio for na'vi alphabet letter(s)")
+async def alphabet(inter, letters=Param(description="the na'vi letter(s) for which to get audio")):
+    """
+    get audio for na'vi letter(s)
+
+    Parameters
+    ----------
+    letters: the na'vi letter(s) for which to get audio
+    """
+    await inter.response.send_message(get_alphabet(letters))
+
+
 @fwew_bot.slash_command(name="list", description="list all words with certain characteristics")
 async def list(inter, where=Param(description="characteristics of the word, such as part of speech, number of syllables, etc."), lang="en"):
     """
