@@ -224,7 +224,7 @@ async def name(inter,
     await inter.response.send_message(get_name(s1, s2, s3, ending, n))
 
 
-@fwew_bot.message_command(name="fwew translate", default_permission=True, guild_ids=test_env)
+@fwew_bot.message_command(name="fwew translate", default_permission=True)
 async def translate_message(inter, message):
     """
     translate this message using Fwew
