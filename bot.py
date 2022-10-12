@@ -201,12 +201,12 @@ async def version(inter):
 
 @fwew_bot.slash_command(name="name", description="generate Na'vi full names")
 async def name(inter,
-               s1=Param(name="first_name_num_syllables",
-                        description="first name number of syllables", gt=1, le=4),
-               s2=Param(name="family_name_num_syllables",
-                        description="family name number of syllables", gt=1, le=4),
-               s3=Param(name="parent_name_num_syllables",
-                        description="parent's name number of syllables", gt=1, le=4),
+               s1=Param(name="firstNameLength",
+                        description="first name number of syllables", gt=1, le=4, default=2),
+               s2=Param(name="familyNameLength",
+                        description="family name number of syllables", gt=1, le=4, default=2),
+               s3=Param(name="parentNameLength",
+                        description="parent's name number of syllables", gt=1, le=4, default=2),
                ending=commands.Param(
                    description="'ite (daughter) or 'itan (son)", choices=["'ite", "'itan"]),
                n=Param(description="number of names to generate", gt=0, le=50, default=1)):
