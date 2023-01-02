@@ -5,12 +5,27 @@ import requests
 from space_containing import *
 from name_gen import *
 
-version = "2.3.0"
+version = "2.3.1"
 api_url = "http://localhost:10000/api"
 url_pattern = r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
 si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|alm|ìlm|ìly|aly|arm|ìrm|ìry|ary|ìsy|asy)?(eiy|äng|eng|uy|ats)?i"
 paren_pattern = r"(\(.+\))"
 char_limit = 2000
+
+
+def get_language(inter):
+    languages = {
+        935489523155075092: "en",
+        395558141162422275: "en",
+        154318499722952704: "en",
+        860933619296108564: "en",
+        1058520916612624536: "fr"
+    }
+    if inter.guild is None:
+        return "en"
+    if inter.guild_id not in languages:
+        languages[inter.guild_id] = "en"
+    return languages[inter.guild_id]
 
 
 def format_ipa(word: dict) -> str:

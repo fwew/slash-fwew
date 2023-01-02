@@ -45,7 +45,7 @@ async def fwew(inter,
                words=Param(description="the na'vi word(s) to look up"),
                ipa=Param(description="set to true to show IPA",
                          default=False, choices=["true", "false"]),
-               lang="en"):
+               lang=None):
     """
     search word(s) na'vi -> english
 
@@ -55,6 +55,8 @@ async def fwew(inter,
     ipa: set to true to show IPA
     lang: the two-letter language-code for results (default: en)
     """
+    if lang is None:
+        lang = get_language(inter)
     showIPA = True if ipa == "true" else False
     await inter.response.send_message(get_fwew(lang, words, showIPA))
 
@@ -64,7 +66,7 @@ async def search(inter,
                  words=Param(description="the english word(s) to look up"),
                  ipa=Param(description="set to true to show IPA",
                            default=False, choices=["true", "false"]),
-                 lang="en"):
+                 lang=None):
     """
     search words english -> na'vi
 
@@ -73,6 +75,8 @@ async def search(inter,
     words: the english word(s) to look up
     lang: the two-letter language-code for results (default: en)
     """
+    if lang is None:
+        lang = get_language(inter)
     showIPA = True if ipa == "true" else False
     await inter.response.send_message(get_fwew_reverse(lang, words, showIPA))
 
@@ -81,7 +85,7 @@ async def search(inter,
 async def profanity(inter,
                     ipa=Param(description="set to true to show IPA",
                               default=False, choices=["true", "false"]),
-                    lang="en"):
+                    lang=None):
     """
     get the list of Na'vi vulgar curse words / profanity
 
@@ -90,6 +94,8 @@ async def profanity(inter,
     ipa: set to true to show IPA
     lang: the two-letter language-code for results (default: en)
     """
+    if lang is None:
+        lang = get_language(inter)
     showIPA = True if ipa == "true" else False
     await inter.response.send_message(get_profanity(lang, showIPA))
 
@@ -131,7 +137,7 @@ async def alphabet(inter, letters=Param(description="the na'vi letter(s) for whi
 
 
 @fwew_bot.slash_command(name="list", description="list all words with certain characteristics")
-async def list(inter, where=Param(description="characteristics of the word, such as part of speech, number of syllables, etc."), lang="en"):
+async def list(inter, where=Param(description="characteristics of the word, such as part of speech, number of syllables, etc."), lang=None):
     """
     list all words with certain characteristics
 
@@ -140,11 +146,13 @@ async def list(inter, where=Param(description="characteristics of the word, such
     where: characteristics of the word, such as part of speech, number of syllables, etc.
     lang: the two-letter language-code for results (default: en)
     """
+    if lang is None:
+        lang = get_language(inter)
     await inter.response.send_message(get_list(lang, where))
 
 
 @fwew_bot.slash_command(name="random", description="get given number of random entries with certain characteristics")
-async def random(inter, n=Param(description="the number of random words to get"), where="", lang="en"):
+async def random(inter, n=Param(description="the number of random words to get"), where="", lang=None):
     """
     get given number of random entries with certain characteristics
 
@@ -154,6 +162,8 @@ async def random(inter, n=Param(description="the number of random words to get")
     where: characteristics of the word, such as part of speech, number of syllables, etc.
     lang: the two-letter language-code for results (default: en)
     """
+    if lang is None:
+        lang = get_language(inter)
     if len(where) == 0:
         await inter.response.send_message(get_random(lang, n))
     else:
