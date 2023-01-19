@@ -5,7 +5,7 @@ import requests
 from space_containing import *
 from name_gen import *
 
-version = "2.3.2"
+version = "2.3.3"
 api_url = "http://localhost:10000/api"
 url_pattern = r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
 si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|alm|ìlm|ìly|aly|arm|ìrm|ìry|ary|ìsy|asy)?(eiy|äng|eng|uy|ats)?i"
@@ -20,7 +20,8 @@ def get_language(inter):
         154318499722952704: "en",
         860933619296108564: "en",
         1058520916612624536: "fr",
-        1061696962304426025: "fr"
+        1061696962304426025: "fr",
+        1065673594354548757: "ru"
     }
     if inter.guild is None:
         return "en"
