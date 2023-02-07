@@ -240,13 +240,13 @@ async def servers(inter):
     list all servers the bot is in
     """
     if inter.user.id == me:
-        await inter.response.defer(ephermal=True)
+        await inter.response.defer(ephemeral=True)
         content = f"currently in {len(fwew_bot.guilds)} servers:\n"
         for guild in fwew_bot.guilds:
             content += f"{guild.name} ({guild.id}) by {guild.owner.name} aka {guild.owner.display_name} ({guild.owner.id}) - {guild.member_count} members\n"
         await inter.edit_original_message(content=content)
     else:
-        await inter.response.defer(ephermal=True)
+        await inter.response.defer(ephemeral=True)
         await inter.edit_original_message(content="you are not authorized to use this command")
 
 
@@ -260,12 +260,12 @@ async def leave(inter, server_id=Param(description="the server id")):
     server_id: the server id
     """
     if inter.user.id == me:
-        await inter.response.defer(ephermal=True)
+        await inter.response.defer(ephemeral=True)
         guild = await fwew_bot.get_guild(guild_id=int(server_id))
         await guild.leave()
         await inter.edit_original_message(content=f"left {guild.name}/{guild.id}")
     else:
-        await inter.response.defer(ephermal=True)
+        await inter.response.defer(ephemeral=True)
         await inter.edit_original_message(content="you are not authorized to use this command")
 
 
