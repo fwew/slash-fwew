@@ -15,16 +15,22 @@ token = os.environ.get("token")
 
 logfile = "log.txt"
 
-sndb0x = 935489523155075092
-fbts = 395558141162422275
-lnc = 154318499722952704
-gfs = 860933619296108564
-me = 166401675840585728
-test_env = [sndb0x, fbts, lnc, gfs]
+developer = 166401675840585728
+
+servers = [
+    935489523155075092,  # sndb0x
+    395558141162422275,  # fbts
+    154318499722952704,  # lnc
+    860933619296108564,  # gfs
+    1058520916612624536, # fr
+    1061696962304426025, # fr
+    1065673594354548757, # ru
+    1063774395748847648, # ru
+]
 
 intents = disnake.Intents.default()
 fwew_bot = commands.Bot(command_prefix="?", help_command=None, sync_permissions=True,
-                        intents=intents, sync_commands_debug=True)  # , test_guilds=test_env)
+                        intents=intents, sync_commands_debug=True)  # , test_guilds=servers)
 
 
 @fwew_bot.event
@@ -38,6 +44,12 @@ async def on_ready():
         log.write(" ")
         log.write(str(fwew_bot.user.id))
         log.write("\n")
+
+
+@fwew_bot.event
+async def on_guild_join(guild):
+    if guild.id not in servers:
+        await guild.leave()
 
 
 @fwew_bot.slash_command(name="fwew", description="search word(s) na'vi -> english")
@@ -239,7 +251,7 @@ async def servers(inter):
     """
     list all servers the bot is in
     """
-    if inter.user.id == me:
+    if inter.user.id == developer:
         count = 1
         embed = disnake.Embed(
             title="Servers",
@@ -272,7 +284,7 @@ async def leave(inter, server_id=Param(description="the server id")):
     ----------
     server_id: the server id
     """
-    if inter.user.id == me:
+    if inter.user.id == developer:
         await inter.response.defer(ephemeral=True)
         guild = fwew_bot.get_guild(int(server_id))
         await guild.leave()
