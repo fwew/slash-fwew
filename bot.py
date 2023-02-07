@@ -240,11 +240,24 @@ async def servers(inter):
     list all servers the bot is in
     """
     if inter.user.id == me:
-        await inter.response.defer(ephemeral=True)
-        content = f"currently in {len(fwew_bot.guilds)} servers:\n"
+        count = 1
+        embed = disnake.Embed(
+            title="Servers",
+            description=f"currently in {len(fwew_bot.guilds)} servers:\n\n",
+            color=0x7494BA,
+            timestamp=datetime.now(),
+        )
+
         for guild in fwew_bot.guilds:
-            content += f"{guild.name} ({guild.id}) by {guild.owner.name} aka {guild.owner.display_name} ({guild.owner.id}) - {guild.member_count} members\n"
-        await inter.edit_original_message(content=content)
+            # to_add = f"[{count}] {guild.name} ({guild.id}) by ({guild.owner_id}) - {guild.member_count} members\n"
+            # if len(content + to_add) > 2000:
+            #     embed.description += content
+            #     content = to_add
+            # else:
+            #     content += to_add
+            embed.description += f"[{count}] {guild.name} ({guild.id}) by ({guild.owner_id}) - {guild.member_count} members\n"
+            count += 1
+        await inter.response.send_message(embed=embed)
     else:
         await inter.response.defer(ephemeral=True)
         await inter.edit_original_message(content="you are not authorized to use this command")
@@ -261,9 +274,9 @@ async def leave(inter, server_id=Param(description="the server id")):
     """
     if inter.user.id == me:
         await inter.response.defer(ephemeral=True)
-        guild = await fwew_bot.get_guild(guild_id=int(server_id))
+        guild = fwew_bot.get_guild(int(server_id))
         await guild.leave()
-        await inter.edit_original_message(content=f"left {guild.name}/{guild.id}")
+        await inter.edit_original_message(content=f"left {guild.name} ({guild.id})")
     else:
         await inter.response.defer(ephemeral=True)
         await inter.edit_original_message(content="you are not authorized to use this command")
