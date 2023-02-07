@@ -5,7 +5,6 @@ from datetime import datetime
 import disnake
 from disnake.ext import commands
 from disnake.ext.commands import Param
-from disnake.utils import get
 from dotenv import load_dotenv
 
 from lib import *
@@ -20,6 +19,7 @@ sndb0x = 935489523155075092
 fbts = 395558141162422275
 lnc = 154318499722952704
 gfs = 860933619296108564
+me = 166401675840585728
 test_env = [sndb0x, fbts, lnc, gfs]
 
 intents = disnake.Intents.default()
@@ -232,6 +232,41 @@ async def name(inter,
     n: number of names to generate
     """
     await inter.response.send_message(get_name(s1, s2, s3, ending, n))
+
+
+@fwew_bot.slash_command(name="servers", description="list all servers the bot is in")
+async def servers(inter):
+    """
+    list all servers the bot is in
+    """
+    if inter.user.id == me:
+        await inter.response.defer(ephermal=True)
+        content = f"currently in {len(fwew_bot.guilds)} servers:\n"
+        for guild in fwew_bot.guilds:
+            content += f"{guild.name} ({guild.id}) by {guild.owner.name} aka {guild.owner.display_name} ({guild.owner.id}) - {guild.member_count} members\n"
+        await inter.edit_original_message(content=content)
+    else:
+        await inter.response.defer(ephermal=True)
+        await inter.edit_original_message(content="you are not authorized to use this command")
+
+
+@fwew_bot.slash_command(name="leave", description="leave the given server")
+async def leave(inter, server_id=Param(description="the server id")):
+    """
+    leave the given server
+
+    Parameters
+    ----------
+    server_id: the server id
+    """
+    if inter.user.id == me:
+        await inter.response.defer(ephermal=True)
+        guild = await fwew_bot.get_guild(guild_id=int(server_id))
+        await guild.leave()
+        await inter.edit_original_message(content=f"left {guild.name}/{guild.id}")
+    else:
+        await inter.response.defer(ephermal=True)
+        await inter.edit_original_message(content="you are not authorized to use this command")
 
 
 @fwew_bot.message_command(name="fwew translate", default_permission=True)
