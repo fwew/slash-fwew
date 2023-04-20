@@ -470,6 +470,26 @@ kx, px, tx -> k, p, t
          ' -> (disappears, except before ll or rr)
 ```"""
 
+def get_all_thats() -> str:
+    return """```
+Case|Noun |   Clause wrapper   |
+    |     |prox.| dist.|answer |
+====|=====|=====|======|=======|
+Sub.|Tsaw |Fwa  |Tsawa |Teynga |
+Agt.|Tsal |Fula |Tsala |Teyngla|
+Pat.|Tsat |Futa |Tsata |Teyngta|
+Gen.|Tseyä| N/A |  N/A |
+Dat.|Tsar |Fura |Tsara |
+Top.|Tsari|Furia|Tsaria|
+
+tsa-      pre.  that
+tsa'u     n.    that (thing)
+tsakem    n.    that (action)
+fmawnta   sbd.  that news
+tsnì      sbd.  that (function word)
+kuma/akum conj. that (as a result)
+a         part. clause level attributive marker
+```"""
 
 def get_version() -> str:
     res = requests.get(f"{api_url}/version")
