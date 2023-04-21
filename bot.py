@@ -216,6 +216,12 @@ async def lenition(inter):
     """
     await inter.response.send_message(get_lenition())
 
+@fwew_bot.slash_command(name="that", description="show all possible \"that\"s in Na'vi")
+async def that(inter):
+    """
+    get the possible translations of "that" into Na'vi
+    """
+    await inter.response.send_message(get_all_thats())
 
 @fwew_bot.slash_command(name="version", description="get version information")
 async def version(inter):
