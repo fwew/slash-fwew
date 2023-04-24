@@ -462,6 +462,103 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
     return results
 
 
+def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
+    results = ""
+    if not valid(adj_mode, b, k):
+        results = "Nice try. ;D"
+    else:
+        
+        b, k = int(b), int(k)
+        mk = 0
+
+        # Adjectives and nouns can be shared across loops
+        adjectives = []
+        nouns = []
+        buffer = ""
+
+        # Do entire generator process n times
+        while (mk < k):
+            i = 0
+
+            mode = 0
+            if adj_mode == "none":
+                mode = 1
+            elif adj_mode == "normal adjective":
+                mode = 2
+            elif adj_mode == "genitive noun":
+                mode = 3
+            elif adj_mode == "origin noun":
+                mode = 4
+            
+            # if not specified, pick randomly
+            if mode == 0:
+                mode = random.randint(1,4)
+
+            # ADJECTIVE
+            if mode == 2:
+                # Get adjectives
+                while len(adjectives) == 0:
+                    query = requests.get(f"{api_url}/random/1")
+                    buffer = query.text
+                    # And buffer some nouns while we're at it
+                    if buffer['PartOfSpeech'] == "n.":
+                        nouns.append(buffer['Navi'])
+                    elif buffer['PartOfSpeech'] == "adj.":
+                        adjectives.append(buffer['Navi'])
+                results += adjectives.pop()
+                # Make sure there's no a before we add an a (like in "hona" or "apxa")
+                if(len(results) > 0 and results[len(results) - 1] != 'a'):
+                    results += "a "
+                else:
+                    results += " "
+            # ATTRIBUTIVE NOUN
+            elif mode == 3 or mode == 4:
+                # Get nouns
+                while len(nouns) < 2:
+                    query = requests.get(f"{api_url}/random/1")
+                    buffer = query.text
+                    if buffer['PartOfSpeech'] == "n.":
+                        nouns.append(buffer['Navi'])
+                    # And buffer some adjectives while we're at it
+                    elif buffer['PartOfSpeech'] == "adj.":
+                        adjectives.append(buffer['Navi'])
+                results += nouns.pop()
+                # Genitive noun
+                if mode == 3:
+                    if(len(results) > 0 #if it's not a vowel
+                    and results[len(results) - 1] != 'ä'
+                    and results[len(results) - 1] != 'a'
+                    and results[len(results) - 1] != 'e'
+                    and results[len(results) - 1] != 'i'
+                    and results[len(results) - 1] != 'ì'):
+                        results += "ä "
+                    else: #If's it's a conosonent, o or u
+                        results += "yä "
+                # Origin noun
+                elif mode == 4:
+                    results += "ta "
+                
+            results += nouns.pop()
+            results += " alu "
+
+            # BUILD FIRST NAME
+            # first syllable: CV
+            results += f"{get_onset()}{get_nucleus()}".capitalize()
+            while i < b - 1:
+                # some more CV until `a` syllables
+                results += f"{get_onset()}{get_nucleus()}"
+                i += 1
+            results += get_coda()  # Maybe end the syllable with something, maybe not
+            i = 0  # reset counter back to 0 for the next part of the name
+
+            # ADD ENDING
+            results += "\n"
+
+            mk += 1
+
+    return results
+
+
 def get_lenition() -> str:
     return """```
 kx, px, tx -> k, p, t
