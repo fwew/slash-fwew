@@ -472,40 +472,32 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
         mk = 0
 
         # Adjectives and nouns can be shared across loops
-        adjectives = []
-        nouns = []
         buffer = ""
+
+        mode = 0
+        if adj_mode == "none":
+            mode = 1
+        elif adj_mode == "normal adjective":
+            mode = 2
+        elif adj_mode == "genitive noun":
+            mode = 3
+        elif adj_mode == "origin noun":
+            mode = 4
 
         # Do entire generator process n times
         while (mk < k):
             i = 0
-
-            mode = 0
-            if adj_mode == "none":
-                mode = 1
-            elif adj_mode == "normal adjective":
-                mode = 2
-            elif adj_mode == "genitive noun":
-                mode = 3
-            elif adj_mode == "origin noun":
-                mode = 4
             
             # if not specified, pick randomly
-            if mode == 0:
+            if adj_mode == "any":
                 mode = random.randint(1,4)
 
             # ADJECTIVE
             if mode == 2:
                 # Get adjectives
-                while len(adjectives) == 0:
-                    query = requests.get(f"{api_url}/random/1")
-                    buffer = query.text
-                    # And buffer some nouns while we're at it
-                    if buffer['PartOfSpeech'] == "n.":
-                        nouns.append(buffer['Navi'])
-                    elif buffer['PartOfSpeech'] == "adj.":
-                        adjectives.append(buffer['Navi'])
-                results += adjectives.pop()
+                query = requests.get(f"{api_url}/random/1/pos is adj.")
+                buffer = query.text
+                results += buffer['Navi']
                 # Make sure there's no a before we add an a (like in "hona" or "apxa")
                 if(len(results) > 0 and results[len(results) - 1] != 'a'):
                     results += "a "
@@ -514,31 +506,41 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
             # ATTRIBUTIVE NOUN
             elif mode == 3 or mode == 4:
                 # Get nouns
-                while len(nouns) < 2:
-                    query = requests.get(f"{api_url}/random/1")
-                    buffer = query.text
-                    if buffer['PartOfSpeech'] == "n.":
-                        nouns.append(buffer['Navi'])
-                    # And buffer some adjectives while we're at it
-                    elif buffer['PartOfSpeech'] == "adj.":
-                        adjectives.append(buffer['Navi'])
-                results += nouns.pop()
+                query = requests.get(f"{api_url}/random/1/pos is n.")
+                buffer = query.text
+
+                words = buffer['Navi']
                 # Genitive noun
                 if mode == 3:
-                    if(len(results) > 0 #if it's not a vowel
-                    and results[len(results) - 1] != 'ä'
+                    # ends in "yä" srak?
+                    if(results[len(results) - 1] == 'ä' and results[len(results) - 2] == 'y'):
+                        # search for the space
+                        wordList = buffer['Navi'].split()
+                        # reverse the word order
+                        results += wordList[1] + " " + wordList[0] + "yä "
+                    elif(len(results) > 0 #if it's not a vowel
                     and results[len(results) - 1] != 'a'
                     and results[len(results) - 1] != 'e'
                     and results[len(results) - 1] != 'i'
                     and results[len(results) - 1] != 'ì'):
+                        results += words
                         results += "ä "
-                    else: #If's it's a conosonent, o or u
+                    else: #If's it's a conosonent, o, u or ä
+                        results += words
                         results += "yä "
                 # Origin noun
                 elif mode == 4:
-                    results += "ta "
-                
-            results += nouns.pop()
+                    if(words[len(words) - 1] == 'ä' and words[len(words) - 2] == 'y'):
+                        wordList = words.split()
+                        # reverse the word order
+                        results += wordList[1] + " " + wordList[0] + "ta "
+                    else:
+                        results += words
+                        results += "ta "
+            
+            query = requests.get(f"{api_url}/random/1/pos is n.")
+            buffer = query.text
+            results += buffer['Navi']
             results += " alu "
 
             # BUILD FIRST NAME
