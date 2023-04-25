@@ -513,46 +513,44 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                 wordList = words.split()
                 # Genitive noun
                 if mode == 3:
-                    for i in range(len(wordList) - 1, -1, -1):
-                        # The only nouns put together using a space
-                        if words == "tsko swizaw":
-                            results += "tskxo swizawyä "
-                            break
-                        # The only a-attributed word in the dictionary, part of "swoasey ayll"
-                        elif wordList[i] == "ayll":
-                            results += "ylla "
-                            continue
-                        elif wordList[i].startswith("le"):
-                            results += wordList[i] + "a "
-                        elif(not wordList[i].endswith("yä")):
-                            #The only baked-in genitives are "yä", so no need to look for others
-                            if(len(wordList[i]) > 0 #if it's not a vowel
-                            and wordList[i][len(wordList[i]) - 1] != 'a'
-                            and wordList[i][len(wordList[i]) - 1] != 'e'
-                            and wordList[i][len(wordList[i]) - 1] != 'i'
-                            and wordList[i][len(wordList[i]) - 1] != 'ì'):
+                    # The only nouns put together using a space
+                    if words == "tsko swizaw":
+                        results += "tskxo swizawyä "
+                    else:
+                        for i in range(len(wordList) - 1, -1, -1):
+                            # The only a-attributed word in the dictionary, part of "swoasey ayll"
+                            if wordList[i] == "ayll":
+                                results += "ylla "
+                            elif wordList[i].startswith("le"):
+                                results += wordList[i] + "a "
+                            elif(not wordList[i].endswith("yä")):
+                                #The only baked-in genitives are "yä", so no need to look for others
+                                if(len(wordList[i]) > 0 #if it's not a vowel
+                                and wordList[i][len(wordList[i]) - 1] != 'a'
+                                and wordList[i][len(wordList[i]) - 1] != 'e'
+                                and wordList[i][len(wordList[i]) - 1] != 'i'
+                                and wordList[i][len(wordList[i]) - 1] != 'ì'):
+                                    results += wordList[i]
+                                    results += "ä "
+                                else: #If's it's a conosonent, diphthong o, u or ä
+                                    results += wordList[i]
+                                    results += "yä "
+                            else:
                                 results += wordList[i]
-                                results += "ä "
-                            else: #If's it's a conosonent, diphthong o, u or ä
-                                results += wordList[i]
-                                results += "yä "
-                        else:
-                            results += wordList[i]
                 # Origin noun
                 elif mode == 4:
-                    for i in range(len(wordList) - 1, -1, -1):
-                        # The only nouns put together using a space
-                        if words == "tsko swizaw":
-                            results += "tskxo swizawta "
-                            break
-                        # The only a-attributed word in the dictionary, part of "swoasey ayll"
-                        elif wordList[i] == "ayll":
-                            results += "ylla "
-                            continue
-                        elif wordList[i].startswith("le"):
-                            results += wordList[i] + "a "
-                        else:
-                            results += wordList[i] + "ta "
+                    # The only nouns put together using a space
+                    if words == "tsko swizaw":
+                        results += "tskxo swizawta "
+                    else:
+                        for i in range(len(wordList) - 1, -1, -1):
+                            # The only a-attributed word in the dictionary, part of "swoasey ayll"
+                            if wordList[i] == "ayll":
+                                results += "ylla "
+                            elif wordList[i].startswith("le"):
+                                results += wordList[i] + "a "
+                            else:
+                                results += wordList[i] + "ta "
             
             query = requests.get(f"{api_url}/random/1/pos is n.")
             buffer = query.text
