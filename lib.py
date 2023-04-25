@@ -510,33 +510,49 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                 buffer = query.text
 
                 words = buffer['Navi']
+                wordList = words.split()
                 # Genitive noun
                 if mode == 3:
-                    # ends in "yä" srak?
-                    if(results[len(results) - 1] == 'ä' and results[len(results) - 2] == 'y'):
-                        # search for the space
-                        wordList = buffer['Navi'].split()
-                        # reverse the word order
-                        results += wordList[1] + " " + wordList[0] + "yä "
-                    elif(len(results) > 0 #if it's not a vowel
-                    and results[len(results) - 1] != 'a'
-                    and results[len(results) - 1] != 'e'
-                    and results[len(results) - 1] != 'i'
-                    and results[len(results) - 1] != 'ì'):
-                        results += words
-                        results += "ä "
-                    else: #If's it's a conosonent, o, u or ä
-                        results += words
-                        results += "yä "
+                    for i in range(len(wordList) - 1, -1, -1):
+                        # The only nouns put together using a space
+                        if words == "tsko swizaw":
+                            results += "tskxo swizawyä "
+                            break
+                        # The only a-attributed word in the dictionary, part of "swoasey ayll"
+                        elif wordList[i] == "ayll":
+                            results += "ylla "
+                            continue
+                        elif wordList[i].startswith("le"):
+                            results += wordList[i] + "a "
+                        elif(not wordList[i].endswith("yä")):
+                            #The only baked-in genitives are "yä", so no need to look for others
+                            if(len(wordList[i]) > 0 #if it's not a vowel
+                            and wordList[i][len(wordList[i]) - 1] != 'a'
+                            and wordList[i][len(wordList[i]) - 1] != 'e'
+                            and wordList[i][len(wordList[i]) - 1] != 'i'
+                            and wordList[i][len(wordList[i]) - 1] != 'ì'):
+                                results += wordList[i]
+                                results += "ä "
+                            else: #If's it's a conosonent, o, u or ä
+                                results += wordList[i]
+                                results += "yä "
+                        else:
+                            results += wordList[i]
                 # Origin noun
                 elif mode == 4:
-                    if(words[len(words) - 1] == 'ä' and words[len(words) - 2] == 'y'):
-                        wordList = words.split()
-                        # reverse the word order
-                        results += wordList[1] + " " + wordList[0] + "ta "
-                    else:
-                        results += words
-                        results += "ta "
+                    for i in range(len(wordList) - 1, -1, -1):
+                        # The only nouns put together using a space
+                        if words == "tsko swizaw":
+                            results += "tskxo swizawta "
+                            break
+                        # The only a-attributed word in the dictionary, part of "swoasey ayll"
+                        elif wordList[i] == "ayll":
+                            results += "ylla "
+                            continue
+                        elif wordList[i].startswith("le"):
+                            results += wordList[i] + "a "
+                        else:
+                            results += wordList[i] + "ta "
             
             query = requests.get(f"{api_url}/random/1/pos is n.")
             buffer = query.text
