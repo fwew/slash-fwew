@@ -533,7 +533,7 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                             and wordList[i][len(wordList[i]) - 1] != 'ì'):
                                 results += wordList[i]
                                 results += "ä "
-                            else: #If's it's a conosonent, o, u or ä
+                            else: #If's it's a conosonent, diphthong o, u or ä
                                 results += wordList[i]
                                 results += "yä "
                         else:
