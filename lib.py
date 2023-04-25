@@ -473,7 +473,7 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
         # Adjectives and nouns can be shared across loops
         buffer = ""
 
-        mode = 0
+        mode = 3
         if adj_mode == "none":
             mode = 1
         elif adj_mode == "normal adjective":
@@ -485,8 +485,6 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
 
         # Do entire generator process n times
         for mk in range(k): #loop k times
-            i = 0
-            
             # if not specified, pick randomly
             if adj_mode == "any":
                 mode = random.randint(1,4)
@@ -528,13 +526,11 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                             elif wordList[i].startswith("le"):
                                 results += wordList[i] + "a "
                             elif wordList[i].endswith("yä"):
-                                results += wordList[i]
+                                results += wordList[i] + " "
                             elif len(results) > 0 and results[-1] in yvowels:
-                                results += wordList[i]
-                                results += "yä "
+                                results += wordList[i] + "yä "
                             else: #If's it's a conosonent, diphthong o, u or ä
-                                results += wordList[i]
-                                results += "ä "
+                                results += wordList[i] + "ä "
                 # Origin noun
                 elif mode == 4:
                     # The only nouns put together using a space
