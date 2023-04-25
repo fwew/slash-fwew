@@ -516,6 +516,9 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                     # The only nouns put together using a space
                     if words == "tsko swizaw":
                         results += "tskxo swizawyä "
+                    # the only noun with two spaces
+                    elif words == "mo a fngä'":
+                        results += "moä a fgnä'"
                     else:
                         for i in range(len(wordList) - 1, -1, -1):
                             # The only a-attributed word in the dictionary, part of "swoasey ayll"
@@ -523,25 +526,26 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                                 results += "ylla "
                             elif wordList[i].startswith("le"):
                                 results += wordList[i] + "a "
-                            elif(not wordList[i].endswith("yä")):
-                                #The only baked-in genitives are "yä", so no need to look for others
-                                if(len(wordList[i]) > 0 #if it's not a vowel
-                                and wordList[i][len(wordList[i]) - 1] != 'a'
-                                and wordList[i][len(wordList[i]) - 1] != 'e'
-                                and wordList[i][len(wordList[i]) - 1] != 'i'
-                                and wordList[i][len(wordList[i]) - 1] != 'ì'):
-                                    results += wordList[i]
-                                    results += "ä "
-                                else: #If's it's a conosonent, diphthong o, u or ä
-                                    results += wordList[i]
-                                    results += "yä "
-                            else:
+                            elif wordList[i].endswith("yä"):
                                 results += wordList[i]
+                            elif(len(wordList[i]) > 0 #if it's not a vowel
+                            and wordList[i][len(wordList[i]) - 1] != 'a'
+                            and wordList[i][len(wordList[i]) - 1] != 'e'
+                            and wordList[i][len(wordList[i]) - 1] != 'i'
+                            and wordList[i][len(wordList[i]) - 1] != 'ì'):
+                                results += wordList[i]
+                                results += "ä "
+                            else: #If's it's a conosonent, diphthong o, u or ä
+                                results += wordList[i]
+                                results += "yä "
                 # Origin noun
                 elif mode == 4:
                     # The only nouns put together using a space
                     if words == "tsko swizaw":
                         results += "tskxo swizawta "
+                    # the only noun with two spaces
+                    elif words == "mo a fngä'":
+                        results += "mota a fgnä'"
                     else:
                         for i in range(len(wordList) - 1, -1, -1):
                             # The only a-attributed word in the dictionary, part of "swoasey ayll"
@@ -549,6 +553,8 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                                 results += "ylla "
                             elif wordList[i].startswith("le"):
                                 results += wordList[i] + "a "
+                            elif wordList[i].endswith("yä"):
+                                results += wordList[i]
                             else:
                                 results += wordList[i] + "ta "
             
