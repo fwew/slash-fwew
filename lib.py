@@ -469,7 +469,6 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
     else:
         
         b, k = int(b), int(k)
-        mk = 0
 
         # Adjectives and nouns can be shared across loops
         buffer = ""
@@ -485,7 +484,7 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
             mode = 4
 
         # Do entire generator process n times
-        while (mk < k):
+        for mk in range(k): #loop k times
             i = 0
             
             # if not specified, pick randomly
@@ -507,6 +506,7 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
             elif mode == 3 or mode == 4:
                 # Get nouns
                 query = requests.get(f"{api_url}/random/1/pos is n.")
+
                 buffer = query.text
 
                 words = buffer['Navi']
@@ -515,11 +515,12 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                 if mode == 3:
                     # The only nouns put together using a space
                     if words == "tsko swizaw":
-                        results += "tskxo swizawyä "
+                        results += "tsko swizawyä "
                     # the only noun with two spaces
                     elif words == "mo a fngä'":
-                        results += "moä a fgnä'"
+                        results += "moä a fgnä' "
                     else:
+                        yvowels = ['a', 'ä', 'e', 'i', 'ì']
                         for i in range(len(wordList) - 1, -1, -1):
                             # The only a-attributed word in the dictionary, part of "swoasey ayll"
                             if wordList[i] == "ayll":
@@ -528,24 +529,20 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                                 results += wordList[i] + "a "
                             elif wordList[i].endswith("yä"):
                                 results += wordList[i]
-                            elif(len(wordList[i]) > 0 #if it's not a vowel
-                            and wordList[i][len(wordList[i]) - 1] != 'a'
-                            and wordList[i][len(wordList[i]) - 1] != 'e'
-                            and wordList[i][len(wordList[i]) - 1] != 'i'
-                            and wordList[i][len(wordList[i]) - 1] != 'ì'):
-                                results += wordList[i]
-                                results += "ä "
-                            else: #If's it's a conosonent, diphthong o, u or ä
+                            elif len(results) > 0 and results[-1] in yvowels:
                                 results += wordList[i]
                                 results += "yä "
+                            else: #If's it's a conosonent, diphthong o, u or ä
+                                results += wordList[i]
+                                results += "ä "
                 # Origin noun
                 elif mode == 4:
                     # The only nouns put together using a space
                     if words == "tsko swizaw":
-                        results += "tskxo swizawta "
+                        results += "tsko swizawta "
                     # the only noun with two spaces
                     elif words == "mo a fngä'":
-                        results += "mota a fgnä'"
+                        results += "ta mo a fgnä' "
                     else:
                         for i in range(len(wordList) - 1, -1, -1):
                             # The only a-attributed word in the dictionary, part of "swoasey ayll"
@@ -558,6 +555,7 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                             else:
                                 results += wordList[i] + "ta "
             
+            # GET PRIMARY NOUN
             query = requests.get(f"{api_url}/random/1/pos is n.")
             buffer = query.text
             results += buffer['Navi']
@@ -566,17 +564,13 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
             # BUILD FIRST NAME
             # first syllable: CV
             results += f"{get_onset()}{get_nucleus()}".capitalize()
-            while i < b - 1:
+            for x in range(b): #loop B times
                 # some more CV until `a` syllables
                 results += f"{get_onset()}{get_nucleus()}"
-                i += 1
             results += get_coda()  # Maybe end the syllable with something, maybe not
-            i = 0  # reset counter back to 0 for the next part of the name
 
             # ADD ENDING
             results += "\n"
-
-            mk += 1
 
     return results
 
