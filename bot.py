@@ -256,6 +256,25 @@ async def name(inter,
     await inter.response.send_message(get_name(s1, s2, s3, ending, n))
 
 
+@fwew_bot.slash_command(name="name-alu", description="Use existing Na'vi words to generate Na'vi names")
+async def name(inter,
+               adj_mode=commands.Param(
+                   description="type of adjective for the noun", choices=["any", "none", "normal adjective", "genitive noun", "origin noun"]),
+               s2=Param(name="b",
+                        description="name length", gt=1, le=4, default=2),
+               n=Param(description="number of names to generate", gt=0, le=50, default=1)):
+    """
+    generate full Na'vi name(s) out of preexisting Na'vi words
+
+    Parameters
+    ----------
+    mode: What to put next to the name (0 = doesn't matter, 1 = none, 2 = adjective, 3 = genitive noun, 4 = origin noun,)
+    name_num_syllables: name number of syllables
+    n: number of names to generate
+    """
+    await inter.response.send_message(get_name_alu(s2, adj_mode, n))
+
+
 @fwew_bot.slash_command(name="servers", description="list all servers the bot is in")
 async def servers(inter):
     """

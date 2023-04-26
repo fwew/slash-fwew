@@ -462,6 +462,115 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
     return results
 
 
+def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
+    results = ""
+    if not valid(adj_mode, b, k):
+        results = "Nice try. ;D"
+    else:
+        
+        b, k = int(b), int(k)
+
+        # Adjectives and nouns can be shared across loops
+        buffer = ""
+
+        mode = 3
+        if adj_mode == "none":
+            mode = 1
+        elif adj_mode == "normal adjective":
+            mode = 2
+        elif adj_mode == "genitive noun":
+            mode = 3
+        elif adj_mode == "origin noun":
+            mode = 4
+
+        # Do entire generator process n times
+        for mk in range(k): #loop k times
+            # if not specified, pick randomly
+            if adj_mode == "any":
+                mode = random.randint(1,4)
+
+            # ADJECTIVE
+            if mode == 2:
+                # Get adjectives
+                query = requests.get(f"{api_url}/random/1/pos is adj.")
+                buffer = query.text
+                results += buffer['Navi']
+                # Make sure there's no a before we add an a (like in "hona" or "apxa")
+                if(len(results) > 0 and results[len(results) - 1] != 'a'):
+                    results += "a "
+                else:
+                    results += " "
+            # ATTRIBUTIVE NOUN
+            elif mode == 3 or mode == 4:
+                # Get nouns
+                query = requests.get(f"{api_url}/random/1/pos is n.")
+
+                buffer = query.text
+
+                words = buffer['Navi']
+                wordList = words.split()
+                # Genitive noun
+                if mode == 3:
+                    # The only nouns put together using a space
+                    if words == "tsko swizaw":
+                        results += "tsko swizawyä "
+                    # the only noun with two spaces
+                    elif words == "mo a fngä'":
+                        results += "moä a fgnä' "
+                    else:
+                        yvowels = ['a', 'ä', 'e', 'i', 'ì']
+                        for i in range(len(wordList) - 1, -1, -1):
+                            # The only a-attributed word in the dictionary, part of "swoasey ayll"
+                            if wordList[i] == "ayll":
+                                results += "ylla "
+                            elif wordList[i].startswith("le"):
+                                results += wordList[i] + "a "
+                            elif wordList[i].endswith("yä"):
+                                results += wordList[i] + " "
+                            elif len(results) > 0 and results[-1] in yvowels:
+                                results += wordList[i] + "yä "
+                            else: #If's it's a conosonent, diphthong o, u or ä
+                                results += wordList[i] + "ä "
+                # Origin noun
+                elif mode == 4:
+                    # The only nouns put together using a space
+                    if words == "tsko swizaw":
+                        results += "tsko swizawta "
+                    # the only noun with two spaces
+                    elif words == "mo a fngä'":
+                        results += "ta mo a fgnä' "
+                    else:
+                        for i in range(len(wordList) - 1, -1, -1):
+                            # The only a-attributed word in the dictionary, part of "swoasey ayll"
+                            if wordList[i] == "ayll":
+                                results += "ylla "
+                            elif wordList[i].startswith("le"):
+                                results += wordList[i] + "a "
+                            elif wordList[i].endswith("yä"):
+                                results += wordList[i]
+                            else:
+                                results += wordList[i] + "ta "
+            
+            # GET PRIMARY NOUN
+            query = requests.get(f"{api_url}/random/1/pos is n.")
+            buffer = query.text
+            results += buffer['Navi']
+            results += " alu "
+
+            # BUILD FIRST NAME
+            # first syllable: CV
+            results += f"{get_onset()}{get_nucleus()}".capitalize()
+            for x in range(b): #loop B times
+                # some more CV until `a` syllables
+                results += f"{get_onset()}{get_nucleus()}"
+            results += get_coda()  # Maybe end the syllable with something, maybe not
+
+            # ADD ENDING
+            results += "\n"
+
+    return results
+
+
 def get_lenition() -> str:
     return """```
 kx, px, tx -> k, p, t
