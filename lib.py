@@ -595,10 +595,13 @@ tsa-      pre.  that
 tsa'u     n.    that (thing)
 tsakem    n.    that (action)
 fmawnta   sbd.  that news
+fayluta   sbd.  these words
 tsnì      sbd.  that (function word)
+tsonta    conj. to (with kxìm)
 kuma/akum conj. that (as a result)
 a         part. clause level attributive marker
 ```"""
+
 
 def get_version() -> str:
     res = requests.get(f"{api_url}/version")
