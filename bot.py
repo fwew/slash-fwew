@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 from lib import *
 
-dotenv_dir = "token_container/"
+dotenv_dir = "C:/Users/User/Desktop/wewter/slash-fwew/"
 load_dotenv(os.path.join(dotenv_dir, ".env"))
 token = os.environ.get("token")
 
