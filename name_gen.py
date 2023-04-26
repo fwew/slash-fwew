@@ -228,6 +228,7 @@ def get_coda():
     return result
 
 
+# For use with the command "namr"
 def valid(a, b, c, k) -> bool:
     """
     Validate the input vars from the URL - No ridiculousness this time -- at all. :P
@@ -253,6 +254,41 @@ def valid(a, b, c, k) -> bool:
         return False
     # Probably Vawmataw or someone trying to be funny by generating HRH.gif amounts of syllables
     elif a > 4 or b > 4 or c > 4:
+        return False
+    # they are all set and with values between and including 1 thru 4
+    else:
+        return True
+
+# For use with the command "name-alu"
+def valid_alu(adj_mode: str, b: int, k: int) -> bool:
+    """
+    Validate the input vars from the URL - No ridiculousness this time -- at all. :P
+    Acceptable Ranges:
+    1 ≤ b ≤ 4
+    1 ≤ k ≤ 100
+    """
+    def is_set(x):
+        return x is not None and x != ""
+    # b, k not set, usually a fresh referral from index.php
+    # Requiring at least b=1 k=1 is so lame. So having unset b, k is valid
+    # Also happens if any or all elements in form are not selected and submitted. Should also be valid
+
+    # But adj_mode works differently
+    if not adj_mode in ["any", "none", "normal adjective", "genitive noun", "origin noun"]:
+        return False
+    if not is_set(b) or is_set(k):
+        return True
+    # They all need to be integers
+    if not re.match('/^\d+$/', b + k):
+        return False
+    # disallow generating HRH.gif amounts of names
+    if k > 100:
+        return False
+    # lolwut, zero syllables? Negative syllables?
+    if b < 1 or k < 1:
+        return False
+    # Probably Vawmataw or someone trying to be funny by generating HRH.gif amounts of syllables
+    elif b > 4:
         return False
     # they are all set and with values between and including 1 thru 4
     else:

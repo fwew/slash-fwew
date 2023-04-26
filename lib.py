@@ -464,7 +464,7 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
 
 def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
     results = ""
-    if not valid(adj_mode, b, k):
+    if not valid_alu(adj_mode, b, k):
         results = "Nice try. ;D"
     else:
         
