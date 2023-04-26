@@ -492,7 +492,7 @@ tsonta    conj. to (with kxìm)
 kuma/akum conj. that (as a result)
 a         part. clause level attributive marker
 ```"""
-#ta mesyokx a ke lu yey
+
 
 def get_version() -> str:
     res = requests.get(f"{api_url}/version")
