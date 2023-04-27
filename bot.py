@@ -259,7 +259,7 @@ async def name(inter,
 @fwew_bot.slash_command(name="name-alu", description="Use existing Na'vi words to generate Na'vi names")
 async def name(inter,
                adj_mode=commands.Param(
-                   description="type of adjective for the noun", choices=["any", "none", "normal adjective", "genitive noun", "origin noun"]),
+                   description="type of adjective for the noun", choices=["any", "none", "normal adjective", "genitive noun", "origin noun"], default="any"),
                s2=Param(name="b",
                         description="name length", gt=1, le=4, default=2),
                n=Param(description="number of names to generate", gt=0, le=50, default=1)):
