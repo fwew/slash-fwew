@@ -228,7 +228,7 @@ def get_coda():
     return result
 
 
-# For use with the command "namr"
+# For use with the command "name"
 def valid(a, b, c, k) -> bool:
     """
     Validate the input vars from the URL - No ridiculousness this time -- at all. :P
