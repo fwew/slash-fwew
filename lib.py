@@ -494,7 +494,7 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                 # Get adjectives
                 query = requests.get(f"{api_url}/random/1/pos is adj.")
                 buffer = query.text
-                results += buffer['Navi']
+                results += buffer[0]['Navi']
                 # Make sure there's no a before we add an a (like in "hona" or "apxa")
                 if(len(results) > 0 and results[len(results) - 1] != 'a'):
                     results += "a "
@@ -507,7 +507,7 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
 
                 buffer = query.text
 
-                words = buffer['Navi']
+                words = buffer[0]['Navi']
                 wordList = words.split()
                 # Genitive noun
                 if mode == 3:
@@ -554,7 +554,7 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
             # GET PRIMARY NOUN
             query = requests.get(f"{api_url}/random/1/pos is n.")
             buffer = query.text
-            results += buffer['Navi']
+            results += buffer[0]['Navi']
             results += " alu "
 
             # BUILD FIRST NAME
