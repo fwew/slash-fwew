@@ -4,6 +4,12 @@
 import random
 import re
 
+# Assistant command to capitalize words that begin with a glottal stop
+# If it begins with an apostrophe, capitalize the second letter
+def glottal_caps(s: str):
+    if s.startswith("'"):
+        return s[:1].lower() + s[1:].capitalize()
+    return s
 
 def get_onset():
     c1type = ""
