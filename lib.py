@@ -12,7 +12,6 @@ si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|
 paren_pattern = r"(\(.+\))"
 char_limit = 2000
 
-
 def get_language(inter):
     languages = {
         935489523155075092: "en",
@@ -416,6 +415,8 @@ def get_translation(text: str, languageCode: str) -> str:
 
 def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
     results = ""
+    # for temp storage before appending to results
+    loader = ""
     if not valid(a, b, c, k):
         results = "Nice try. ;D"
     else:
@@ -427,31 +428,37 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
 
             # BUILD FIRST NAME
             # first syllable: CV
-            results += f"{get_onset()}{get_nucleus()}".capitalize()
+            loader = ""
+            loader += f"{get_onset()}{get_nucleus()}".capitalize()
             while i < a - 1:
                 # some more CV until `a` syllables
-                results += f"{get_onset()}{get_nucleus()}"
+                loader += f"{get_onset()}{get_nucleus()}"
                 i += 1
-            results += get_coda()  # Maybe end the syllable with something, maybe not
+            loader += get_coda()  # Maybe end the syllable with something, maybe not
+            results += glottal_caps(loader)
             i = 0  # reset counter back to 0 for the next part of the name
 
             results += " te "
 
             # BUILD FAMILY NAME
-            results += f"{get_onset()}{get_nucleus()}".capitalize()  # CV
+            loader = ""
+            loader += f"{get_onset()}{get_nucleus()}".capitalize()  # CV
             while i < b - 1:
-                results += f"{get_onset()}{get_nucleus()}"  # CV
+                loader += f"{get_onset()}{get_nucleus()}"  # CV
                 i += 1
-            results += get_coda()  # C or None
+            loader += get_coda()  # C or None
             i = 0  # reset again for the last part of name
+            results += glottal_caps(loader)
             results += " "
 
             # BUILD PARENT'S NAME
-            results += f"{get_onset()}{get_nucleus()}".capitalize()
+            loader = ""
+            loader += f"{get_onset()}{get_nucleus()}".capitalize()
             while i < c - 1:
-                results += f"{get_onset()}{get_nucleus()}"  # CV
+                loader += f"{get_onset()}{get_nucleus()}"  # CV
                 i += 1
-            results += get_coda()
+            loader += get_coda()
+            results += glottal_caps(loader)
             i = 0
 
             # ADD ENDING
@@ -485,23 +492,40 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
 
         # Do entire generator process n times
         for mk in range(k): #loop k times
+            # For building names before appending them to results
+            loader = ""
+
+            # BUILD FIRST NAME
+            # first syllable: CV
+            loader = ""
+            loader += f"{get_onset()}{get_nucleus()}".capitalize()
+            for x in range(b): #loop B times
+                # some more CV until `a` syllables
+                loader += f"{get_onset()}{get_nucleus()}"
+            loader += get_coda()  # Maybe end the syllable with something, maybe not
+            results += glottal_caps(loader) + " alu "
+
             # if not specified, pick randomly
             if adj_mode == "any":
                 mode = random.randint(1,4)
 
             # ADJECTIVE
             if mode == 2:
+                loader = ""
                 # Get adjectives
                 query = requests.get(f"{api_url}/random/1/pos is adj.")
                 buffer = json.loads(query.text)
-                results += buffer[0]['Navi']
+                loader += buffer[0]['Navi']
                 # Make sure there's no a before we add an a (like in "hona" or "apxa")
-                if(len(results) > 0 and results[len(results) - 1] != 'a'):
-                    results += "a "
+                if(len(loader) > 0 and loader[len(loader) - 1] != 'a'):
+                    loader += "a "
                 else:
-                    results += " "
+                    loader += " "
+                
+                results += glottal_caps(loader.capitalize())
             # ATTRIBUTIVE NOUN
             elif mode == 3 or mode == 4:
+                loader = ""
                 # Get nouns
                 query = requests.get(f"{api_url}/random/1/pos is n.")
 
@@ -513,57 +537,54 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                 if mode == 3:
                     # The only nouns put together using a space
                     if words == "tsko swizaw":
-                        results += "tsko swizawyä "
+                        results += "Tsko Swizawyä "
                     # the only noun with two spaces
                     elif words == "mo a fngä'":
-                        results += "moä a fgnä' "
+                        results += "Moä a Fgnä' "
                     else:
                         yvowels = ['a', 'ä', 'e', 'i', 'ì']
                         for i in range(len(wordList) - 1, -1, -1):
+                            loader = ""
                             # The only a-attributed word in the dictionary, part of "swoasey ayll"
                             if wordList[i] == "ayll":
-                                results += "ylla "
+                                loader += "Ylla "
                             elif wordList[i].startswith("le"):
-                                results += wordList[i] + "a "
+                                loader += wordList[i] + "a "
                             elif wordList[i].endswith("yä"):
-                                results += wordList[i] + " "
-                            elif len(results) > 0 and results[-1] in yvowels:
-                                results += wordList[i] + "yä "
+                                loader += wordList[i] + " "
+                            elif len(loader) > 0 and wordList[i][-1] in yvowels:
+                                loader += wordList[i] + "yä "
                             else: #If's it's a conosonent, diphthong o, u or ä
-                                results += wordList[i] + "ä "
+                                loader += wordList[i] + "ä "
+                            results += glottal_caps(loader.capitalize())
                 # Origin noun
                 elif mode == 4:
                     # The only nouns put together using a space
                     if words == "tsko swizaw":
-                        results += "tsko swizawta "
+                        results += "Tsko Swizawta "
                     # the only noun with two spaces
                     elif words == "mo a fngä'":
-                        results += "ta mo a fgnä' "
+                        results += "ta Mo a Fgnä' "
                     else:
                         for i in range(len(wordList) - 1, -1, -1):
+                            loader = ""
                             # The only a-attributed word in the dictionary, part of "swoasey ayll"
                             if wordList[i] == "ayll":
-                                results += "ylla "
+                                loader += "Ylla "
                             elif wordList[i].startswith("le"):
-                                results += wordList[i] + "a "
+                                loader += wordList[i] + "a "
                             elif wordList[i].endswith("yä"):
-                                results += wordList[i]
+                                loader += wordList[i]
                             else:
-                                results += wordList[i] + "ta "
+                                loader += wordList[i] + "ta "
+                            results += glottal_caps(loader.capitalize())
             
             # GET PRIMARY NOUN
+            loader = ""
             query = requests.get(f"{api_url}/random/1/pos is n.")
             buffer = json.loads(query.text)
-            results += buffer[0]['Navi']
-            results += " alu "
-
-            # BUILD FIRST NAME
-            # first syllable: CV
-            results += f"{get_onset()}{get_nucleus()}".capitalize()
-            for x in range(b): #loop B times
-                # some more CV until `a` syllables
-                results += f"{get_onset()}{get_nucleus()}"
-            results += get_coda()  # Maybe end the syllable with something, maybe not
+            loader = buffer[0]['Navi']
+            results += glottal_caps(loader.capitalize())
 
             # ADD ENDING
             results += "\n"
