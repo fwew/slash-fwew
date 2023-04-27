@@ -493,7 +493,7 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
             if mode == 2:
                 # Get adjectives
                 query = requests.get(f"{api_url}/random/1/pos is adj.")
-                buffer = query.text
+                buffer = json.loads(query.text)
                 results += buffer[0]['Navi']
                 # Make sure there's no a before we add an a (like in "hona" or "apxa")
                 if(len(results) > 0 and results[len(results) - 1] != 'a'):
@@ -505,7 +505,7 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                 # Get nouns
                 query = requests.get(f"{api_url}/random/1/pos is n.")
 
-                buffer = query.text
+                buffer = json.loads(query.text)
 
                 words = buffer[0]['Navi']
                 wordList = words.split()
@@ -553,7 +553,7 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
             
             # GET PRIMARY NOUN
             query = requests.get(f"{api_url}/random/1/pos is n.")
-            buffer = query.text
+            buffer = json.loads(query.text)
             results += buffer[0]['Navi']
             results += " alu "
 
