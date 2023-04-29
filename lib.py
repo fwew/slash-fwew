@@ -544,7 +544,6 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                     # Watch your profanity
                     # elif words in ["kalweyaveng", "kurkung", "la'ang",
                     #               "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
-                    #    print("Of the potty mouth")
                     #    results += "Skxawngä "
                     else:
                         yvowels = ['a', 'ä', 'e', 'i', 'ì']
@@ -561,7 +560,6 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                                 loader += wordList[i]
                                 loader.removesuffix('a')
                                 loader += "ä "
-                                print("-ia activated")
                             elif wordList[i][-1] in yvowels:
                                 loader += wordList[i] + "yä "
                             else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
@@ -578,7 +576,6 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                     # Watch your profanity
                     # elif words in ["kalweyaveng", "kurkung", "la'ang",
                     #                "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
-                    #     print("From the potty mouth")
                     #     results += "Skxawngta "
                     else:
                         for i in range(len(wordList) - 1, -1, -1):
@@ -602,7 +599,6 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
             # Wivatch youä profanitit
             # if loader in ["kalweyaveng", "kurkung", "la'ang",
             #            "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
-            #    print("The potty mouth")
             #    loader = "Skxawng"
             results += glottal_caps(loader.capitalize())
 
