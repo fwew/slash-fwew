@@ -541,6 +541,11 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                     # the only noun with two spaces
                     elif words == "mo a fngä'":
                         results += "Moä a Fgnä' "
+                    # Watch your profanity
+                    # elif words in ["kalweyaveng", "kurkung", "la'ang",
+                    #               "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
+                    #    print("Of the potty mouth")
+                    #    results += "Skxawngä "
                     else:
                         yvowels = ['a', 'ä', 'e', 'i', 'ì']
                         for i in range(len(wordList) - 1, -1, -1):
@@ -552,9 +557,14 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                                 loader += wordList[i] + "a "
                             elif wordList[i].endswith("yä"):
                                 loader += wordList[i] + " "
-                            elif len(loader) > 0 and wordList[i][-1] in yvowels:
+                            elif wordList[i].endswith("ia"): # aungia, meuia, soaia, tìftia, kemuia
+                                loader += wordList[i]
+                                loader.removesuffix('a')
+                                loader += "ä "
+                                print("-ia activated")
+                            elif wordList[i][-1] in yvowels:
                                 loader += wordList[i] + "yä "
-                            else: #If's it's a conosonent, diphthong o, u or ä
+                            else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
                                 loader += wordList[i] + "ä "
                             results += glottal_caps(loader.capitalize())
                 # Origin noun
@@ -565,6 +575,11 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
                     # the only noun with two spaces
                     elif words == "mo a fngä'":
                         results += "ta Mo a Fgnä' "
+                    # Watch your profanity
+                    # elif words in ["kalweyaveng", "kurkung", "la'ang",
+                    #                "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
+                    #     print("From the potty mouth")
+                    #     results += "Skxawngta "
                     else:
                         for i in range(len(wordList) - 1, -1, -1):
                             loader = ""
@@ -584,6 +599,11 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
             query = requests.get(f"{api_url}/random/1/pos is n.")
             buffer = json.loads(query.text)
             loader = buffer[0]['Navi']
+            # Wivatch youä profanitit
+            # if loader in ["kalweyaveng", "kurkung", "la'ang",
+            #            "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
+            #    print("The potty mouth")
+            #    loader = "Skxawng"
             results += glottal_caps(loader.capitalize())
 
             # ADD ENDING
