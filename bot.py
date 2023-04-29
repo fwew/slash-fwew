@@ -33,8 +33,9 @@ servers = [
 ]
 
 intents = disnake.Intents.default()
-fwew_bot = commands.Bot(command_prefix="?", help_command=None, sync_permissions=True,
-                        intents=intents, sync_commands_debug=True)  # , test_guilds=servers)
+intents.message_content = True
+fwew_bot = commands.Bot(command_prefix="?", help_command=None, intents=intents)
+    #, sync_commands_debug=True) #, sync_permissions=True #, test_guilds=servers)
 
 
 @fwew_bot.event
@@ -323,7 +324,7 @@ async def leave(inter, server_id=Param(description="the server id")):
         await inter.edit_original_message(content="you are not authorized to use this command")
 
 
-@fwew_bot.message_command(name="fwew translate", default_permission=True)
+@fwew_bot.message_command(name="fwew translate") # default_permission=True)
 async def translate_message(inter, message):
     """
     translate this message using Fwew
