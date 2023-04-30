@@ -240,20 +240,20 @@ def valid(a, b, c, k) -> bool:
     Validate the input vars from the URL - No ridiculousness this time -- at all. :P
     Acceptable Ranges:
     1 ≤ a, b, c ≤ 4
-    1 ≤ k ≤ 100
+    1 ≤ k ≤ 40 (more than that and you might exceed the 2000 character limit)
     """
     def is_set(x):
         return x is not None and x != ""
     # a, b, c, k not set, usually a fresh referral from index.php
     # Requiring at least a=1 b=1 c=1 k=1 is so lame. So having unset a, b, c, k is valid
     # Also happens if any or all elements in form are not selected and submitted. Should also be valid
-    if not is_set(a) or not is_set(b) or is_set(c) or is_set(k):
+    if not is_set(a) and not is_set(b) and is_set(c) and is_set(k):
         return True
     # They all need to be integers
-    if not re.match('/^\d+$/', a + b + c + k):
+    if not type(a) is int or not type(b) is int or not type(c) is int or not type(k) is int:
         return False
     # disallow generating HRH.gif amounts of names
-    if k > 100:
+    if k > 40:
         return False
     # lolwut, zero syllables? Negative syllables?
     if a < 1 or b < 1 or c < 1 or k < 1:
@@ -266,12 +266,12 @@ def valid(a, b, c, k) -> bool:
         return True
 
 # For use with the command "name-alu"
-def valid_alu(adj_mode: str, b: int, k: int) -> bool:
+def valid_alu(adj_mode: str, b, k) -> bool:
     """
     Validate the input vars from the URL - No ridiculousness this time -- at all. :P
     Acceptable Ranges:
     1 ≤ b ≤ 4
-    1 ≤ k ≤ 100
+    1 ≤ k ≤ 50 (more than that and you might exceed the 2000 character limit)
     """
     def is_set(x):
         return x is not None and x != ""
@@ -282,13 +282,13 @@ def valid_alu(adj_mode: str, b: int, k: int) -> bool:
     # But adj_mode works differently
     if not adj_mode in ["any", "none", "normal adjective", "genitive noun", "origin noun"]:
         return False
-    if not is_set(b) or is_set(k):
+    if not is_set(b) and is_set(k):
         return True
     # They all need to be integers
-    if not re.match('/^\d+$/', b + k):
+    if not type(b) is int or not type(k) is int:
         return False
     # disallow generating HRH.gif amounts of names
-    if k > 100:
+    if k > 50:
         return False
     # lolwut, zero syllables? Negative syllables?
     if b < 1 or k < 1:
