@@ -96,6 +96,17 @@ def format_suffixes(word: dict) -> str:
         results += "\n"
     return results
 
+def format_comment(word: dict) -> str:
+    results = ""
+    comment = word['Affixes']['Comment']
+    if comment is not None and len(comment) > 0:
+        results += "      comment: "
+        for k, comment in enumerate(comment):
+            if k != 0:
+                results += ", "
+            results += f"**{comment}**"
+        results += "\n"
+    return results
 
 def format_lenition(word: dict) -> str:
     results = ""
@@ -172,6 +183,7 @@ def format(response_text: str, languageCode: str, showIPA: bool = False) -> str:
         results += format_infixes(word)
         results += format_suffixes(word)
         results += format_lenition(word)
+        results += format_comment(word)
     if len(results) > char_limit:
         return f"{len(words)} results. please search a more specific list, or use /random with number and same args"
     return results
