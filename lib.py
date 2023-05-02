@@ -5,7 +5,7 @@ import requests
 from space_containing import *
 from name_gen import *
 
-version = "2.5.2"
+version = "2.6.0"
 api_url = "http://localhost:10000/api"
 url_pattern = r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
 si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|alm|ìlm|ìly|aly|arm|ìrm|ìry|ary|ìsy|asy)?(eiy|äng|eng|uy|ats)?i"
@@ -621,6 +621,21 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
 
 
 def get_lenition() -> str:
+    return """```
+kx → k
+px → p
+tx → t
+
+k  → h
+p  → f
+t  → s
+
+ts → s
+
+'  → (disappears, except before ll or rr)
+```"""
+
+def get_len() -> str:
     return """```
 kx, px, tx -> k, p, t
    k, p, t -> h, f, s

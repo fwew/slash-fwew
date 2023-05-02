@@ -221,6 +221,13 @@ async def lenition(inter):
     """
     await inter.response.send_message(get_lenition())
 
+@fwew_bot.slash_command(name="len", description="get the compact lenition table")
+async def len(inter):
+    """
+    get the compact lenition table
+    """
+    await inter.response.send_message(get_len())
+
 @fwew_bot.slash_command(name="that", description="show all possible \"that\"s in Na'vi")
 async def that(inter):
     """
@@ -295,12 +302,6 @@ async def servers(inter):
         )
 
         for guild in fwew_bot.guilds:
-            # to_add = f"[{count}] {guild.name} ({guild.id}) by ({guild.owner_id}) - {guild.member_count} members\n"
-            # if len(content + to_add) > 2000:
-            #     embed.description += content
-            #     content = to_add
-            # else:
-            #     content += to_add
             embed.description += f"[{count}] {guild.name} ({guild.id}) by ({guild.owner_id}) - {guild.member_count} members\n"
             count += 1
         await inter.response.send_message(embed=embed)
