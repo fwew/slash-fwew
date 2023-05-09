@@ -24,12 +24,15 @@ servers = [
     860933619296108564,  # gfs
     1058520916612624536, # fr
     1061696962304426025, # fr
+    1103339942538645605, # fr
     1065673594354548757, # ru
     1063774395748847648, # ru
     1078367154912628867, # sds
     1060288947596570624, # 4023
     1067521820401619004, # 0422
     1061325007998943392, # 1537
+    1075866581265043548, # 2565
+    1062822191961489408, # nm01
 ]
 
 intents = disnake.Intents.default()
@@ -219,6 +222,13 @@ async def lenition(inter):
     """
     await inter.response.send_message(get_lenition())
 
+@fwew_bot.slash_command(name="len", description="get the compact lenition table")
+async def len(inter):
+    """
+    get the compact lenition table
+    """
+    await inter.response.send_message(get_len())
+
 @fwew_bot.slash_command(name="that", description="show all possible \"that\"s in Na'vi")
 async def that(inter):
     """
@@ -293,12 +303,6 @@ async def servers(inter):
         )
 
         for guild in fwew_bot.guilds:
-            # to_add = f"[{count}] {guild.name} ({guild.id}) by ({guild.owner_id}) - {guild.member_count} members\n"
-            # if len(content + to_add) > 2000:
-            #     embed.description += content
-            #     content = to_add
-            # else:
-            #     content += to_add
             embed.description += f"[{count}] {guild.name} ({guild.id}) by ({guild.owner_id}) - {guild.member_count} members\n"
             count += 1
         await inter.response.send_message(embed=embed)

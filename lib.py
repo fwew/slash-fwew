@@ -5,7 +5,7 @@ import requests
 from space_containing import *
 from name_gen import *
 
-version = "2.5.0"
+version = "2.6.2"
 api_url = "http://localhost:10000/api"
 url_pattern = r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
 si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|alm|ìlm|ìly|aly|arm|ìrm|ìry|ary|ìsy|asy)?(eiy|äng|eng|uy|ats)?i"
@@ -13,21 +13,35 @@ paren_pattern = r"(\(.+\))"
 char_limit = 2000
 
 def get_language(inter):
-    languages = {
+    channel_languages = {
+        1104882512607576114: "fr", # LN/fr/#commandes-bot
+        298701183898484737: "de",  # LN/other/#deutsch
+        365987412163297284: "fr",  # LN/other/#français
+        466721683496239105: "nl",  # LN/other/#nederlands
+        649363324143665192: "pl",  # LN/other/#polski
+        507306946190114846: "ru",  # LN/other/#русский
+        998643038878453870: "tr"   # LN/other/#türkçe
+    }
+    if inter.channel is None:
+        return "en"
+    if inter.channel.id in channel_languages:
+        return channel_languages[inter.channel.id]
+    server_languages = {
         935489523155075092: "en",
         395558141162422275: "en",
         154318499722952704: "en",
         860933619296108564: "en",
         1058520916612624536: "fr",
         1061696962304426025: "fr",
+        1103339942538645605: "fr",
         1065673594354548757: "ru",
         1063774395748847648: "ru"
     }
     if inter.guild is None:
         return "en"
-    if inter.guild_id not in languages:
-        languages[inter.guild_id] = "en"
-    return languages[inter.guild_id]
+    if inter.guild_id not in server_languages:
+        server_languages[inter.guild_id] = "en"
+    return server_languages[inter.guild_id]
 
 
 def format_ipa(word: dict) -> str:
@@ -96,6 +110,17 @@ def format_suffixes(word: dict) -> str:
         results += "\n"
     return results
 
+def format_comment(word: dict) -> str:
+    results = ""
+    comment = word['Affixes']['Comment']
+    if comment is not None and len(comment) > 0:
+        results += "      comment: "
+        for k, comment in enumerate(comment):
+            if k != 0:
+                results += ", "
+            results += f"**{comment}**"
+        results += "\n"
+    return results
 
 def format_lenition(word: dict) -> str:
     results = ""
@@ -172,6 +197,7 @@ def format(response_text: str, languageCode: str, showIPA: bool = False) -> str:
         results += format_infixes(word)
         results += format_suffixes(word)
         results += format_lenition(word)
+        results += format_comment(word)
     if len(results) > char_limit:
         return f"{len(words)} results. please search a more specific list, or use /random with number and same args"
     return results
@@ -418,7 +444,7 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
     # for temp storage before appending to results
     loader = ""
     if not valid(int(a), int(b), int(c), int(k)):
-        results = "Max a, b and c are 4, max k is 40"
+        results = "Max a, b and c are 4, max n is 50"
     else:
         a, b, c, k = int(a), int(b), int(c), int(k)
         mk = 0
@@ -472,7 +498,7 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
 def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
     results = ""
     if not valid_alu(adj_mode, int(b), int(k)):
-        results = "Max b is 4, max k is 50"
+        results = "Max b is 4, max n is 50"
     else:
         
         b, k = int(b), int(k)
@@ -609,6 +635,21 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
 
 
 def get_lenition() -> str:
+    return """```
+kx → k
+px → p
+tx → t
+
+k  → h
+p  → f
+t  → s
+
+ts → s
+
+'  → (disappears, except before ll or rr)
+```"""
+
+def get_len() -> str:
     return """```
 kx, px, tx -> k, p, t
    k, p, t -> h, f, s

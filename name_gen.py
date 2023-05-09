@@ -253,7 +253,7 @@ def valid(a, b, c, k) -> bool:
     if not type(a) is int or not type(b) is int or not type(c) is int or not type(k) is int:
         return False
     # disallow generating HRH.gif amounts of names
-    if k > 40:
+    if k > 50:
         return False
     # lolwut, zero syllables? Negative syllables?
     if a < 1 or b < 1 or c < 1 or k < 1:
