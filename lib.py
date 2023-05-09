@@ -5,7 +5,7 @@ import requests
 from space_containing import *
 from name_gen import *
 
-version = "2.6.0"
+version = "2.6.1"
 api_url = "http://localhost:10000/api"
 url_pattern = r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
 si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|alm|ìlm|ìly|aly|arm|ìrm|ìry|ary|ìsy|asy)?(eiy|äng|eng|uy|ats)?i"
@@ -431,7 +431,7 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
     # for temp storage before appending to results
     loader = ""
     if not valid(int(a), int(b), int(c), int(k)):
-        results = "Max a, b and c are 4, max k is 40"
+        results = "Max a, b and c are 4, max n is 50"
     else:
         a, b, c, k = int(a), int(b), int(c), int(k)
         mk = 0
@@ -485,7 +485,7 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
 def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
     results = ""
     if not valid_alu(adj_mode, int(b), int(k)):
-        results = "Max b is 4, max k is 50"
+        results = "Max b is 4, max n is 50"
     else:
         
         b, k = int(b), int(k)
