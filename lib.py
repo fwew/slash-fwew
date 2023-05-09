@@ -249,7 +249,7 @@ def format_number(response_text: str) -> str:
     name = number["name"]
     octal = number["octal"]
     decimal = number["decimal"]
-    return f"**na'vi**: {name} | **octal**: {octal} | **decimal**: {decimal}"
+    return f"`  na'vi`: {name}\n`  octal`: {octal}\n`decimal`: {decimal}"
 
 
 def get_word_bundles(words: str) -> list[str]:
@@ -368,6 +368,10 @@ def get_number(word: str) -> str:
 
 
 def get_number_reverse(num: int) -> str:
+    if int(num) > 32767:
+        return "Error: Maximum is 32,767 (octal: 077777)"
+    if int(num) < 0:
+        return "Na'vi has no negative numbers"
     res = requests.get(f"{api_url}/number/r/{num}")
     text = res.text
     return format_number(text)
