@@ -5,7 +5,7 @@ import requests
 from space_containing import *
 from name_gen import *
 
-version = "2.6.1"
+version = "2.6.2"
 api_url = "http://localhost:10000/api"
 url_pattern = r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
 si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|alm|ìlm|ìly|aly|arm|ìrm|ìry|ary|ìsy|asy)?(eiy|äng|eng|uy|ats)?i"
@@ -13,7 +13,20 @@ paren_pattern = r"(\(.+\))"
 char_limit = 2000
 
 def get_language(inter):
-    languages = {
+    channel_languages = {
+        1104882512607576114: "fr", # LN/fr/#commandes-bot
+        298701183898484737: "de",  # LN/other/#deutsch
+        365987412163297284: "fr",  # LN/other/#français
+        466721683496239105: "nl",  # LN/other/#nederlands
+        649363324143665192: "pl",  # LN/other/#polski
+        507306946190114846: "ru",  # LN/other/#русский
+        998643038878453870: "tr"   # LN/other/#türkçe
+    }
+    if inter.channel is None:
+        return "en"
+    if inter.channel.id in channel_languages:
+        return channel_languages[inter.channel.id]
+    server_languages = {
         935489523155075092: "en",
         395558141162422275: "en",
         154318499722952704: "en",
@@ -26,9 +39,9 @@ def get_language(inter):
     }
     if inter.guild is None:
         return "en"
-    if inter.guild_id not in languages:
-        languages[inter.guild_id] = "en"
-    return languages[inter.guild_id]
+    if inter.guild_id not in server_languages:
+        server_languages[inter.guild_id] = "en"
+    return server_languages[inter.guild_id]
 
 
 def format_ipa(word: dict) -> str:
