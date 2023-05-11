@@ -3,13 +3,102 @@
 # Translated into Python3 by Tirea Aean
 import random
 import re
+from frequencyscript_ipa import distros
+
+# Import 3 dictionaries and get info from them
+phonemes = distros()
+
+onset_distros = phonemes[0]
+nucleus_distros = phonemes[1]
+end_distros = phonemes[2]
+superclusters = phonemes[3]
+
+onset_keys = list(onset_distros.keys())
+nucleus_keys = list(nucleus_distros.keys())
+end_keys = list(end_distros.keys())
+super_keys = list(superclusters.keys())
+
+onset_numbers = {}
+nucleus_numbers = {}
+end_numbers = {}
+super_numbers = {}
+
+# Onset calculations
+onsets = len(onset_keys)
+
+x = 0
+for i in range(0,onsets):
+    onset_numbers[i] = x
+    x += onset_distros[onset_keys[i]]
+
+max_rand_onsets = x
+
+# Nucleus calculations
+nuclei = len(nucleus_keys)
+
+x = 0
+for i in range(0,nuclei):
+    nucleus_numbers[i] = x
+    x += nucleus_distros[nucleus_keys[i]]
+
+max_rand_nuclei = x
+
+# End calculations
+ends = len(end_keys)
+
+x = 0
+for i in range(0,ends):
+    end_numbers[i] = x
+    x += end_distros[end_keys[i]]
+
+max_rand_ends = x
+
+# Supercluster calculations
+supers = len(super_keys)
+
+#
+# Methods
+#
+
+def get_onset_2():
+    global onsets
+    global max_rand_onsets
+
+    x = random.randint(0,max_rand_onsets)
+    for i in range(0,onsets - 1):
+        if onset_numbers[i + 1] > x:
+            return onset_keys[i]
+    return onset_keys[-1]
+
+def get_nucleus_2():
+    global nuclei
+    global max_rand_nuclei
+
+    x = random.randint(0,max_rand_nuclei)
+    for i in range(0,nuclei - 1):
+        if nucleus_numbers[i + 1] > x:
+            return nucleus_keys[i]
+    return nucleus_keys[-1]
+
+def get_coda_2(nucleus: str):
+    if(nucleus in {"ll", "rr"}):
+        return ""
+
+    global ends
+    global max_rand_ends
+
+    x = random.randint(0,max_rand_ends)
+    for i in range(0,ends - 1):
+        if end_numbers[i + 1] > x:
+            return end_keys[i]
+    return end_keys[-1]
 
 # Assistant command to capitalize words that begin with a glottal stop
 # If it begins with an apostrophe, capitalize the second letter
 def glottal_caps(s: str):
     if s.startswith("'"):
         return s[:1].lower() + s[1:].capitalize()
-    return s
+    return s.capitalize()
 
 def get_onset():
     c1type = ""
@@ -255,8 +344,8 @@ def valid(a, b, c, k) -> bool:
     # disallow generating HRH.gif amounts of names
     if k > 50:
         return False
-    # lolwut, zero syllables? Negative syllables?
-    if a < 1 or b < 1 or c < 1 or k < 1:
+    # lolwut, negative syllables?
+    if a < 0 or b < 0 or c < 0 or k < 1:
         return False
     # Probably Vawmataw or someone trying to be funny by generating HRH.gif amounts of syllables
     elif a > 4 or b > 4 or c > 4:
@@ -280,7 +369,7 @@ def valid_alu(adj_mode: str, b, k) -> bool:
     # Also happens if any or all elements in form are not selected and submitted. Should also be valid
 
     # But adj_mode works differently
-    if not adj_mode in ["any", "none", "normal adjective", "genitive noun", "origin noun"]:
+    if not adj_mode in ["any", "something", "none", "normal adjective", "genitive noun", "origin noun"]:
         return False
     if not is_set(b) and is_set(k):
         return True
@@ -291,7 +380,7 @@ def valid_alu(adj_mode: str, b, k) -> bool:
     if k > 50:
         return False
     # lolwut, zero syllables? Negative syllables?
-    if b < 1 or k < 1:
+    if b < 0 or k < 1:
         return False
     # Probably Vawmataw or someone trying to be funny by generating HRH.gif amounts of syllables
     elif b > 4:

@@ -42,7 +42,6 @@ flags.sync_commands_debug = True
 fwew_bot = commands.Bot(command_prefix="?", help_command=None, intents=intents, 
     command_sync_flags=flags) #, sync_permissions=True #, test_guilds=servers)
 
-
 @fwew_bot.event
 async def on_ready():
     with open(logfile, "a") as log:
@@ -247,14 +246,14 @@ async def version(inter):
 @fwew_bot.slash_command(name="name", description="generate Na'vi full names")
 async def name(inter,
                s1=Param(name="a",
-                        description="first name length", gt=1, le=4, default=2),
+                        description="first name length", gt=0, le=4, default=0),
                s2=Param(name="b",
-                        description="family name length", gt=1, le=4, default=2),
+                        description="family name length", gt=0, le=4, default=0),
                s3=Param(name="c",
-                        description="parent's name length", gt=1, le=4, default=2),
+                        description="parent's name length", gt=0, le=4, default=0),
                ending=commands.Param(
                    description="'ite (daughter) or 'itan (son)", choices=["'ite", "'itan"]),
-               n=Param(description="number of names to generate", gt=0, le=50, default=1)):
+               n=Param(description="number of names to generate", gt=1, le=50, default=1)):
     """
     generate full Na'vi name(s)
 
@@ -272,10 +271,10 @@ async def name(inter,
 @fwew_bot.slash_command(name="name-alu", description="Use existing Na'vi words to generate Na'vi names")
 async def name(inter,
                adj_mode=commands.Param(
-                   description="type of adjective for the noun", choices=["any", "none", "normal adjective", "genitive noun", "origin noun"], default="any"),
+                   description="type of adjective for the noun", choices=["any", "something", "none", "normal adjective", "genitive noun", "origin noun"], default="something"),
                s2=Param(name="b",
-                        description="name length", gt=1, le=4, default=2),
-               n=Param(description="number of names to generate", gt=0, le=50, default=1)):
+                        description="name length", gt=0, le=4, default=0),
+               n=Param(description="number of names to generate", gt=1, le=50, default=1)):
     """
     generate full Na'vi name(s) out of preexisting Na'vi words
 

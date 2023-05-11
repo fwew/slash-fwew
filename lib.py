@@ -12,6 +12,8 @@ si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|
 paren_pattern = r"(\(.+\))"
 char_limit = 2000
 
+global_onset = ["",""]
+
 def get_language(inter):
     channel_languages = {
         1104882512607576114: "fr", # LN/fr/#commandes-bot
@@ -442,6 +444,69 @@ def get_translation(text: str, languageCode: str) -> str:
         return f"translation exceeds character limit of {char_limit}"
     return results
 
+def single_name(i: int):
+    loader = ""
+    onset = get_onset_2().strip()
+    nucleus = get_nucleus_2()
+    coda = get_coda_2(nucleus)
+    if not (len(onset) > 0 and onset[0] == nucleus[0]): #disallow "lll" and "rrr"
+        loader += onset
+              
+    loader += (nucleus + coda).strip()
+            
+    x = 0
+    while x < (i - 1): #loop A times
+        # some more CV until `a` syllables
+        onset = get_onset_2().strip()
+        if(onset == loader[-1]): #disallow "lll", "rrr", "eyy" and "aww"
+            onset = ""
+
+        #
+        # "Superclusters" are whitelisted
+        #
+
+        if len(coda.strip()) > 0 and len(onset) > 1:
+            # Decode the cluster
+            a = ""
+            b = ""
+            i = 1
+            cluster_possible = False
+            if onset.startswith("ts") :
+                a = "ts"
+                i = 2
+                cluster_possible = True
+            elif onset[0] in ["f", "s"] :
+                a = onset[0]
+                cluster_possible = True
+            
+            if cluster_possible:
+                b = onset[i:].strip()
+                if len(b) > 0:
+                    if not(coda in superclusters and a in superclusters[coda] and b in superclusters[coda][a]):
+                        onset = b
+                    #For debugging
+                    #    print("Rejected: " + coda + a + b)
+                    #else:
+                    #    print("Accepted: " + coda + a + b)
+
+        #
+        # Nucleus and coda
+        #
+
+        nucleus = get_nucleus_2()
+        # No identical adjacent vowels.  This isn't the reef
+        if(onset == "" and nucleus[0] == loader[-1]):
+            continue # Destruction of nucleus property.  Do not pass go, do not collect your x += 1
+        coda = get_coda_2(nucleus)
+        loader += (onset + nucleus + coda).strip()
+        x += 1
+
+    return glottal_caps(loader)
+
+def rand_if_zero(x: int):
+    if x == 0:
+        return random.randint(2,4)
+    return x
 
 def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
     results = ""
@@ -453,59 +518,34 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
         a, b, c, k = int(a), int(b), int(c), int(k)
         mk = 0
         # Do entire generator process n times
-        while (mk < k):
-            i = 0
-
+        for mk in range(0,k):
             # BUILD FIRST NAME
             # first syllable: CV
-            loader = ""
-            loader += f"{get_onset()}{get_nucleus()}".capitalize()
-            while i < a - 1:
-                # some more CV until `a` syllables
-                loader += f"{get_onset()}{get_nucleus()}"
-                i += 1
-            loader += get_coda()  # Maybe end the syllable with something, maybe not
-            results += glottal_caps(loader)
-            i = 0  # reset counter back to 0 for the next part of the name
+            results += single_name(rand_if_zero(a))
 
             results += " te "
 
             # BUILD FAMILY NAME
-            loader = ""
-            loader += f"{get_onset()}{get_nucleus()}".capitalize()  # CV
-            while i < b - 1:
-                loader += f"{get_onset()}{get_nucleus()}"  # CV
-                i += 1
-            loader += get_coda()  # C or None
-            i = 0  # reset again for the last part of name
-            results += glottal_caps(loader)
+            results += single_name(rand_if_zero(b))
+
             results += " "
 
             # BUILD PARENT'S NAME
-            loader = ""
-            loader += f"{get_onset()}{get_nucleus()}".capitalize()
-            while i < c - 1:
-                loader += f"{get_onset()}{get_nucleus()}"  # CV
-                i += 1
-            loader += get_coda()
-            results += glottal_caps(loader)
-            i = 0
+            results += single_name(rand_if_zero(b))
 
             # ADD ENDING
             results += ending + "\n"
 
-            mk += 1
-
     return results
 
 
-def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
+def get_name_alu(a: int, adj_mode: str = "something", k: int = 1) -> str:
     results = ""
-    if not valid_alu(adj_mode, int(b), int(k)):
+    if not valid_alu(adj_mode, int(a), int(k)):
         results = "Max b is 4, max n is 50"
     else:
         
-        b, k = int(b), int(k)
+        a, k = int(a), int(k)
 
         # Adjectives and nouns can be shared across loops
         buffer = ""
@@ -525,19 +565,19 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
             # For building names before appending them to results
             loader = ""
 
-            # BUILD FIRST NAME
-            # first syllable: CV
-            loader = ""
-            loader += f"{get_onset()}{get_nucleus()}".capitalize()
-            for x in range(b): #loop B times
-                # some more CV until `a` syllables
-                loader += f"{get_onset()}{get_nucleus()}"
-            loader += get_coda()  # Maybe end the syllable with something, maybe not
-            results += glottal_caps(loader) + " alu "
+            if a == 0:
+                b = random.randint(2,4)
+            else:
+                b = a
+
+            results += single_name(b) + " alu "
 
             # if not specified, pick randomly
-            if adj_mode == "any":
+            if adj_mode == "any" or adj_mode == "something":
                 mode = random.randint(1,4)
+            
+            if adj_mode == "something" and mode == 1:
+                mode = 2
 
             # ADJECTIVE
             if mode == 2:
