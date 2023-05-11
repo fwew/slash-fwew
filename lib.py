@@ -448,14 +448,11 @@ def single_name_discord(i: int, n: int):
     loader = ""
     
     if int(i) > 4 or int(i) < 0:
-        loader += "Max b is 4   "
+        return "Max b is 4, max n is 50"
     i = rand_if_zero(int(i))
     n = int(n)
     if n > 50 or n < 1:
-        loader += "Max n is 50"
-
-    if len(loader) > 2:
-        return loader
+        return "Max b is 4, max n is 50"
 
     for k in range(0,rand_if_zero(n)):
         loader += single_name(i) + "\n"
