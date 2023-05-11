@@ -451,7 +451,7 @@ def single_name_discord(i: int, n: int):
         return "Max n is 50"
     
     loader = ""
-    print(i)
+
     for k in range(0,rand_if_zero(n)):
         loader += single_name(i) + "\n"
     return loader
