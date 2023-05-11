@@ -444,6 +444,18 @@ def get_translation(text: str, languageCode: str) -> str:
         return f"translation exceeds character limit of {char_limit}"
     return results
 
+def single_name_discord(i: int, n: int):
+    i = rand_if_zero(int(i))
+    n = int(n)
+    if n > 50 or n < 0:
+        return "Max n is 50"
+    
+    loader = ""
+    print(i)
+    for k in range(0,rand_if_zero(n)):
+        loader += single_name(i) + "\n"
+    return loader
+
 def single_name(i: int):
     loader = ""
     onset = get_onset_2().strip()

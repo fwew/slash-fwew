@@ -242,6 +242,20 @@ async def version(inter):
     """
     await inter.response.send_message(get_version())
 
+@fwew_bot.slash_command(name="name-single", description="Generate a valid Na'vi word to use as a name")
+async def name(inter,
+               s2=Param(name="b",
+                        description="name length", gt=0, le=4, default=0),
+               n=Param(description="number of names to generate", gt=1, le=50, default=1)):
+    """
+    generate full Na'vi name(s) out of preexisting Na'vi words
+
+    Parameters
+    ----------
+    name_num_syllables: name number of syllables
+    n: number of names to generate
+    """
+    await inter.response.send_message(single_name_discord(s2, n))
 
 @fwew_bot.slash_command(name="name", description="generate Na'vi full names")
 async def name(inter,
