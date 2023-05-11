@@ -445,9 +445,11 @@ def get_translation(text: str, languageCode: str) -> str:
     return results
 
 def single_name_discord(i: int, n: int):
+    if i > 4 or i < 0:
+        return "Max b is 4"
     i = rand_if_zero(int(i))
     n = int(n)
-    if n > 50 or n < 0:
+    if n > 50 or n < 1:
         return "Max n is 50"
     
     loader = ""
