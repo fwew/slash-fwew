@@ -525,8 +525,9 @@ def single_name(i: int):
         loader += (onset + nucleus + coda).strip()
         x += 1
     
-    if loader.startswith("rr"):
+    if loader[0:2] in {"rr", "ll"}:
         loader = "'" + loader
+        #print(loader[0:3])
 
     return glottal_caps(loader)
 
