@@ -515,9 +515,7 @@ def single_name(i: int):
         
         # no, you can't add fr to rr or sl to ll
         if len(onset) > 0 and onset[-1] == nucleus[0]:
-            print("Caught " + onset + " hanging out with " + nucleus)
             onset = onset.removesuffix(onset[-1])
-            print("Shortened to " + onset)
 
         # No identical adjacent letters
         e = 0
