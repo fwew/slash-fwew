@@ -472,7 +472,7 @@ def single_name(i: int):
     while x < (i - 1): #loop A times
         # some more CV until `a` syllables
         onset = get_onset_2().strip()
-        if(onset == loader[-1]): #disallow "lll", "rrr", "eyy" and "aww"
+        if(onset == coda): #disallow "lll", "rrr", "eyy" and "aww"
             onset = ""
 
         #
@@ -509,25 +509,29 @@ def single_name(i: int):
 
         nucleus = get_nucleus_2()
 
+        # Disallow syllables starting with a psuedovowel
+        if len(coda.strip()) == 0 and len(onset.strip()) == 0 and nucleus in {"rr", "ll"}:
+            onset = "'"
+
         # No identical adjacent letters
         e = 0
-        if len(onset) > 0:
-            while loader[-1] == onset[0]:
-                e += 1
-                loader = loader.removesuffix(loader[-1])
-        else:
-            while loader[-1] == nucleus[0]:
-                e += 1
-                loader = loader.removesuffix(loader[-1])
-
+        if len(loader) > 0:
+            if len(onset) > 0:
+                while loader[-1] == onset[0]:
+                    e += 1
+                    loader = loader.removesuffix(loader[-1])
+            else:
+                while loader[-1] == nucleus[0]:
+                    e += 1
+                    loader = loader.removesuffix(loader[-1])
 
         coda = get_coda_2(nucleus)
         loader += (onset + nucleus + coda).strip()
         x += 1
     
+    # Disallow syllables starting with a psuedovowel
     if loader[0:2] in {"rr", "ll"}:
-        loader = "'" + loader
-        #print(loader[0:3])
+        onset = "'"
 
     return glottal_caps(loader)
 
