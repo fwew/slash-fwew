@@ -472,7 +472,7 @@ def single_name(i: int):
     while x < (i - 1): #loop A times
         # some more CV until `a` syllables
         onset = get_onset_2().strip()
-        if(onset == coda): #disallow "lll", "rrr", "eyy" and "aww"
+        if onset == coda: #disallow "lll", "rrr", "eyy" and "aww"
             onset = ""
 
         #
@@ -504,7 +504,7 @@ def single_name(i: int):
                     #    print("Accepted: " + coda + a + b)
 
         #
-        # Nucleus and coda
+        # Nucleus
         #
 
         nucleus = get_nucleus_2()
@@ -512,6 +512,12 @@ def single_name(i: int):
         # Disallow syllables starting with a psuedovowel
         if len(coda.strip()) == 0 and len(onset.strip()) == 0 and nucleus in {"rr", "ll"}:
             onset = "'"
+        
+        # no, you can't add fr to rr or sl to ll
+        if len(onset) > 0 and onset[-1] == nucleus[0]:
+            print("Caught " + onset + " hanging out with " + nucleus)
+            onset = onset.removesuffix(onset[-1])
+            print("Shortened to " + onset)
 
         # No identical adjacent letters
         e = 0
@@ -525,7 +531,12 @@ def single_name(i: int):
                     e += 1
                     loader = loader.removesuffix(loader[-1])
 
+        #
+        # Coda
+        #
+
         coda = get_coda_2(nucleus)
+
         loader += (onset + nucleus + coda).strip()
         x += 1
     
