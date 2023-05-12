@@ -464,11 +464,11 @@ def single_name(i: int):
     nucleus = ""
     coda = ""
             
-    x = 0
-    while x < (i): #loop A times
+    #x = 0
+    for x in range(i): #loop A times
         # some more CV until `a` syllables
         onset = get_onset_2().strip()
-        if coda == onset or (len(loader) > 0 and onset == loader[-1]): #disallow "l-ll", "r-rr", "ey-y" and "aw-w"
+        if len(onset.strip()) > 0 and (coda == onset or (len(loader) > 0 and onset[0] == loader[-1])): #disallow "l-ll", "r-rr", "ey-y" and "aw-w"
             onset = ""
 
         #
@@ -479,18 +479,18 @@ def single_name(i: int):
             # Decode the cluster
             a = ""
             b = ""
-            i = 1
+            cluster_int = 1
             cluster_possible = False
             if onset.startswith("ts") :
                 a = "ts"
-                i = 2
+                cluster_int = 2
                 cluster_possible = True
             elif onset[0] in ["f", "s"] :
                 a = onset[0]
                 cluster_possible = True
             
             if cluster_possible:
-                b = onset[i:].strip()
+                b = onset[cluster_int:].strip()
                 if len(b) > 0:
                     if not(coda in superclusters and a in superclusters[coda] and b in superclusters[coda][a]):
                         onset = b
@@ -500,8 +500,8 @@ def single_name(i: int):
                     #    print("Accepted: " + coda + a + b)
         
         # No "nng"
-        if coda == "n" and onset in {"ng", "n"}:
-            loader = loader[0:len(loader) - 1]
+        #if coda == "n" and onset in {"ng", "n"}:
+        #    loader = loader[0:len(loader) - 1]
 
         #
         # Nucleus
@@ -528,7 +528,7 @@ def single_name(i: int):
         coda = get_coda_2(nucleus)
 
         loader += (onset + nucleus + coda).strip()
-        x += 1
+        #x += 1
     
     # Disallow syllables starting with a psuedovowel
     if loader[0:2] in {"rr", "ll", "Rr", "Ll"}:
