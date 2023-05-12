@@ -460,19 +460,15 @@ def single_name_discord(i: int, n: int):
 
 def single_name(i: int):
     loader = ""
-    onset = get_onset_2().strip()
-    nucleus = get_nucleus_2()
-    coda = get_coda_2(nucleus)
-    if not (len(onset) > 0 and onset[0] == nucleus[0]): #disallow "lll" and "rrr"
-        loader += onset
-              
-    loader += (nucleus + coda).strip()
+    onset = ""
+    nucleus = ""
+    coda = ""
             
     x = 0
-    while x < (i - 1): #loop A times
+    while x < (i): #loop A times
         # some more CV until `a` syllables
         onset = get_onset_2().strip()
-        if onset == coda: #disallow "lll", "rrr", "eyy" and "aww"
+        if coda == onset or (len(loader) > 0 and onset == loader[-1]): #disallow "l-ll", "r-rr", "ey-y" and "aw-w"
             onset = ""
 
         #
@@ -502,6 +498,10 @@ def single_name(i: int):
                     #    print("Rejected: " + coda + a + b)
                     #else:
                     #    print("Accepted: " + coda + a + b)
+        
+        # No "nng"
+        if coda == "n" and onset in {"ng", "n"}:
+            loader = loader[0:len(loader) - 1]
 
         #
         # Nucleus
@@ -510,24 +510,16 @@ def single_name(i: int):
         nucleus = get_nucleus_2()
 
         # Disallow syllables starting with a psuedovowel
-        if len(coda.strip()) == 0 and len(onset.strip()) == 0 and nucleus in {"rr", "ll"}:
-            onset = "'"
-        
-        # no, you can't add fr to rr or sl to ll
-        if len(onset) > 0 and onset[-1] == nucleus[0]:
-            onset = onset.removesuffix(onset[-1])
-
-        # No identical adjacent letters
-        e = 0
-        if len(loader) > 0:
-            if len(onset) > 0:
-                while loader[-1] == onset[0]:
-                    e += 1
-                    loader = loader.removesuffix(loader[-1])
-            else:
-                while loader[-1] == nucleus[0]:
-                    e += 1
-                    loader = loader.removesuffix(loader[-1])
+        if nucleus.strip() in {"rr","ll"}:
+            if len(onset.strip()) > 0 and onset[-1] == nucleus[0]:
+                onset = "'"
+            elif len(loader.strip()) > 0 and (loader[-1] in {"a", "ä", "e", "i", "ì", "o", "u"} or loader[-1] == nucleus[0]):
+                onset = "'"
+            
+                
+        # No identical vowels togther.  It's not the reef
+        elif onset.strip() == "" and len(loader) > 0 and loader[-1] == nucleus:
+            onset = "y"
 
         #
         # Coda
@@ -539,8 +531,8 @@ def single_name(i: int):
         x += 1
     
     # Disallow syllables starting with a psuedovowel
-    if loader[0:2] in {"rr", "ll"}:
-        onset = "'"
+    if loader[0:2] in {"rr", "ll", "Rr", "Ll"}:
+        loader = "'" + loader
 
     return glottal_caps(loader)
 
