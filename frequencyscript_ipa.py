@@ -131,13 +131,13 @@ def distros():
 
     z = 0
 
-    a = requests.get(f"{api_url}/list")
-    a = json.loads(a.text)
+    dictionary = requests.get(f"{api_url}/list")
+    dictionary = json.loads(dictionary.text)
     
     #print(a[5]['IPA'])
 
     #with open('dictionary-v2.txt', 'r') as a:
-    for b in a:
+    for entry in dictionary:
         # skip the first line
         if z == 0:
             z += 1
@@ -146,17 +146,15 @@ def distros():
         coda = ""
         start_cluster = ""
 
-        c = b['IPA']
+        words = entry['IPA'].split(' ')
         
-        d = c.split(' ')
-        
-        for e in d:
+        for word in words:
             
-            f = e.split('.')
+            syllables = word.split('.')
 
-            for g in f:
+            for syllable in syllables:
                 # get rid of the garbage
-                h = g.replace("·", "").replace("ˈ","").removeprefix("[").removesuffix("]").removeprefix('ˌ')
+                syllable = syllable.replace("·", "").replace("ˈ","").removeprefix("[").removesuffix("]").removeprefix('ˌ')
 
                 # keep track of where we are in the syllable
                 i = 0
@@ -167,47 +165,47 @@ def distros():
                 start_cluster = ""
                 
                 # Affricative?
-                if(h.startswith('t͡s')):
-                    if(h[3] in {"p", "k", "t"}):
-                        if(h[4] == "'"):
+                if(syllable.startswith('t͡s')):
+                    if(syllable[3] in {"p", "k", "t"}):
+                        if(syllable[4] == "'"):
                             i = 5
                         else:
                             i = 4
-                        start_cluster = romanization[h[0:3]] + romanization[h[3:i]]
-                    elif(h[3] in {"l", "ɾ", "m", "n", "ŋ", "w", "j"}):
+                        start_cluster = romanization[syllable[0:3]] + romanization[syllable[3:i]]
+                    elif(syllable[3] in {"l", "ɾ", "m", "n", "ŋ", "w", "j"}):
                         i = 4
-                        start_cluster = romanization[h[0:3]] + romanization[h[3:i]]
+                        start_cluster = romanization[syllable[0:3]] + romanization[syllable[3:i]]
                     else:
                         i = 3
                 # Some other clustarable thing?
-                elif(h[0] in {"f", "s"}):
-                    if(h[1] in {"p", "k", "t"}):
-                        if(h[2] == "'"):
+                elif(syllable[0] in {"f", "s"}):
+                    if(syllable[1] in {"p", "k", "t"}):
+                        if(syllable[2] == "'"):
                             i = 3
                         else:
                             i = 2
-                        start_cluster = romanization[h[0]] + romanization[h[1:i]]
-                    elif(h[1] in {"l", "ɾ", "m", "n", "ŋ", "w", "j"}):
+                        start_cluster = romanization[syllable[0]] + romanization[syllable[1:i]]
+                    elif(syllable[1] in {"l", "ɾ", "m", "n", "ŋ", "w", "j"}):
                         i = 2
-                        start_cluster = romanization[h[0]] + romanization[h[1:i]]
+                        start_cluster = romanization[syllable[0]] + romanization[syllable[1:i]]
                     else:
                         i = 1
                 # Something that can ejective?
-                elif(h[0] in {"p", "k", "t"}):
-                    if(h[1] == "'"):
+                elif(syllable[0] in {"p", "k", "t"}):
+                    if(syllable[1] == "'"):
                         i = 2
                     else:
                         i = 1
                 # None of the above
-                elif(h[0] in {"ʔ", "l", "ɾ", "h", "m", "n", "ŋ", "v", "w", "j", "z", "ʃ", "ʒ"}):
+                elif(syllable[0] in {"ʔ", "l", "ɾ", "h", "m", "n", "ŋ", "v", "w", "j", "z", "ʃ", "ʒ"}):
                     i = 1
                     
-                if(i > 1 and (h[0:i].startswith("f") or h[0:i].startswith("s"))):
-                    table_manager_onset(romanization[h[0]] + romanization[h[1:i]])
-                elif(i > 3 and h[0:i].startswith('t͡s')):
-                    table_manager_onset(romanization[h[0:3]] + romanization[h[3:i]])
+                if(i > 1 and (syllable[0:i].startswith("f") or syllable[0:i].startswith("s"))):
+                    table_manager_onset(romanization[syllable[0]] + romanization[syllable[1:i]])
+                elif(i > 3 and syllable[0:i].startswith('t͡s')):
+                    table_manager_onset(romanization[syllable[0:3]] + romanization[syllable[3:i]])
                 else:
-                    table_manager_onset(romanization[h[0:i]])
+                    table_manager_onset(romanization[syllable[0:i]])
 
                 if coda != "" and start_cluster != "":
                     table_manager_supercluster(coda, start_cluster)
@@ -218,47 +216,47 @@ def distros():
                 # Nucleus of the syllable
                 #
 
-                if(i + 1 < len(h) and h[i+1] in {'j', 'w'}):
-                    table_manager_nuclei(romanization[h[i:i+2]])
+                if(i + 1 < len(syllable) and syllable[i+1] in {'j', 'w'}):
+                    table_manager_nuclei(romanization[syllable[i:i+2]])
                     i += 2
-                elif(i + 1 < len(h) and h[i] in {'r', 'l'}):
-                    table_manager_nuclei(romanization[h[i:i+2]])
+                elif(i + 1 < len(syllable) and syllable[i] in {'r', 'l'}):
+                    table_manager_nuclei(romanization[syllable[i:i+2]])
                     continue # Do not count psuedovowels towards the final consonent distribution
                 else:
-                    table_manager_nuclei(romanization[h[i]])
+                    table_manager_nuclei(romanization[syllable[i]])
                     i += 1
 
                 #
                 # Syllable-final consonents
                 #
 
-                if(i >= len(h)):
+                if(i >= len(syllable)):
                     table_manager_end(" ")
                     coda = ""
-                elif(i + 1 == len(h)):
-                    if(not h[i] in {":", '̣', "'"}): # fìtsenge lu kxanì
-                        table_manager_end(romanization[h[i]])
-                        coda = romanization[h[i]]
+                elif(i + 1 == len(syllable)):
+                    if(not syllable[i] in {":", '̣', "'"}): # fìtsenge lu kxanì
+                        table_manager_end(romanization[syllable[i]])
+                        coda = romanization[syllable[i]]
                     else:
                         table_manager_end(" ")
-                elif(i + 1 < len(h)):
-                    if(h.endswith('k̚')):
+                elif(i + 1 < len(syllable)):
+                    if(syllable.endswith('k̚')):
                         table_manager_end(romanization['k'])
                         coda = romanization['k']
-                    elif(h.endswith('p̚')):
+                    elif(syllable.endswith('p̚')):
                         table_manager_end(romanization['p'])
                         coda = romanization['p']
-                    elif(h.endswith('t̚')):
+                    elif(syllable.endswith('t̚')):
                         table_manager_end(romanization['t'])
                         coda = romanization['t']
-                    elif(h.endswith('ʔ̚')):
+                    elif(syllable.endswith('ʔ̚')):
                         table_manager_end(romanization['ʔ'])
                         coda = romanization['ʔ']
-                    elif (h[i:i+2] == "ss"):
+                    elif (syllable[i:i+2] == "ss"):
                         table_manager_end(" ") # oìsss only
                     else:
-                        table_manager_end(romanization[h[i:i+2]])
-                        coda = romanization[h[i:i+2]]
+                        table_manager_end(romanization[syllable[i:i+2]])
+                        coda = romanization[syllable[i:i+2]]
                 else:
                     print("You should not be seeing this")
     
