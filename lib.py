@@ -508,12 +508,25 @@ def single_name(i: int):
         #
 
         nucleus = get_nucleus_2()
-        # No identical adjacent vowels.  This isn't the reef
-        if(onset == "" and nucleus[0] == loader[-1]):
-            continue # Destruction of nucleus property.  Do not pass go, do not collect your x += 1
+
+        # No identical adjacent letters
+        e = 0
+        if len(onset) > 0:
+            while loader[-1] == onset[0]:
+                e += 1
+                loader = loader.removesuffix(loader[-1])
+        else:
+            while loader[-1] == nucleus[0]:
+                e += 1
+                loader = loader.removesuffix(loader[-1])
+
+
         coda = get_coda_2(nucleus)
         loader += (onset + nucleus + coda).strip()
         x += 1
+    
+    if loader.startswith("rr"):
+        loader = "'" + loader
 
     return glottal_caps(loader)
 
@@ -548,6 +561,8 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
             results += single_name(rand_if_zero(b))
 
             # ADD ENDING
+            if results.endswith("'"):
+                results = results.removesuffix("'")
             results += ending + "\n"
 
     return results
