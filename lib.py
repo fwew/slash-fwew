@@ -499,9 +499,10 @@ def single_name(i: int):
                     #else:
                     #    print("Accepted: " + coda + a + b)
         
-        # No "nng"
-        #if coda == "n" and onset in {"ng", "n"}:
-        #    loader = loader[0:len(loader) - 1]
+        # No "nng" "ttx" or anything like that
+        if len(onset) > 0 and coda == onset[0]:
+            print("Prevented " + loader + coda + onset)
+            loader = loader[0:len(loader) - 1]
 
         #
         # Nucleus
@@ -518,7 +519,7 @@ def single_name(i: int):
             
                 
         # No identical vowels togther.  It's not the reef
-        elif onset.strip() == "" and len(loader) > 0 and loader[-1] == nucleus:
+        elif onset.strip() == "" and len(loader) > 0 and loader[-1] == nucleus[0]:
             onset = "y"
 
         #
