@@ -501,7 +501,6 @@ def single_name(i: int):
         
         # No "nng" "ttx" or anything like that
         if len(onset) > 0 and coda == onset[0]:
-            print("Prevented " + loader + coda + onset)
             loader = loader[0:len(loader) - 1]
 
         #
