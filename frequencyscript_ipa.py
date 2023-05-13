@@ -33,7 +33,7 @@ romanization = {
     "aw": "aw",
     "ɛj": "ey",
     "aj": "ay",
-    "ɛw": "ey",
+    "ɛw": "ew",
     # Psuedovowels
     "ṛ": "rr",
     "ḷ": "ll",
