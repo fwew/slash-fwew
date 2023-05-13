@@ -93,6 +93,49 @@ def get_coda_2(nucleus: str):
             return end_keys[i]
     return end_keys[-1]
 
+def chart_entry(x:str, y:int):
+    ys = str(y)
+    spaces = 7 - len(x) - len(ys)
+    stringtsyìp = x
+    for i in range(0,spaces):
+        stringtsyìp += " "
+    stringtsyìp += ys
+
+    return stringtsyìp + "|"
+
+def get_phoneme_frequency_chart():
+    entries = ["| Onset:|Nuclei:|Ending:|", "|=======|=======|=======|"]
+
+    i = 2
+    for a in onset_keys:
+        entries.append("|" + chart_entry(a, onset_distros[a]))
+        i += 1
+
+    i = 2
+    for a in nucleus_keys:
+        entries[i] += chart_entry(a, nucleus_distros[a])
+        i += 1
+
+    while i < len(entries):
+        entries[i] += "       |"
+        i += 1
+
+    i = 2
+    for a in end_keys:
+        entries[i] += chart_entry(a, end_distros[a])
+        i += 1
+    
+    while i < len(entries):
+        entries[i] += "       |"
+        i += 1
+
+    entries_2 = "```\nPhoneme distributions:\n\n"
+    for a in entries:
+        entries_2 += a + "\n"
+    entries_2 += "```"
+
+    return entries_2
+
 # Assistant command to capitalize words that begin with a glottal stop
 # If it begins with an apostrophe, capitalize the second letter
 def glottal_caps(s: str):

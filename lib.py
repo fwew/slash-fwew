@@ -712,6 +712,9 @@ def get_name_alu(a: int, adj_mode: str = "something", k: int = 1) -> str:
 
     return results
 
+def get_phonemes() -> str:
+    return get_phoneme_frequency_chart()
+
 
 def get_lenition() -> str:
     return """```

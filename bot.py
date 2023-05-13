@@ -301,6 +301,14 @@ async def name(inter,
     await inter.response.send_message(get_name_alu(s2, adj_mode, n))
 
 
+@fwew_bot.slash_command(name="phoneme-frequency", description="show how often a phoneme appears")
+async def that(inter):
+    """
+    get the possible translations of "that" into Na'vi
+    """
+    await inter.response.send_message(get_phonemes())
+
+
 @fwew_bot.slash_command(name="servers", description="list all servers the bot is in")
 async def servers(inter):
     """

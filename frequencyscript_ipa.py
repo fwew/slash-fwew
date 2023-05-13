@@ -59,9 +59,15 @@ romanization = {
     "p'": "px",
     "f": "f",
     "r": "r",
+    # Reef dialect
+    "b": "px",
+    "d": "tx",
+    "g": "kx",
+    "ʃ": "sy",
+    "tʃ": "tsy",
+    "ʊ": "ù",
     # mistakes and rarities
     "ʒ": "tsy",
-    "ʃ": "sy",
     "": "",
     " ": ""
 }
@@ -112,16 +118,6 @@ def table_manager_supercluster(x:str, y:str):
     else:
         superclusters[x] = {}
         superclusters[x][a] = [b]
-
-def chart_entry(x:str, y:int):
-    ys = str(y)
-    spaces = 7 - len(x) - len(ys)
-    stringtsyìp = x
-    for i in range(0,spaces):
-        stringtsyìp += " "
-    stringtsyìp += ys
-
-    return stringtsyìp
 
 def distros():
     global freq_table_onset
@@ -186,12 +182,12 @@ def distros():
                         i = 1
                 # Something that can ejective?
                 elif(syllable[0] in {"p", "k", "t"}):
-                    if(syllable[1] == "'"):
+                    if(syllable[1] in {"'", "ʃ"}):
                         i = 2
                     else:
                         i = 1
                 # None of the above
-                elif(syllable[0] in {"ʔ", "l", "ɾ", "h", "m", "n", "ŋ", "v", "w", "j", "z", "ʃ", "ʒ"}):
+                elif(syllable[0] in {"ʔ", "l", "ɾ", "h", "m", "n", "ŋ", "v", "w", "j", "z", "ʃ", "ʒ", "b", "d", "g"}):
                     i = 1
                     
                 if(i > 1 and (syllable[0:i].startswith("f") or syllable[0:i].startswith("s"))):
