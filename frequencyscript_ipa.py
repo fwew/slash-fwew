@@ -138,18 +138,12 @@ def distros():
 
     #with open('dictionary-v2.txt', 'r') as a:
     for entry in dictionary:
-        # skip the first line
-        if z == 0:
-            z += 1
-            continue
-
         coda = ""
         start_cluster = ""
 
         words = entry['IPA'].split(' ')
         
         for word in words:
-            
             syllables = word.split('.')
 
             for syllable in syllables:
