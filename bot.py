@@ -304,7 +304,7 @@ async def name(inter,
 @fwew_bot.slash_command(name="phoneme-frequency", description="show how often a phoneme appears")
 async def that(inter):
     """
-    get the possible translations of "that" into Na'vi
+    Show how likely each phoneme or consonent cluster is to start, end, or center a syllable
     """
     await inter.response.send_message(get_phonemes())
 
