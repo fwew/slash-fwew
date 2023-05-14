@@ -203,7 +203,6 @@ def distros():
                 # None of the above
                 elif(syllable[0] in {"ʔ", "l", "ɾ", "h", "m", "n", "ŋ", "v", "w", "j", "z", "b", "d", "g"}):
                     i = 1
-                    table_manager_non_cluster(romanization[syllable[0]])
                 elif syllable[0] in {"ʃ", "ʒ"}:
                     i = 1
                     table_manager_cluster(romanization[syllable[0]][0:-1], romanization[syllable[0:i]][-1])
