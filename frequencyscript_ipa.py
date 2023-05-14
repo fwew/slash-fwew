@@ -6,17 +6,15 @@ import requests
 api_url = "http://localhost:10000/api"
 
 freq_table_onset = {
-    'p': 0,
     # Consonent clusters will be added in runtime
 }
 
-freq_table_nuclei = {
-    'a': 0,
-}
+freq_table_nuclei = {}
 
-freq_table_end = {
-    'p': 0
-}
+freq_table_end = {}
+
+clusters = {"f":{},"s":{},"ts":{}}
+non_clusters = {}
 
 superclusters = {}
 
@@ -90,6 +88,18 @@ def table_manager_end(x:str):
     else:
         freq_table_end[x] = 1
 
+def table_manager_cluster(x:str, y:str):
+    if not y in clusters[x]:
+        clusters[x][y] = 1
+    else:
+        clusters[x][y] += 1
+
+def table_manager_non_cluster(x:str):
+    if not x in non_clusters:
+        non_clusters[x] = 1
+    else:
+        non_clusters[x] += 1
+
 def table_manager_supercluster(x:str, y:str):
     # Decode the cluster
     a = ""
@@ -98,10 +108,8 @@ def table_manager_supercluster(x:str, y:str):
     if y.startswith("ts") :
         a = "ts"
         i = 2
-    elif y.startswith("s") :
-        a = "s"
-    elif y.startswith("f") :
-        a = "f"
+    elif y[0] in {"f","s"} :
+        a = y[0]
     else:
         print("Some weird consonent cluster beginning")
 
@@ -123,6 +131,8 @@ def distros():
     global freq_table_onset
     global freq_table_nuclei
     global freq_table_end
+    global clusters
+    global non_clusters
     global superclusters
 
     z = 0
@@ -162,9 +172,11 @@ def distros():
                         else:
                             i = 4
                         start_cluster = romanization[syllable[0:3]] + romanization[syllable[3:i]]
+                        table_manager_cluster(romanization[syllable[0:3]], romanization[syllable[3:i]])
                     elif(syllable[3] in {"l", "ɾ", "m", "n", "ŋ", "w", "j"}):
                         i = 4
                         start_cluster = romanization[syllable[0:3]] + romanization[syllable[3:i]]
+                        table_manager_cluster(romanization[syllable[0:3]], romanization[syllable[3:i]])
                     else:
                         i = 3
                 # Some other clustarable thing?
@@ -175,9 +187,11 @@ def distros():
                         else:
                             i = 2
                         start_cluster = romanization[syllable[0]] + romanization[syllable[1:i]]
+                        table_manager_cluster(romanization[syllable[0]], romanization[syllable[1:i]])
                     elif(syllable[1] in {"l", "ɾ", "m", "n", "ŋ", "w", "j"}):
                         i = 2
                         start_cluster = romanization[syllable[0]] + romanization[syllable[1:i]]
+                        table_manager_cluster(romanization[syllable[0]], romanization[syllable[1:i]])
                     else:
                         i = 1
                 # Something that can ejective?
@@ -187,8 +201,12 @@ def distros():
                     else:
                         i = 1
                 # None of the above
-                elif(syllable[0] in {"ʔ", "l", "ɾ", "h", "m", "n", "ŋ", "v", "w", "j", "z", "ʃ", "ʒ", "b", "d", "g"}):
+                elif(syllable[0] in {"ʔ", "l", "ɾ", "h", "m", "n", "ŋ", "v", "w", "j", "z", "b", "d", "g"}):
                     i = 1
+                    table_manager_non_cluster(syllable[0])
+                elif syllable[0] in {"ʃ", "ʒ"}:
+                    i = 1
+                    table_manager_cluster(romanization[syllable[0]][0:-1], romanization[syllable[0:i]][-1])
                     
                 if(i > 1 and (syllable[0:i].startswith("f") or syllable[0:i].startswith("s"))):
                     table_manager_onset(romanization[syllable[0]] + romanization[syllable[1:i]])
@@ -196,6 +214,8 @@ def distros():
                     table_manager_onset(romanization[syllable[0:3]] + romanization[syllable[3:i]])
                 else:
                     table_manager_onset(romanization[syllable[0:i]])
+                    if not syllable[0] in {"ʃ", "ʒ"}:
+                        table_manager_non_cluster(romanization[syllable[0:i]])
 
                 if coda != "" and start_cluster != "":
                     table_manager_supercluster(coda, start_cluster)
@@ -257,5 +277,6 @@ def distros():
     freq_table_onset = dict(sorted(freq_table_onset.items(), key=lambda item: item[1], reverse = True))
     freq_table_nuclei = dict(sorted(freq_table_nuclei.items(), key=lambda item: item[1], reverse = True))
     freq_table_end = dict(sorted(freq_table_end.items(), key=lambda item: item[1], reverse = True))
+    non_clusters = dict(sorted(non_clusters.items(), key=lambda item: item[1], reverse = True))
     
-    return [freq_table_onset, freq_table_nuclei, freq_table_end, superclusters]
+    return [freq_table_onset, freq_table_nuclei, freq_table_end, non_clusters, clusters, superclusters]

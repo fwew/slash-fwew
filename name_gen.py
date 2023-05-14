@@ -11,7 +11,9 @@ phonemes = distros()
 onset_distros = phonemes[0]
 nucleus_distros = phonemes[1]
 end_distros = phonemes[2]
-superclusters = phonemes[3]
+non_clusters = phonemes[3]
+clusters = phonemes[4]
+superclusters = phonemes[5]
 
 onset_keys = list(onset_distros.keys())
 nucleus_keys = list(nucleus_distros.keys())
@@ -93,9 +95,9 @@ def get_coda_2(nucleus: str):
             return end_keys[i]
     return end_keys[-1]
 
-def chart_entry(x:str, y:int):
+def chart_entry(x:str, y:int, width:int):
     ys = str(y)
-    spaces = 7 - len(x) - len(ys)
+    spaces = width - len(x) - len(ys)
     stringtsyìp = x
     for i in range(0,spaces):
         stringtsyìp += " "
@@ -106,32 +108,58 @@ def chart_entry(x:str, y:int):
 def get_phoneme_frequency_chart():
     entries = ["| Onset:|Nuclei:|Ending:|", "|=======|=======|=======|"]
 
+    # Onsets
     i = 2
-    for a in onset_keys:
-        entries.append("|" + chart_entry(a, onset_distros[a]))
+    for a in non_clusters.keys():
+        entries.append("|" + chart_entry(a, non_clusters[a],7))
         i += 1
 
+    # Nuclei
     i = 2
     for a in nucleus_keys:
-        entries[i] += chart_entry(a, nucleus_distros[a])
+        entries[i] += chart_entry(a, nucleus_distros[a],7)
         i += 1
 
     while i < len(entries):
         entries[i] += "       |"
         i += 1
 
+    # Ends
     i = 2
     for a in end_keys:
-        entries[i] += chart_entry(a, end_distros[a])
+        entries[i] += chart_entry(a, end_distros[a],7)
         i += 1
     
     while i < len(entries):
         entries[i] += "       |"
         i += 1
 
-    entries_2 = "```\nPhoneme distributions:\n\n"
+    # Top
+    entries_2 = "```Phoneme distributions:\n"
     for a in entries:
         entries_2 += a + "\n"
+
+    # Clusters
+    entries = ["\nClusters:\n", "  | f:| s:|ts:|", "==|===|===|===|"]
+    
+    cluster_ends = ["k", "kx", "l", "m", "n", "ng", "p", "px", "t", "tx", "r", "w", "y"]
+
+    for a in cluster_ends:
+        entries.append(chart_entry(a,"",2))
+    
+    # "f" clusters
+    i = 3
+    for part_two in cluster_ends:
+        for part_one in clusters.keys():
+            if part_two in clusters[part_one]:
+                entries[i] += chart_entry("", clusters[part_one][part_two], 3)
+            else:
+                entries[i] += "   |"
+        i += 1
+    
+    for a in entries:
+        entries_2 += a + "\n"
+
     entries_2 += "```"
 
     return entries_2
