@@ -1,12 +1,18 @@
 import json
 import re
 import requests
+import os
 
+from dotenv import load_dotenv
 from space_containing import *
 from name_gen import *
+from pathlib import Path
 
-version = "2.7.0"
-api_url = "http://localhost:10000/api"
+version = "3.0.0"
+
+load_dotenv(os.path.join(Path.cwd(), ".env"))
+api_url = os.environ.get("API_URL")
+
 url_pattern = r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
 si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|alm|ìlm|ìly|aly|arm|ìrm|ìry|ary|ìsy|asy)?(eiy|äng|eng|uy|ats)?i"
 paren_pattern = r"(\(.+\))"
