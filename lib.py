@@ -12,6 +12,8 @@ si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|
 paren_pattern = r"(\(.+\))"
 char_limit = 2000
 
+global_onset = ["",""]
+
 def get_language(inter):
     channel_languages = {
         1104882512607576114: "fr", # LN/fr/#commandes-bot
@@ -275,7 +277,7 @@ def format_number(response_text: str) -> str:
     name = number["name"]
     octal = number["octal"]
     decimal = number["decimal"]
-    return f"**na'vi**: {name} | **octal**: {octal} | **decimal**: {decimal}"
+    return f"`  na'vi`: {name}\n`  octal`: {octal}\n`decimal`: {decimal}"
 
 
 def get_word_bundles(words: str) -> list[str]:
@@ -394,6 +396,10 @@ def get_number(word: str) -> str:
 
 
 def get_number_reverse(num: int) -> str:
+    if int(num) > 32767:
+        return "Error: Maximum is 32,767 (octal: 077777)"
+    if int(num) < 0:
+        return "Na'vi has no negative numbers"
     res = requests.get(f"{api_url}/number/r/{num}")
     text = res.text
     return format_number(text)
@@ -438,6 +444,102 @@ def get_translation(text: str, languageCode: str) -> str:
         return f"translation exceeds character limit of {char_limit}"
     return results
 
+def single_name_discord(i: int, n: int):
+    loader = ""
+    
+    if int(i) > 4 or int(i) < 0:
+        return "Max b is 4, max n is 50"
+    i = rand_if_zero(int(i))
+    n = int(n)
+    if n > 50 or n < 1:
+        return "Max b is 4, max n is 50"
+
+    for k in range(0,rand_if_zero(n)):
+        loader += single_name(i) + "\n"
+    return loader
+
+def single_name(i: int):
+    loader = ""
+    onset = ""
+    nucleus = ""
+    coda = ""
+            
+    #x = 0
+    for x in range(i): #loop A times
+        # some more CV until `a` syllables
+        onset = get_onset_2().strip()
+        if len(onset.strip()) > 0 and (coda == onset or (len(loader) > 0 and onset[0] == loader[-1])): #disallow "l-ll", "r-rr", "ey-y" and "aw-w"
+            onset = ""
+
+        #
+        # "Superclusters" are whitelisted
+        #
+
+        if len(coda.strip()) > 0 and len(onset) > 1:
+            # Decode the cluster
+            a = ""
+            b = ""
+            cluster_int = 1
+            cluster_possible = False
+            if onset.startswith("ts") :
+                a = "ts"
+                cluster_int = 2
+                cluster_possible = True
+            elif onset[0] in ["f", "s"] :
+                a = onset[0]
+                cluster_possible = True
+            
+            if cluster_possible:
+                b = onset[cluster_int:].strip()
+                if len(b) > 0:
+                    if not(coda in superclusters and a in superclusters[coda] and b in superclusters[coda][a]):
+                        onset = b
+                    #For debugging
+                    #    print("Rejected: " + coda + a + b)
+                    #else:
+                    #    print("Accepted: " + coda + a + b)
+        
+        # No "nng" "ttx" or anything like that
+        if len(onset) > 0 and coda == onset[0]:
+            loader = loader[0:len(loader) - 1]
+
+        #
+        # Nucleus
+        #
+
+        nucleus = get_nucleus_2()
+
+        # Disallow syllables starting with a psuedovowel
+        if nucleus.strip() in {"rr","ll"}:
+            if len(onset.strip()) > 0 and onset[-1] == nucleus[0]:
+                onset = "'"
+            elif len(loader.strip()) > 0 and (loader[-1] in {"a", "ä", "e", "i", "ì", "o", "u"} or loader[-1] == nucleus[0]):
+                onset = "'"
+            
+                
+        # No identical vowels togther.  It's not the reef
+        elif onset.strip() == "" and len(loader) > 0 and loader[-1] == nucleus[0]:
+            onset = "y"
+
+        #
+        # Coda
+        #
+
+        coda = get_coda_2(nucleus)
+
+        loader += (onset + nucleus + coda).strip()
+        #x += 1
+    
+    # Disallow syllables starting with a psuedovowel
+    if loader[0:2] in {"rr", "ll", "Rr", "Ll"}:
+        loader = "'" + loader
+
+    return glottal_caps(loader)
+
+def rand_if_zero(x: int):
+    if x == 0:
+        return random.randint(2,4)
+    return x
 
 def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
     results = ""
@@ -449,59 +551,36 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
         a, b, c, k = int(a), int(b), int(c), int(k)
         mk = 0
         # Do entire generator process n times
-        while (mk < k):
-            i = 0
-
+        for mk in range(0,k):
             # BUILD FIRST NAME
             # first syllable: CV
-            loader = ""
-            loader += f"{get_onset()}{get_nucleus()}".capitalize()
-            while i < a - 1:
-                # some more CV until `a` syllables
-                loader += f"{get_onset()}{get_nucleus()}"
-                i += 1
-            loader += get_coda()  # Maybe end the syllable with something, maybe not
-            results += glottal_caps(loader)
-            i = 0  # reset counter back to 0 for the next part of the name
+            results += single_name(rand_if_zero(a))
 
             results += " te "
 
             # BUILD FAMILY NAME
-            loader = ""
-            loader += f"{get_onset()}{get_nucleus()}".capitalize()  # CV
-            while i < b - 1:
-                loader += f"{get_onset()}{get_nucleus()}"  # CV
-                i += 1
-            loader += get_coda()  # C or None
-            i = 0  # reset again for the last part of name
-            results += glottal_caps(loader)
+            results += single_name(rand_if_zero(b))
+
             results += " "
 
             # BUILD PARENT'S NAME
-            loader = ""
-            loader += f"{get_onset()}{get_nucleus()}".capitalize()
-            while i < c - 1:
-                loader += f"{get_onset()}{get_nucleus()}"  # CV
-                i += 1
-            loader += get_coda()
-            results += glottal_caps(loader)
-            i = 0
+            results += single_name(rand_if_zero(b))
 
             # ADD ENDING
+            if results.endswith("'"):
+                results = results.removesuffix("'")
             results += ending + "\n"
-
-            mk += 1
 
     return results
 
 
-def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
+def get_name_alu(a: int, adj_mode: str = "something", k: int = 1) -> str:
     results = ""
-    if not valid_alu(adj_mode, int(b), int(k)):
+    if not valid_alu(adj_mode, int(a), int(k)):
         results = "Max b is 4, max n is 50"
     else:
         
-        b, k = int(b), int(k)
+        a, k = int(a), int(k)
 
         # Adjectives and nouns can be shared across loops
         buffer = ""
@@ -521,19 +600,19 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
             # For building names before appending them to results
             loader = ""
 
-            # BUILD FIRST NAME
-            # first syllable: CV
-            loader = ""
-            loader += f"{get_onset()}{get_nucleus()}".capitalize()
-            for x in range(b): #loop B times
-                # some more CV until `a` syllables
-                loader += f"{get_onset()}{get_nucleus()}"
-            loader += get_coda()  # Maybe end the syllable with something, maybe not
-            results += glottal_caps(loader) + " alu "
+            if a == 0:
+                b = random.randint(2,4)
+            else:
+                b = a
+
+            results += single_name(b) + " alu "
 
             # if not specified, pick randomly
-            if adj_mode == "any":
+            if adj_mode == "any" or adj_mode == "something":
                 mode = random.randint(1,4)
+            
+            if adj_mode == "something" and mode == 1:
+                mode = 2
 
             # ADJECTIVE
             if mode == 2:
@@ -632,6 +711,9 @@ def get_name_alu(b: int, adj_mode: str = "any", k: int = 1) -> str:
             results += "\n"
 
     return results
+
+def get_phonemes() -> str:
+    return get_phoneme_frequency_chart()
 
 
 def get_lenition() -> str:

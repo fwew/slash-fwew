@@ -42,7 +42,6 @@ flags.sync_commands_debug = True
 fwew_bot = commands.Bot(command_prefix="?", help_command=None, intents=intents, 
     command_sync_flags=flags) #, sync_permissions=True #, test_guilds=servers)
 
-
 @fwew_bot.event
 async def on_ready():
     with open(logfile, "a") as log:
@@ -243,18 +242,32 @@ async def version(inter):
     """
     await inter.response.send_message(get_version())
 
+@fwew_bot.slash_command(name="name-single", description="Generate a valid Na'vi word to use as a name")
+async def name(inter,
+               s2=Param(name="b",
+                        description="name length", gt=0, le=4, default=0),
+               n=Param(description="number of names to generate", gt=1, le=50, default=1)):
+    """
+    generate full Na'vi name(s) out of preexisting Na'vi words
+
+    Parameters
+    ----------
+    name_num_syllables: name number of syllables
+    n: number of names to generate
+    """
+    await inter.response.send_message(single_name_discord(s2, n))
 
 @fwew_bot.slash_command(name="name", description="generate Na'vi full names")
 async def name(inter,
                s1=Param(name="a",
-                        description="first name length", gt=1, le=4, default=2),
+                        description="first name length", gt=0, le=4, default=0),
                s2=Param(name="b",
-                        description="family name length", gt=1, le=4, default=2),
+                        description="family name length", gt=0, le=4, default=0),
                s3=Param(name="c",
-                        description="parent's name length", gt=1, le=4, default=2),
+                        description="parent's name length", gt=0, le=4, default=0),
                ending=commands.Param(
                    description="'ite (daughter) or 'itan (son)", choices=["'ite", "'itan"]),
-               n=Param(description="number of names to generate", gt=0, le=50, default=1)):
+               n=Param(description="number of names to generate", gt=1, le=50, default=1)):
     """
     generate full Na'vi name(s)
 
@@ -272,10 +285,10 @@ async def name(inter,
 @fwew_bot.slash_command(name="name-alu", description="Use existing Na'vi words to generate Na'vi names")
 async def name(inter,
                adj_mode=commands.Param(
-                   description="type of adjective for the noun", choices=["any", "none", "normal adjective", "genitive noun", "origin noun"], default="any"),
+                   description="type of adjective for the noun", choices=["any", "something", "none", "normal adjective", "genitive noun", "origin noun"], default="something"),
                s2=Param(name="b",
-                        description="name length", gt=1, le=4, default=2),
-               n=Param(description="number of names to generate", gt=0, le=50, default=1)):
+                        description="name length", gt=0, le=4, default=0),
+               n=Param(description="number of names to generate", gt=1, le=50, default=1)):
     """
     generate full Na'vi name(s) out of preexisting Na'vi words
 
@@ -286,6 +299,14 @@ async def name(inter,
     n: number of names to generate
     """
     await inter.response.send_message(get_name_alu(s2, adj_mode, n))
+
+
+@fwew_bot.slash_command(name="phoneme-frequency", description="show how often a phoneme appears")
+async def that(inter):
+    """
+    Show how likely each phoneme or consonent cluster is to start, end, or center a syllable
+    """
+    await inter.response.send_message(get_phonemes())
 
 
 @fwew_bot.slash_command(name="servers", description="list all servers the bot is in")
