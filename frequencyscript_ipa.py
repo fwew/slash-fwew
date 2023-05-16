@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 
 import json
-import requests
+import os
+from pathlib import Path
 
-api_url = "http://localhost:10000/api"
+import requests
+from dotenv import load_dotenv
+
+load_dotenv(os.path.join(Path.cwd(), ".env"))
+api_url = os.environ.get("API_URL")
 
 freq_table_onset = {
     # Consonent clusters will be added in runtime

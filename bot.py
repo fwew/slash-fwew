@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 from datetime import datetime
+from pathlib import Path
 
 import disnake
 from disnake.ext import commands
@@ -9,9 +10,8 @@ from dotenv import load_dotenv
 
 from lib import *
 
-dotenv_dir = "token_container/"
-load_dotenv(os.path.join(dotenv_dir, ".env"))
-token = os.environ.get("token")
+load_dotenv(os.path.join(Path.cwd(), ".env"))
+token = os.environ.get("TOKEN")
 
 logfile = "log.txt"
 
@@ -173,7 +173,7 @@ async def list(inter, where=Param(description="characteristics of the word, such
 
 
 @fwew_bot.slash_command(name="random", description="get given number of random entries with certain characteristics")
-async def random(inter, n=Param(description="the number of random words to get"), where="", lang=None):
+async def random(inter, n=Param(description="the number of random words to get"), where=None, lang=None):
     """
     get given number of random entries with certain characteristics
 
@@ -185,7 +185,7 @@ async def random(inter, n=Param(description="the number of random words to get")
     """
     if lang is None:
         lang = get_language(inter)
-    if len(where) == 0:
+    if where is None:
         await inter.response.send_message(get_random(lang, n))
     else:
         await inter.response.send_message(get_random_filter(lang, n, where))
