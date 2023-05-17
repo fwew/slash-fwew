@@ -78,9 +78,7 @@ supers = len(super_keys)
 # Methods
 #
 
-def get_onset_2():
-    global onsets
-    global non_cluster_onsets
+def get_onset():
     global max_non_cluster
     global max_rand_onsets
 
@@ -99,7 +97,7 @@ def get_onset_2():
             return [non_cluster_keys[i]]
     return [non_cluster_keys[-1]]
 
-def get_nucleus_2():
+def get_nucleus():
     global nuclei
     global max_rand_nuclei
 
@@ -109,7 +107,7 @@ def get_nucleus_2():
             return nucleus_keys[i]
     return nucleus_keys[-1]
 
-def get_coda_2():
+def get_coda():
     global ends
     global max_rand_ends
 
@@ -164,7 +162,7 @@ def get_phoneme_frequency_chart():
         entries_2 += a + "\n"
 
     # Clusters
-    entries = ["\nClusters:\n", "  | f:| s:|ts:|", "==|===|===|===|"]
+    entries = ["\nClusters:", "  | f:| s:|ts:|", "==|===|===|===|"]
     
     cluster_ends = ["k", "kx", "l", "m", "n", "ng", "p", "px", "t", "tx", "r", "w", "y"]
 

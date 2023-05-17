@@ -476,7 +476,7 @@ def single_name(i: int):
     #x = 0
     for x in range(i): #loop A times
         # some more CV until `a` syllables
-        onset = get_onset_2()
+        onset = get_onset()
         if len(onset[0]) > 0 and (coda == onset[0] or (len(loader) > 0 and onset[0][0] == loader[-1])):
             onset = [""] # disallow "l-ll", "r-rr", "ey-y" and "aw-w"
 
@@ -490,7 +490,7 @@ def single_name(i: int):
         #
         # Nucleus
         #
-        nucleus = get_nucleus_2()#.strip()
+        nucleus = get_nucleus()#.strip()
 
         psuedovowel = False
         # Disallow syllables starting with a psuedovowel
@@ -521,7 +521,7 @@ def single_name(i: int):
         if psuedovowel:
             coda = ""
         else:
-            coda = get_coda_2().strip()
+            coda = get_coda().strip()
 
         for k in onset:
             loader += k
