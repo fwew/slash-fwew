@@ -13,6 +13,7 @@ version = "3.0.0"
 
 load_dotenv(os.path.join(Path.cwd(), ".env"))
 api_url = os.environ.get("API_URL")
+#api_url = "http://localhost:10000/api"
 
 url_pattern = r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
 si_pattern = r"s(äp|eyk|äpeyk)?(iv|ol|er|am|ìm|ìy|ay|ilv|irv|imv|iyev|ìyev|alm|ìlm|ìly|aly|arm|ìrm|ìry|ary|ìsy|asy)?(eiy|äng|eng|uy|ats)?i"
@@ -456,7 +457,6 @@ def single_name_discord(i: int, n: int):
     
     if int(i) > 4 or int(i) < 0:
         return "Max b is 4, max n is 50"
-    i = rand_if_zero(int(i))
     n = int(n)
     if n > 50 or n < 1:
         return "Max b is 4, max n is 50"
@@ -470,76 +470,63 @@ def single_name(i: int):
     onset = ""
     nucleus = ""
     coda = ""
+
+    i = rand_if_zero(int(i))
             
     #x = 0
     for x in range(i): #loop A times
         # some more CV until `a` syllables
-        onset = get_onset_2().strip()
-        if len(onset.strip()) > 0 and (coda == onset or (len(loader) > 0 and onset[0] == loader[-1])): #disallow "l-ll", "r-rr", "ey-y" and "aw-w"
-            onset = ""
+        onset = get_onset_2()
+        if len(onset[0]) > 0 and (coda == onset[0] or (len(loader) > 0 and onset[0][0] == loader[-1])):
+            onset = [""] # disallow "l-ll", "r-rr", "ey-y" and "aw-w"
 
         #
         # "Superclusters" are whitelisted
         #
-
-        if len(coda.strip()) > 0 and len(onset) > 1:
-            # Decode the cluster
-            a = ""
-            b = ""
-            cluster_int = 1
-            cluster_possible = False
-            if onset.startswith("ts") :
-                a = "ts"
-                cluster_int = 2
-                cluster_possible = True
-            elif onset[0] in ["f", "s"] :
-                a = onset[0]
-                cluster_possible = True
-            
-            if cluster_possible:
-                b = onset[cluster_int:].strip()
-                if len(b) > 0:
-                    if not(coda in superclusters and a in superclusters[coda] and b in superclusters[coda][a]):
-                        onset = b
-                    #For debugging
-                    #    print("Rejected: " + coda + a + b)
-                    #else:
-                    #    print("Accepted: " + coda + a + b)
-        
-        # No "nng" "ttx" or anything like that
-        if len(onset) > 0 and coda == onset[0]:
-            loader = loader[0:len(loader) - 1]
+        if len(onset) > 1 and len(coda) > 0:
+            if not(coda in superclusters and onset[0] in superclusters[coda] and onset[1] in superclusters[coda][onset[0]]):
+                onset = [onset[1]]
 
         #
         # Nucleus
         #
+        nucleus = get_nucleus_2()#.strip()
 
-        nucleus = get_nucleus_2()
-
+        psuedovowel = False
         # Disallow syllables starting with a psuedovowel
-        if nucleus.strip() in {"rr","ll"}:
-            if len(onset.strip()) > 0 and onset[-1] == nucleus[0]:
-                onset = "'"
-            elif len(loader.strip()) > 0 and (loader[-1] in {"a", "ä", "e", "i", "ì", "o", "u"} or loader[-1] == nucleus[0]):
-                onset = "'"
-            
-                
+        if nucleus in {"rr","ll"}:
+            psuedovowel = True
+            # Disallow onsets from imitating the psuedovowel
+            if len(onset[0]) > 0:
+                if onset[-1][-1] == nucleus[0]:
+                    onset = ["'"]
+            # If no onset, disallow the previous coda from imitating the psuedovowel
+            elif len(loader) > 0:
+                if loader[-1] == nucleus[0] or loader[-1] in {"a", "ä", "e", "i", "ì", "o", "u"}:
+                    onset = ["'"]
+            # No onset or loader thing?  Needs a thing to start
+            else:
+                onset = ["'"]
         # No identical vowels togther.  It's not the reef
-        elif onset.strip() == "" and len(loader) > 0 and loader[-1] == nucleus[0]:
-            onset = "y"
-
+        elif onset[0] == "" and len(loader) > 0 and loader[-1] == nucleus[0]:
+            onset = ["y"]
+        
+        # No "n-ng" "t-tx", "o'-lll" becoming "o'-'ll" or anything like that
+        if len(onset[0]) > 0 and len(loader) > 0 and loader[-1] == onset[0][0]:
+            loader = loader[0:len(loader) - 1]
+                
         #
         # Coda
         #
+        if psuedovowel:
+            coda = ""
+        else:
+            coda = get_coda_2().strip()
 
-        coda = get_coda_2(nucleus)
-
-        loader += (onset + nucleus + coda).strip()
+        for k in onset:
+            loader += k
+        loader += (nucleus + coda)
         #x += 1
-    
-    # Disallow syllables starting with a psuedovowel
-    if loader[0:2] in {"rr", "ll", "Rr", "Ll"}:
-        loader = "'" + loader
 
     return glottal_caps(loader)
 

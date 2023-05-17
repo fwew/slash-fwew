@@ -8,32 +8,48 @@ from frequencyscript_ipa import distros
 # Import 3 dictionaries and get info from them
 phonemes = distros()
 
-onset_distros = phonemes[0]
-nucleus_distros = phonemes[1]
-end_distros = phonemes[2]
-non_clusters = phonemes[3]
-clusters = phonemes[4]
-superclusters = phonemes[5]
+#onset_distros = phonemes[0]
+non_clusters = phonemes[0]
+clusters = phonemes[1]
+nucleus_distros = phonemes[2]
+end_distros = phonemes[3]
+superclusters = phonemes[4]
 
-onset_keys = list(onset_distros.keys())
+non_cluster_keys = list(non_clusters.keys())
+cluster_keys = []
 nucleus_keys = list(nucleus_distros.keys())
 end_keys = list(end_distros.keys())
 super_keys = list(superclusters.keys())
 
-onset_numbers = {}
+non_cluster_onset_numbers = {}
+cluster_onset_numbers = []
 nucleus_numbers = {}
 end_numbers = {}
 super_numbers = {}
 
 # Onset calculations
-onsets = len(onset_keys)
+max_non_cluster = 0
+non_cluster_total = len(non_cluster_keys)
+cluster_total = 0
 
 x = 0
-for i in range(0,onsets):
-    onset_numbers[i] = x
-    x += onset_distros[onset_keys[i]]
+for i in range(0,non_cluster_total):
+    non_cluster_onset_numbers[i] = x
+    x += non_clusters[non_cluster_keys[i]]
 
-max_rand_onsets = x
+max_non_cluster = x
+
+x = 0
+for i in clusters.keys():
+    for j in clusters[i].keys():
+        cluster_onset_numbers.append(x)
+        cluster_keys.append([i,j])
+        x += clusters[i][j]
+        cluster_total += 1
+
+max_rand_onsets = x + max_non_cluster
+
+onsets = non_cluster_total + cluster_total
 
 # Nucleus calculations
 nuclei = len(nucleus_keys)
@@ -64,13 +80,24 @@ supers = len(super_keys)
 
 def get_onset_2():
     global onsets
+    global non_cluster_onsets
+    global max_non_cluster
     global max_rand_onsets
 
     x = random.randint(0,max_rand_onsets)
-    for i in range(0,onsets - 1):
-        if onset_numbers[i + 1] > x:
-            return onset_keys[i]
-    return onset_keys[-1]
+
+    # If it's high enough to be a cluster
+    if(x > max_non_cluster):
+        x -= max_non_cluster
+        for i in range(0,cluster_total - 1):
+            if cluster_onset_numbers[i] >= x:
+                return cluster_keys[i]
+        return cluster_keys[-1]
+    # Else
+    for i in range(0,non_cluster_total - 1):
+        if non_cluster_onset_numbers[i + 1] >= x:
+            return [non_cluster_keys[i]]
+    return [non_cluster_keys[-1]]
 
 def get_nucleus_2():
     global nuclei
@@ -78,20 +105,17 @@ def get_nucleus_2():
 
     x = random.randint(0,max_rand_nuclei)
     for i in range(0,nuclei - 1):
-        if nucleus_numbers[i + 1] > x:
+        if nucleus_numbers[i + 1] >= x:
             return nucleus_keys[i]
     return nucleus_keys[-1]
 
-def get_coda_2(nucleus: str):
-    if(nucleus in {"ll", "rr"}):
-        return ""
-
+def get_coda_2():
     global ends
     global max_rand_ends
 
     x = random.randint(0,max_rand_ends)
     for i in range(0,ends - 1):
-        if end_numbers[i + 1] > x:
+        if end_numbers[i + 1] >= x:
             return end_keys[i]
     return end_keys[-1]
 
