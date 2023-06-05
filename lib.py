@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from name_gen import *
 from space_containing import *
 
-version = "3.0.0"
+version = "3.0.1"
 
 load_dotenv(os.path.join(Path.cwd(), ".env"))
 api_url = os.environ.get("API_URL")
@@ -291,7 +291,10 @@ def format_number(response_text: str) -> str:
 def get_word_bundles(words: str) -> list[str]:
     result = []
     for pattern in patterns:
-        words = re.sub(pattern, r'"\1"', words)
+        if words[0] == '"' and words[-1] == '"':
+            break
+        else:
+            words = re.sub(pattern, r'"\1"', words)
     yy = [c for c in re.split(r'("\w+ \w+\s?\w*")', words) if len(c) > 0]
     for w in yy:
         if w.startswith('"') and w.endswith('"'):
