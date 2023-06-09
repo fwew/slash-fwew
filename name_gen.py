@@ -13,13 +13,13 @@ non_clusters = phonemes[0]
 clusters = phonemes[1]
 nucleus_distros = phonemes[2]
 end_distros = phonemes[3]
-superclusters = phonemes[4]
+triple_consonants = phonemes[4]
 
 non_cluster_keys = list(non_clusters.keys())
 cluster_keys = []
 nucleus_keys = list(nucleus_distros.keys())
 end_keys = list(end_distros.keys())
-super_keys = list(superclusters.keys())
+super_keys = list(triple_consonants.keys())
 
 non_cluster_onset_numbers = {}
 cluster_onset_numbers = []

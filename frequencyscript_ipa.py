@@ -21,7 +21,7 @@ freq_table_end = {}
 cluster_onsets = {"f":{},"s":{},"ts":{}}
 non_cluster_onsets = {}
 
-superclusters = {}
+triple_consonants = {}
 
 romanization = {
     # Vowels
@@ -114,17 +114,17 @@ def table_manager_supercluster(x:str, y:str):
 
     b = y[i:]
     
-    if x in superclusters:
-        if a in superclusters[x]:
-            if b in superclusters[x][a]:
+    if x in triple_consonants:
+        if a in triple_consonants[x]:
+            if b in triple_consonants[x][a]:
                 i += 1
             else:
-                superclusters[x][a].append(b)
+                triple_consonants[x][a].append(b)
         else:
-            superclusters[x][a] = [b]
+            triple_consonants[x][a] = [b]
     else:
-        superclusters[x] = {}
-        superclusters[x][a] = [b]
+        triple_consonants[x] = {}
+        triple_consonants[x][a] = [b]
 
 def distros():
     global freq_table_onset
@@ -132,7 +132,7 @@ def distros():
     global freq_table_end
     global cluster_onsets
     global non_cluster_onsets
-    global superclusters
+    global triple_consonants
 
     z = 0
 
@@ -276,4 +276,4 @@ def distros():
     freq_table_nuclei = dict(sorted(freq_table_nuclei.items(), key=lambda item: item[1], reverse = True))
     freq_table_end = dict(sorted(freq_table_end.items(), key=lambda item: item[1], reverse = True))
     
-    return [non_cluster_onsets, cluster_onsets, freq_table_nuclei, freq_table_end, superclusters]
+    return [non_cluster_onsets, cluster_onsets, freq_table_nuclei, freq_table_end, triple_consonants]
