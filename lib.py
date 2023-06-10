@@ -484,7 +484,7 @@ def single_name(i: int):
         # "Triple consonants" are whitelisted
         #
         if len(onset) > 1 and len(coda) > 0: #don't want errors
-            if coda == "t" and onset[0] == "s": #t-s-kx is valid as ts-kx
+            if not(coda == "t" and onset[0] == "s"): #t-s-kx is valid as ts-kx
                 if not(coda in triple_consonants and onset[0] in triple_consonants[coda] and onset[1] in triple_consonants[coda][onset[0]]):
                     onset = [onset[1]]
 
