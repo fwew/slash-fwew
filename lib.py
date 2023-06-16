@@ -455,7 +455,7 @@ def get_translation(text: str, languageCode: str) -> str:
         return f"translation exceeds character limit of {char_limit}"
     return results
 
-def single_name_discord(i: int, n: int):
+def get_single_name_discord(i: int, n: int):
     loader = ""
     
     if int(i) > 4 or int(i) < 0:
@@ -465,81 +465,8 @@ def single_name_discord(i: int, n: int):
         return "Max b is 4, max n is 50"
 
     for k in range(0,rand_if_zero(n)):
-        loader += single_name(i) + "\n"
+        loader += get_single_name(i) + "\n"
     return loader
-
-def single_name(i: int):
-    loader = ""
-    onset = ""
-    nucleus = ""
-    coda = ""
-
-    i = rand_if_zero(int(i))
-            
-    #x = 0
-    for x in range(i): #loop I times
-        onset = get_onset()
-
-        #
-        # "Triple consonants" are whitelisted
-        #
-        if len(onset) > 1 and len(coda) > 0: #don't want errors
-            if not(coda == "t" and onset[0] == "s"): #t-s-kx is valid as ts-kx
-                if not(coda in triple_consonants and onset[0] in triple_consonants[coda] and onset[1] in triple_consonants[coda][onset[0]]):
-                    onset = [onset[1]]
-
-        #
-        # Nucleus
-        #
-        nucleus = get_nucleus()#.strip()
-
-        psuedovowel = False
-        # Disallow syllables starting with a psuedovowel
-        if nucleus in {"rr","ll"}:
-            psuedovowel = True
-            # Disallow onsets from imitating the psuedovowel
-            if len(onset[0]) > 0:
-                if onset[-1][-1] == nucleus[0]:
-                    onset = ["'"]
-            # If no onset, disallow the previous coda from imitating the psuedovowel
-            elif len(loader) > 0:
-                if loader[-1] == nucleus[0] or loader[-1] in {"a", "ä", "e", "i", "ì", "o", "u"}:
-                    onset = ["'"]
-            # No onset or loader thing?  Needs a thing to start
-            else:
-                onset = ["'"]
-
-        # No identical vowels togther.  It's not the reef
-        elif onset[0] == "" and len(loader) > 0 and loader[-1] == nucleus[0]:
-            onset = ["y"]
-
-        # Now that the onsets have settled, make sure they don't repeat a letter from the coda
-        # No "ng-n" "t-tx", "o'-lll" becoming "o'-'ll" or anything like that
-        if len(onset[0]) > 0 and len(loader) > 0:
-            length = -1
-            if len(coda) > 1: #in case of ng, px, tx or kx
-                length = -len(coda)
-            if onset[0][0] == loader[length]:
-                onset = [""] # disallow "l-ll", "r-rr", "ey-y" and "aw-w"
-                
-        #
-        # Coda
-        #
-        if psuedovowel:
-            coda = ""
-        else:
-            coda = get_coda().strip()
-
-        for k in onset:
-            loader += k
-        loader += (nucleus + coda)
-
-    return glottal_caps(loader)
-
-def rand_if_zero(x: int):
-    if x == 0:
-        return random.randint(2,4)
-    return x
 
 def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
     results = ""
@@ -554,17 +481,17 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
         for mk in range(0,k):
             # BUILD FIRST NAME
             # first syllable: CV
-            results += single_name(rand_if_zero(a))
+            results += get_single_name(a)
 
             results += " te "
 
             # BUILD FAMILY NAME
-            results += single_name(rand_if_zero(b))
+            results += get_single_name(b)
 
             results += " "
 
             # BUILD PARENT'S NAME
-            results += single_name(rand_if_zero(b))
+            results += get_single_name(c)
 
             # ADD ENDING
             if results.endswith("'"):
@@ -605,7 +532,7 @@ def get_name_alu(a: int, adj_mode: str = "something", k: int = 1) -> str:
             else:
                 b = a
 
-            results += single_name(b) + " alu "
+            results += get_single_name(b) + " alu "
 
             # if not specified, pick randomly
             if adj_mode == "any" or adj_mode == "something":
@@ -761,6 +688,39 @@ tsonta    conj. to (with kxìm)
 kuma/akum conj. that (as a result)
 a         part. clause level attributive marker
 ```"""
+
+def get_cameron_words() -> str:
+    return """```
+Cameron words:
+|Names:   |Nouns:   |Other: |
+|=========|=========|=======|
+|Akwey    |'itan    |eyk    |
+|Ateyo    |'ite     |irayo  |
+|Aonung   |atan     |makto  |
+|Eytukan  |au (drum)|taron  |
+|Eywa     |eyktan   |te     |
+|Kiri     |i'en     |
+|Lo'ak    |Iknimaya |
+|Mo'at    |mikyun   |
+|Na'vi    |ontu     |
+|Neteyam  |seyri    |
+|Newey    |tsaheylu |
+|Neytiri  |tsahìk   |
+|Ninat    |unil     |
+|Omatikaya|
+|Otranyu  |
+|Ronal    |
+|Rongloa  |      |Life:     |
+|Rotxo    |      |==========|
+|Silwanin |      |Atokirina'|
+|Tonowari |      |Ikran     |
+|Tuktirey |      |Palulukan |
+|Tsireya  |      |Riti      |
+|Tskaha   |      |talioang  |
+|Tsu'tey  |      |teylu     |
+|Tsumongwi|      |Toruk     |
+```"""
+
 
 
 def get_version() -> str:

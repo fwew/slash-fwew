@@ -235,6 +235,13 @@ async def that(inter):
     """
     await inter.response.send_message(get_all_thats())
 
+@fwew_bot.slash_command(name="cameron_words", description="Words that James Cameron made")
+async def that(inter):
+    """
+    get the Na'vi words James Cameron made
+    """
+    await inter.response.send_message(get_cameron_words())
+
 @fwew_bot.slash_command(name="version", description="get version information")
 async def version(inter):
     """
@@ -255,7 +262,7 @@ async def name(inter,
     name_num_syllables: name number of syllables
     n: number of names to generate
     """
-    await inter.response.send_message(single_name_discord(s2, n))
+    await inter.response.send_message(get_single_name_discord(s2, n))
 
 @fwew_bot.slash_command(name="name", description="generate Na'vi full names")
 async def name(inter,
