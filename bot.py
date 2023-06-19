@@ -235,7 +235,7 @@ async def that(inter):
     """
     await inter.response.send_message(get_all_thats())
 
-@fwew_bot.slash_command(name="cameron_words", description="Words that James Cameron made")
+@fwew_bot.slash_command(name="cameron-words", description="Words that James Cameron made")
 async def that(inter):
     """
     get the Na'vi words James Cameron made

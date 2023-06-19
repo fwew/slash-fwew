@@ -690,36 +690,12 @@ a         part. clause level attributive marker
 ```"""
 
 def get_cameron_words() -> str:
-    return """```
-Cameron words:
-|Names:   |Nouns:   |Other: |
-|=========|=========|=======|
-|Akwey    |'itan    |eyk    |
-|Ateyo    |'ite     |irayo  |
-|Aonung   |atan     |makto  |
-|Eytukan  |au (drum)|taron  |
-|Eywa     |eyktan   |te     |
-|Kiri     |i'en     |
-|Lo'ak    |Iknimaya |
-|Mo'at    |mikyun   |
-|Na'vi    |ontu     |
-|Neteyam  |seyri    |
-|Newey    |tsaheylu |
-|Neytiri  |tsahìk   |
-|Ninat    |unil     |
-|Omatikaya|
-|Otranyu  |
-|Ronal    |
-|Rongloa  |      |Life:     |
-|Rotxo    |      |==========|
-|Silwanin |      |Atokirina'|
-|Tonowari |      |Ikran     |
-|Tuktirey |      |Palulukan |
-|Tsireya  |      |Riti      |
-|Tskaha   |      |talioang  |
-|Tsu'tey  |      |teylu     |
-|Tsumongwi|      |Toruk     |
-```"""
+    return """## Cameron words:
+- **A1 Names:** Akwey, Ateyo, Eytukan, Eywa, Mo'at, Na'vi, Newey, Neytiri, Ninat, Omatikaya, Otranyu, Rongloa, Silwanin, Tonowari, Tuktirey, Tsireya  Tskaha, Tsu'tey, Tsumongwi
+- **A2 Names:** Aonung, Kiri, Lo'ak, Neteyam, Ronal, Rotxo, Tonowari, Tuktirey, Tsireya
+- **Nouns:** 'itan, 'ite, atan, au *(drum)*, eyktan, i'en, Iknimaya, mikyun, ontu, seyri, tsaheylu, tsahìk, unil
+- **Life:** Atokirina', Ikran, Palulukan, Riti, talioang, teylu, Toruk
+- **Other:** eyk, irayo, makto taron, te"""
 
 
 
