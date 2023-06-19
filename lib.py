@@ -695,7 +695,7 @@ def get_cameron_words() -> str:
 - **A2 Names:** Aonung, Kiri, Lo'ak, Neteyam, Ronal, Rotxo, Tonowari, Tuktirey, Tsireya
 - **Nouns:** 'itan, 'ite, atan, au *(drum)*, eyktan, i'en, Iknimaya, mikyun, ontu, seyri, tsaheylu, tsahìk, unil
 - **Life:** Atokirina', Ikran, Palulukan, Riti, talioang, teylu, Toruk
-- **Other:** eyk, irayo, makto taron, te"""
+- **Other:** eyk, irayo, makto, taron, te"""
 
 
 
