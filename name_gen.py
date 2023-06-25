@@ -117,6 +117,79 @@ def get_coda():
             return end_keys[i]
     return end_keys[-1]
 
+def get_single_name(i: int):
+    loader = ""
+    onset = ""
+    nucleus = ""
+    coda = ""
+
+    i = rand_if_zero(int(i))
+            
+    #x = 0
+    for x in range(i): #loop I times
+        onset = get_onset()
+
+        #
+        # "Triple consonants" are whitelisted
+        #
+        if len(onset) > 1 and len(coda) > 0: #don't want errors
+            if not(coda == "t" and onset[0] == "s"): #t-s-kx is valid as ts-kx
+                if not(coda in triple_consonants and onset[0] in triple_consonants[coda] and onset[1] in triple_consonants[coda][onset[0]]):
+                    onset = [onset[1]]
+
+        #
+        # Nucleus
+        #
+        nucleus = get_nucleus()#.strip()
+
+        psuedovowel = False
+        # Disallow syllables starting with a psuedovowel
+        if nucleus in {"rr","ll"}:
+            psuedovowel = True
+            # Disallow onsets from imitating the psuedovowel
+            if len(onset[0]) > 0:
+                if onset[-1][-1] == nucleus[0]:
+                    onset = ["'"]
+            # If no onset, disallow the previous coda from imitating the psuedovowel
+            elif len(loader) > 0:
+                if loader[-1] == nucleus[0] or loader[-1] in {"a", "ä", "e", "i", "ì", "o", "u"}:
+                    onset = ["'"]
+            # No onset or loader thing?  Needs a thing to start
+            else:
+                onset = ["'"]
+
+        # No identical vowels togther.  It's not the reef
+        elif onset[0] == "" and len(loader) > 0 and loader[-1] == nucleus[0]:
+            onset = ["y"]
+
+        # Now that the onsets have settled, make sure they don't repeat a letter from the coda
+        # No "ng-n" "t-tx", "o'-lll" becoming "o'-'ll" or anything like that
+        if len(onset[0]) > 0 and len(loader) > 0:
+            length = -1
+            if len(coda) > 1: #in case of ng, px, tx or kx
+                length = -len(coda)
+            if onset[0][0] == loader[length]:
+                onset = [""] # disallow "l-ll", "r-rr", "ey-y" and "aw-w"
+                
+        #
+        # Coda
+        #
+        if psuedovowel:
+            coda = ""
+        else:
+            coda = get_coda().strip()
+
+        for k in onset:
+            loader += k
+        loader += (nucleus + coda)
+
+    return glottal_caps(loader)
+
+def rand_if_zero(x: int):
+    if x == 0:
+        return random.randint(2,4)
+    return x
+
 def chart_entry(x:str, y:int, width:int):
     ys = str(y)
     spaces = width - len(x) - len(ys)
