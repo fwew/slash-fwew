@@ -117,7 +117,7 @@ def get_coda():
             return end_keys[i]
     return end_keys[-1]
 
-def get_single_name(i: int):
+def get_single_name(i: int, dialect: str):
     loader = ""
     onset = ""
     nucleus = ""
@@ -158,8 +158,8 @@ def get_single_name(i: int):
             else:
                 onset = ["'"]
 
-        # No identical vowels togther.  It's not the reef
-        elif onset[0] == "" and len(loader) > 0 and loader[-1] == nucleus[0]:
+        # No identical vowels togther.  Unless it's the reef
+        elif dialect != "reef" and onset[0] == "" and len(loader) > 0 and loader[-1] == nucleus[0]:
             onset = ["y"]
 
         # Now that the onsets have settled, make sure they don't repeat a letter from the coda
@@ -178,9 +178,39 @@ def get_single_name(i: int):
             coda = ""
         else:
             coda = get_coda().strip()
+        
+        #
+        # Put everything into the string
+        #
+        if dialect == "reef" and onset[-1] == "y":
+            print(onset)
+            if onset[0] == "ts":
+                onset = "ch"
+            elif onset[0] == "s":
+                onset = "sh"
 
         for k in onset:
             loader += k
+        
+        # Syllable-initial ejectives become voiced plosives in reef
+        if dialect == "reef":
+            if len(loader) > 1:
+                if loader[-1] == "x":
+                    loader = loader[:-1]
+                    if loader[-1] == "p":
+                        loader[-1] == "b"
+                    elif loader[-1] == "t":
+                        loader[-1] == "d"
+                    elif loader[-1] == "k":
+                        loader[-1] == "g"
+                #elif loader[-2:] == "sy":
+                #    if len(loader) > 2 and loader[-3:] == "tsy":
+                #        loader = loader[:-3]
+                #        loader += "ch"
+                #    else:
+                #        loader = loader[:-2]
+                #        loader += "sh"
+
         loader += (nucleus + coda)
 
     return glottal_caps(loader)
