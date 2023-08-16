@@ -116,6 +116,19 @@ def get_coda():
         if end_numbers[i + 1] >= x:
             return end_keys[i]
     return end_keys[-1]
+    
+def reef_ejective(loader: str):
+    if loader[-1] != "x":
+        return loader
+    loader = loader[:-1]
+    if loader[-1] == "p":
+        loader = loader[:-1] + "b"
+    elif loader[-1] == "t":
+        loader = loader[:-1] + "d"
+    elif loader[-1] == "k":
+        loader = loader[:-1] + "g"
+    return loader
+    
 
 def get_single_name(i: int, dialect: str):
     loader = ""
@@ -152,7 +165,7 @@ def get_single_name(i: int, dialect: str):
                     onset = ["'"]
             # If no onset, disallow the previous coda from imitating the psuedovowel
             elif len(loader) > 0:
-                if loader[-1] == nucleus[0] or loader[-1] in {"a", "ä", "e", "i", "ì", "o", "u"}:
+                if loader[-1] == nucleus[0] or loader[-1] in {"a", "ä", "e", "i", "ì", "o", "u", "ù"}:
                     onset = ["'"]
             # No onset or loader thing?  Needs a thing to start
             else:
@@ -182,12 +195,12 @@ def get_single_name(i: int, dialect: str):
         #
         # Put everything into the string
         #
-        if dialect == "reef" and onset[-1] == "y":
-            print(onset)
-            if onset[0] == "ts":
-                onset = "ch"
-            elif onset[0] == "s":
-                onset = "sh"
+        if dialect == "reef":
+            if onset[-1] == "y":
+                if onset[0] == "ts":
+                    onset = "ch"
+                elif onset[0] == "s":
+                    onset = "sh"
 
         for k in onset:
             loader += k
@@ -196,13 +209,14 @@ def get_single_name(i: int, dialect: str):
         if dialect == "reef":
             if len(loader) > 1:
                 if loader[-1] == "x":
-                    loader = loader[:-1]
-                    if loader[-1] == "p":
-                        loader[-1] == "b"
-                    elif loader[-1] == "t":
-                        loader[-1] == "d"
-                    elif loader[-1] == "k":
-                        loader[-1] == "g"
+                    if not (len(loader) > 2 and loader[-3] in ["s", "f"]):
+                        loader = reef_ejective(loader)
+                        if len(loader) > 2 and loader[-2] == "x":
+                            loader = reef_ejective(loader[:-1]) + loader[-1]
+                elif len(loader) > 2 and loader[-1] == "'" and loader[-2] != nucleus:#[0]
+                    if loader[-2] in ["a", "i", "ì", "o", "e", "u", "ä", "ù"]:
+                        if nucleus in ["a", "i", "ì", "o", "e", "u", "ä", "ù"]:
+                            loader = loader[:-1]
                 #elif loader[-2:] == "sy":
                 #    if len(loader) > 2 and loader[-3:] == "tsy":
                 #        loader = loader[:-3]
@@ -212,6 +226,9 @@ def get_single_name(i: int, dialect: str):
                 #        loader += "sh"
 
         loader += (nucleus + coda)
+
+    if dialect == "forest":
+        loader = loader.replace("ù","u")
 
     return glottal_caps(loader)
 
