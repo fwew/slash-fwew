@@ -498,7 +498,6 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1, dialect: str = "in
                 results = results.removesuffix("'")
             if dialect == "reef" and results[-1] in {"a", "ä", "e", "ì", "o", "u", "ù"}:# , "w", "y"}: # does kaw'it become kawit?
                 results += ending[1:] + "\n"
-                print(ending[1:])
             else:
                 results += ending + "\n"
 
