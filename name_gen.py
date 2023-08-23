@@ -253,7 +253,7 @@ def get_phoneme_frequency_chart():
     # Onsets
     i = 2
     for a in non_clusters.keys():
-        entries.append("|" + chart_entry(a, non_clusters    [a],7))
+        entries.append("|" + chart_entry(a, non_clusters[a],7))
         i += 1
 
     # Nuclei
