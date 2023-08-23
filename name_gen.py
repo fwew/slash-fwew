@@ -216,7 +216,7 @@ def get_single_name(i: int, dialect: str):
                     loader = reef_ejective(loader) # it becomes a voiced plosive
                     if len(loader) > 2 and loader[-2] == "x": # adge/egdu exception
                         loader = reef_ejective(loader[:-1]) + loader[-1]
-            elif len(loader) > 2 and loader[-1] == "'" and loader[-2] != nucleus:#[0]: # does 'a'aw become 'aaw always or oprionally like rä'ä?
+            elif len(loader) > 2 and loader[-1] == "'" and loader[-2] != nucleus[0]: # 'a'aw is optionally 'aaw
                 if loader[-2] in ["a", "i", "ì", "o", "e", "u", "ä", "ù"]:#, "w", "y"]: does kaw'it become kawit?
                     if nucleus[0] in ["a", "i", "ì", "o", "e", "u", "ä", "ù"]:
                         loader = loader[:-1]
