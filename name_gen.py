@@ -116,7 +116,8 @@ def get_coda():
         if end_numbers[i + 1] >= x:
             return end_keys[i]
     return end_keys[-1]
-    
+
+# Helper function to make ejectives into voiced plosives
 def reef_ejective(loader: str):
     if loader[-1] != "x":
         return loader
@@ -171,8 +172,8 @@ def get_single_name(i: int, dialect: str):
             else:
                 onset = ["'"]
 
-        # No identical vowels togther.  Unless it's the reef
-        elif dialect != "reef" and onset[0] == "" and len(loader) > 0 and loader[-1] == nucleus[0]:
+        # No identical vowels togther in forest
+        elif dialect == "forest" and onset[0] == "" and len(loader) > 0 and loader[-1] == nucleus[0]:
             onset = ["y"]
 
         # Now that the onsets have settled, make sure they don't repeat a letter from the coda
@@ -195,6 +196,8 @@ def get_single_name(i: int, dialect: str):
         #
         # Put everything into the string
         #
+
+        # You shawm futa sy and tsy become sh and ch XD
         if dialect == "reef":
             if onset[-1] == "y":
                 if onset[0] == "ts":
@@ -202,31 +205,26 @@ def get_single_name(i: int, dialect: str):
                 elif onset[0] == "s":
                     onset = "sh"
 
+        # Onset
         for k in onset:
             loader += k
         
         # Syllable-initial ejectives become voiced plosives in reef
-        if dialect == "reef":
-            if len(loader) > 1:
-                if loader[-1] == "x":
-                    if not (len(loader) > 2 and loader[-3] in ["s", "f"]):
-                        loader = reef_ejective(loader)
-                        if len(loader) > 2 and loader[-2] == "x":
-                            loader = reef_ejective(loader[:-1]) + loader[-1]
-                elif len(loader) > 2 and loader[-1] == "'" and loader[-2] != nucleus:#[0]
-                    if loader[-2] in ["a", "i", "ì", "o", "e", "u", "ä", "ù"]:
-                        if nucleus in ["a", "i", "ì", "o", "e", "u", "ä", "ù"]:
-                            loader = loader[:-1]
-                #elif loader[-2:] == "sy":
-                #    if len(loader) > 2 and loader[-3:] == "tsy":
-                #        loader = loader[:-3]
-                #        loader += "ch"
-                #    else:
-                #        loader = loader[:-2]
-                #        loader += "sh"
+        if dialect == "reef" and len(loader) > 1: # In reef dialect,
+            if loader[-1] == "x": # If there's an ejective in the onset
+                if not (len(loader) > 2 and loader[-3] in ["s", "f"]): # that's not in a cluster,
+                    loader = reef_ejective(loader) # it becomes a voiced plosive
+                    if len(loader) > 2 and loader[-2] == "x": # adge/egdu exception
+                        loader = reef_ejective(loader[:-1]) + loader[-1]
+            elif len(loader) > 2 and loader[-1] == "'" and loader[-2] != nucleus:#[0]: # does 'a'aw become 'aaw always or oprionally like rä'ä?
+                if loader[-2] in ["a", "i", "ì", "o", "e", "u", "ä", "ù"]:#, "w", "y"]: does kaw'it become kawit?
+                    if nucleus[0] in ["a", "i", "ì", "o", "e", "u", "ä", "ù"]:
+                        loader = loader[:-1]
 
+        # Nucleus and coda
         loader += (nucleus + coda)
 
+    # Forest has no u/ù distinction
     if dialect == "forest":
         loader = loader.replace("ù","u")
 
