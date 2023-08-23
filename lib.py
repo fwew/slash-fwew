@@ -573,6 +573,8 @@ def get_name_alu(a: int, adj_mode: str = "something", k: int = 1, dialect: str =
                     # The only nouns put together using a space
                     if words == "tsko swizaw":
                         results += "Tsko Swizawyä "
+                    elif words == "toruk makto":
+                        results += "Torukä Maktoyuä "
                     # the only noun with two spaces
                     elif words == "mo a fngä'":
                         results += "Moä a Fgnä' "
@@ -605,6 +607,8 @@ def get_name_alu(a: int, adj_mode: str = "something", k: int = 1, dialect: str =
                     # The only nouns put together using a space
                     if words == "tsko swizaw":
                         results += "Tsko Swizawta "
+                    elif words == "toruk makto":
+                        results += "Torukä Maktoyuta "
                     # the only noun with two spaces
                     elif words == "mo a fngä'":
                         results += "ta Mo a Fgnä' "
