@@ -265,7 +265,7 @@ async def name(inter,
     dialect: dialect the names would fit into (interdialect, forest, reef)
     n: number of names to generate
     """
-    await inter.response.send_message(get_single_name_discord(s2, n, dialect))
+    await inter.response.send_message(get_single_name_discord(s2, dialect, n))
 
 @fwew_bot.slash_command(name="name", description="generate Na'vi full names")
 async def name(inter,
@@ -292,7 +292,7 @@ async def name(inter,
     ending: 'ite (daughter) or 'itan (son)
     n: number of names to generate
     """
-    await inter.response.send_message(get_name(s1, s2, s3, ending, n, dialect))
+    await inter.response.send_message(get_name(s1, s2, s3, ending, dialect, n))
 
 
 @fwew_bot.slash_command(name="name-alu", description="Use existing Na'vi words to generate Na'vi names")
@@ -315,7 +315,7 @@ async def name(inter,
     dialect: dialect the names would fit into (interdialect, forest, reef)
     n: number of names to generate
     """
-    await inter.response.send_message(get_name_alu(s2, adj_mode, n, dialect))
+    await inter.response.send_message(get_name_alu(s2, adj_mode, dialect, n))
 
 
 @fwew_bot.slash_command(name="phoneme-frequency", description="show how often a phoneme appears")

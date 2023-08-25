@@ -455,7 +455,7 @@ def get_translation(text: str, languageCode: str) -> str:
         return f"translation exceeds character limit of {char_limit}"
     return results
 
-def get_single_name_discord(i: int, n: int, dialect: str = "interdialect"):
+def get_single_name_discord(i: int, n: int, dialect: str):
     loader = ""
     
     if int(i) > 4 or int(i) < 0:
@@ -468,7 +468,7 @@ def get_single_name_discord(i: int, n: int, dialect: str = "interdialect"):
         loader += get_single_name(i,dialect) + "\n"
     return loader
 
-def get_name(a: int, b: int, c: int, ending: str, k: int = 1, dialect: str = "interdialect") -> str:
+def get_name(a: int, b: int, c: int, ending: str, dialect: str, k: int = 1) -> str:
     results = ""
     # for temp storage before appending to results
     loader = ""
@@ -504,7 +504,7 @@ def get_name(a: int, b: int, c: int, ending: str, k: int = 1, dialect: str = "in
     return results
 
 
-def get_name_alu(a: int, adj_mode: str = "something", k: int = 1, dialect: str = "interdialect") -> str:
+def get_name_alu(a: int, dialect: str, adj_mode: str, k: int = 1) -> str:
     results = ""
     if not valid_alu(adj_mode, int(a), int(k)):
         results = "Max b is 4, max n is 50"
@@ -538,11 +538,11 @@ def get_name_alu(a: int, adj_mode: str = "something", k: int = 1, dialect: str =
             results += get_single_name(b,dialect) + " alu "
 
             # if not specified, pick randomly
-            if adj_mode == "any" or adj_mode == "something":
+            if adj_mode == "any":
                 mode = random.randint(1,4)
             
-            if adj_mode == "something" and mode == 1:
-                mode = 2
+            if adj_mode == "something":
+                mode = random.randint(2,4)
 
             # ADJECTIVE
             if mode == 2:
