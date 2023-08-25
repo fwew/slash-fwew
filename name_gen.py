@@ -130,7 +130,7 @@ def reef_ejective(loader: str):
         loader = loader[:-1] + "g"
     return loader
     
-
+# Returns a single name for the lib.py functions that forward it to Discord
 def get_single_name(i: int, dialect: str):
     loader = ""
     onset = ""
@@ -166,7 +166,7 @@ def get_single_name(i: int, dialect: str):
                     onset = ["'"]
             # If no onset, disallow the previous coda from imitating the psuedovowel
             elif len(loader) > 0:
-                if loader[-1] == nucleus[0] or loader[-1] in {"a", "ä", "e", "i", "ì", "o", "u", "ù"}:
+                if loader[-1] == nucleus[0] or loader[-1] in ["a", "e", "ì", "o", "u", "i", "ä", "ù"]:
                     onset = ["'"]
             # No onset or loader thing?  Needs a thing to start
             else:
@@ -198,12 +198,11 @@ def get_single_name(i: int, dialect: str):
         #
 
         # You shawm futa sy and tsy become sh and ch XD
-        if dialect == "reef":
-            if onset[-1] == "y":
-                if onset[0] == "ts":
-                    onset = "ch"
-                elif onset[0] == "s":
-                    onset = "sh"
+        if dialect == "reef" and onset[-1] == "y":
+            if onset[0] == "ts":
+                onset = "ch"
+            elif onset[0] == "s":
+                onset = "sh"
 
         # Onset
         for k in onset:
@@ -216,10 +215,10 @@ def get_single_name(i: int, dialect: str):
                     loader = reef_ejective(loader) # it becomes a voiced plosive
                     if len(loader) > 2 and loader[-2] == "x": # adge/egdu exception
                         loader = reef_ejective(loader[:-1]) + loader[-1]
-            elif len(loader) > 2 and loader[-1] == "'" and loader[-2] != nucleus[0]: # 'a'aw is optionally 'aaw
-                if loader[-2] in ["a", "i", "ì", "o", "e", "u", "ä", "ù"]:#, "w", "y"]: does kaw'it become kawit?
-                    if nucleus[0] in ["a", "i", "ì", "o", "e", "u", "ä", "ù"]:
-                        loader = loader[:-1]
+            elif not psuedovowel and len(loader) > 2 and loader[-1] == "'" and loader[-2] != nucleus[0]: # 'a'aw is optionally 'aaw (the generator leaves it in)
+                if loader[-2] in ["a", "e", "ì", "o", "u", "i", "ä", "ù"]:#, "w", "y"]: does kaw'it become kawit?
+                    # if nucleus[0] in ["a", "e", "ì", "o", "u", "i", "ä", "ù"]: # psudeovowel boolean takes care of this
+                    loader = loader[:-1]
 
         # Nucleus and coda
         loader += (nucleus + coda)

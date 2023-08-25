@@ -530,19 +530,13 @@ def get_name_alu(a: int, dialect: str, adj_mode: str, k: int = 1) -> str:
             # For building names before appending them to results
             loader = ""
 
-            if a == 0:
-                b = random.randint(2,4)
-            else:
-                b = a
-
-            results += get_single_name(b,dialect) + " alu "
+            results += get_single_name(a,dialect) + " alu "
 
             # if not specified, pick randomly
-            if adj_mode == "any":
-                mode = random.randint(1,4)
-            
-            if adj_mode == "something":
+            if adj_mode == "something": # cannot pick "none"
                 mode = random.randint(2,4)
+            elif adj_mode == "any": # can pick "none"
+                mode = random.randint(1,4)
 
             # ADJECTIVE
             if mode == 2:
