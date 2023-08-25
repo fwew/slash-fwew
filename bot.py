@@ -315,7 +315,7 @@ async def name(inter,
     dialect: dialect the names would fit into (interdialect, forest, reef)
     n: number of names to generate
     """
-    await inter.response.send_message(get_name_alu(s2, adj_mode, dialect, n))
+    await inter.response.send_message(get_name_alu(s2, dialect, adj_mode, n))
 
 
 @fwew_bot.slash_command(name="phoneme-frequency", description="show how often a phoneme appears")

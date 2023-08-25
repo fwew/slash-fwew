@@ -455,7 +455,7 @@ def get_translation(text: str, languageCode: str) -> str:
         return f"translation exceeds character limit of {char_limit}"
     return results
 
-def get_single_name_discord(i: int, n: int, dialect: str):
+def get_single_name_discord(i: int, dialect: str, n: int):
     loader = ""
     
     if int(i) > 4 or int(i) < 0:
