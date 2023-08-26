@@ -297,7 +297,7 @@ async def name(inter,
         dialect=Param(name="dialect", description="which dialect the names should fit",
                 choices=["interdialect", "forest", "reef"], default="interdialect"),
         s=Param(name="syllables", description="name syllable count", gt=0, le=4, default=0),
-        adj_mode=commands.Param(name="adjective mode", description="type of adjective for the noun",
+        adj_mode=commands.Param(name="adjective-mode", description="type of adjective for the noun",
                 choices=["any", "something", "none", "normal adjective", "genitive noun", "origin noun"],
                 default="something")):
     """
