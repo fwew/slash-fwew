@@ -10,10 +10,6 @@ from dotenv import load_dotenv
 load_dotenv(os.path.join(Path.cwd(), ".env"))
 api_url = os.environ.get("API_URL")
 
-freq_table_onset = {
-    # Consonent clusters will be added in runtime
-}
-
 freq_table_nuclei = {}
 
 freq_table_end = {}
@@ -127,7 +123,6 @@ def table_manager_supercluster(x:str, y:str):
         triple_consonants[x][a] = [b]
 
 def distros():
-    global freq_table_onset
     global freq_table_nuclei
     global freq_table_end
     global cluster_onsets
@@ -270,7 +265,6 @@ def distros():
     # Format the output
     #
 
-    #freq_table_onset = dict(sorted(freq_table_onset.items(), key=lambda item: item[1], reverse = True))
     #cluster_onsets = dict(sorted(cluster_onsets.items(), key=lambda item: item[1], reverse = True))
     non_cluster_onsets = dict(sorted(non_cluster_onsets.items(), key=lambda item: item[1], reverse = True))
     freq_table_nuclei = dict(sorted(freq_table_nuclei.items(), key=lambda item: item[1], reverse = True))

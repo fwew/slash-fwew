@@ -468,7 +468,7 @@ def get_single_name_discord(i: int, dialect: str, n: int):
         loader += get_single_name(i,dialect) + "\n"
     return loader
 
-def get_name(a: int, b: int, c: int, ending: str, dialect: str, k: int = 1) -> str:
+def get_name(a: int, b: int, c: int, ending: str, dialect: str, k: int) -> str:
     results = ""
     # for temp storage before appending to results
     loader = ""
@@ -504,7 +504,7 @@ def get_name(a: int, b: int, c: int, ending: str, dialect: str, k: int = 1) -> s
     return results
 
 
-def get_name_alu(a: int, dialect: str, adj_mode: str, k: int = 1) -> str:
+def get_name_alu(a: int, dialect: str, adj_mode: str, k: int) -> str:
     results = ""
     if not valid_alu(adj_mode, int(a), int(k)):
         results = "Max b is 4, max n is 50"
