@@ -312,67 +312,51 @@ def glottal_caps(s: str):
 
 
 # For use with the command "name"
-def valid(a, b, c, k) -> bool:
+def valid(n, s_arr) -> bool:
     """
     Validate the input vars from the URL - No ridiculousness this time -- at all. :P
     Acceptable Ranges:
-    1 ≤ a, b, c ≤ 4
-    1 ≤ k ≤ 40 (more than that and you might exceed the 2000 character limit)
+    1 ≤ n ≤ 50 (more than that and you might exceed the 2000 character limit)
+    1 ≤ any value in s_srr ≤ 4
     """
     def is_set(x):
         return x is not None and x != ""
-    # a, b, c, k not set, usually a fresh referral from index.php
-    # Requiring at least a=1 b=1 c=1 k=1 is so lame. So having unset a, b, c, k is valid
-    # Also happens if any or all elements in form are not selected and submitted. Should also be valid
-    if not is_set(a) and not is_set(b) and is_set(c) and is_set(k):
-        return True
-    # They all need to be integers
-    if not type(a) is int or not type(b) is int or not type(c) is int or not type(k) is int:
-        return False
-    # disallow generating HRH.gif amounts of names
-    if k > 50:
-        return False
-    # lolwut, negative syllables?
-    if a < 0 or b < 0 or c < 0 or k < 1:
-        return False
-    # Probably Vawmataw or someone trying to be funny by generating HRH.gif amounts of syllables
-    elif a > 4 or b > 4 or c > 4:
-        return False
-    # they are all set and with values between and including 1 thru 4
-    else:
-        return True
-
-# For use with the command "name-alu"
-def valid_alu(adj_mode: str, b, k) -> bool:
-    """
-    Validate the input vars from the URL - No ridiculousness this time -- at all. :P
-    Acceptable Ranges:
-    1 ≤ b ≤ 4
-    1 ≤ k ≤ 50 (more than that and you might exceed the 2000 character limit)
-    """
-    def is_set(x):
-        return x is not None and x != ""
-    # b, k not set, usually a fresh referral from index.php
-    # Requiring at least b=1 k=1 is so lame. So having unset b, k is valid
+    # n, s1, s2, s3, not set, usually a fresh referral from index.php
+    # Requiring at least n=1 s1=1 s2=1 s3=1 is so lame. So having unset n, s1, s2, s3, is valid
     # Also happens if any or all elements in form are not selected and submitted. Should also be valid
 
-    # But adj_mode works differently
-    if not adj_mode in ["any", "something", "none", "normal adjective", "genitive noun", "origin noun"]:
-        return False
-    if not is_set(b) and is_set(k):
+    # Check all syllable values for validity
+    set_syllables = False
+    for s in s_arr:
+        # See if the syllable count is specified
+        if is_set(s):
+            set_syllables = True
+            break
+    
+    # Most common case is no numbers specified
+    if not is_set(n) and not set_syllables:
         return True
     # They all need to be integers
-    if not type(b) is int or not type(k) is int:
+    if not type(n) is int:
         return False
     # disallow generating HRH.gif amounts of names
-    if k > 50:
+    if n > 50:
         return False
-    # lolwut, zero syllables? Negative syllables?
-    if b < 0 or k < 1:
+    # lolwut, non-positive name count?
+    if n < 1:
         return False
-    # Probably Vawmataw or someone trying to be funny by generating HRH.gif amounts of syllables
-    elif b > 4:
-        return False
+
+    # Not worth checking again if we know none of them are set
+    if set_syllables:
+        for s in s_arr:
+            # They all need to be integers
+            if not type(s) is int:
+                return False
+            # lolwut, negative syllables?
+            if s < 0:
+                return False
+            # Probably Vawmataw or someone trying to be funny by generating HRH.gif amounts of syllables
+            if s > 4:
+                return False
     # they are all set and with values between and including 1 thru 4
-    else:
-        return True
+    return True

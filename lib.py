@@ -455,48 +455,45 @@ def get_translation(text: str, languageCode: str) -> str:
         return f"translation exceeds character limit of {char_limit}"
     return results
 
-def get_single_name_discord(i: int, dialect: str, n: int):
+def get_single_name_discord(n: int, dialect: str, s: int):
     loader = ""
     
-    if int(i) > 4 or int(i) < 0:
-        return "Max b is 4, max n is 50"
-    n = int(n)
-    if n > 50 or n < 1:
-        return "Max b is 4, max n is 50"
+    if not valid(int(n), [int(s)]):
+        results = "Max n is 50, max s is 4"
 
     for k in range(0,rand_if_zero(n)):
-        loader += get_single_name(i,dialect) + "\n"
+        loader += get_single_name(s,dialect) + "\n"
     return loader
 
-def get_name(a: int, b: int, c: int, ending: str, dialect: str, k: int) -> str:
+def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> str:
     results = ""
     # for temp storage before appending to results
     loader = ""
-    if not valid(int(a), int(b), int(c), int(k)):
-        results = "Max a, b and c are 4, max n is 50"
+    if not valid(int(n), [int(s1), int(s2), int(s3)]):
+        results = "Max n is 50, max s1, s2 and s3 are 4"
     else:
-        a, b, c, k = int(a), int(b), int(c), int(k)
+        n, s1, s2, s3 = int(n), int(s1), int(s2), int(s3)
         mk = 0
         # Do entire generator process n times
-        for mk in range(0,k):
+        for mk in range(0,n):
             # BUILD FIRST NAME
             # first syllable: CV
-            results += get_single_name(a,dialect)
+            results += get_single_name(s1,dialect)
 
             results += " te "
 
             # BUILD FAMILY NAME
-            results += get_single_name(b,dialect)
+            results += get_single_name(s2,dialect)
 
             results += " "
 
             # BUILD PARENT'S NAME
-            results += get_single_name(c,dialect)
+            results += get_single_name(s3,dialect)
 
             # ADD ENDING
             if results.endswith("'"):
                 results = results.removesuffix("'")
-            if dialect == "reef" and results[-1] in {"a", "ä", "e", "ì", "o", "u", "ù"}:# , "w", "y"}: # does kaw'it become kawit?
+            if dialect == "reef" and results[-1] in ["a", "e", "ì", "o", "u", "i", "ä", "ù"]:# , "w", "y"}: # does kaw'it become kawit?
                 results += ending[1:] + "\n"
             else:
                 results += ending + "\n"
@@ -504,13 +501,12 @@ def get_name(a: int, b: int, c: int, ending: str, dialect: str, k: int) -> str:
     return results
 
 
-def get_name_alu(a: int, dialect: str, adj_mode: str, k: int) -> str:
+def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
     results = ""
-    if not valid_alu(adj_mode, int(a), int(k)):
-        results = "Max b is 4, max n is 50"
+    if not valid(int(n), [int(s)]):
+        results = "Max n is 50, max s is 4"
     else:
-        
-        a, k = int(a), int(k)
+        n, s = int(n), int(s)
 
         # Adjectives and nouns can be shared across loops
         buffer = ""
@@ -526,15 +522,17 @@ def get_name_alu(a: int, dialect: str, adj_mode: str, k: int) -> str:
             mode = 4
 
         # Do entire generator process n times
-        for mk in range(k): #loop k times
+        for mk in range(n): #loop k times
             # For building names before appending them to results
             loader = ""
 
-            results += get_single_name(a,dialect) + " alu "
+            results += get_single_name(s,dialect) + " alu "
 
             # if not specified, pick randomly
             if adj_mode == "something": # cannot pick "none"
-                mode = random.randint(2,4)
+                mode = random.randint(1,4)
+                if mode == 1: # 50% chance of normal adjective
+                    mode = 2
             elif adj_mode == "any": # can pick "none"
                 mode = random.randint(1,4)
 
@@ -577,7 +575,7 @@ def get_name_alu(a: int, dialect: str, adj_mode: str, k: int) -> str:
                     #               "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
                     #    results += "Skxawngä "
                     else:
-                        yvowels = ['a', 'ä', 'e', 'i', 'ì']
+                        yvowels = ['a', 'e', 'ì', 'i', 'ä']
                         for i in range(len(wordList) - 1, -1, -1):
                             loader = ""
                             # The only a-attributed word in the dictionary, part of "swoasey ayll"

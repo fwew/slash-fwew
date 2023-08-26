@@ -251,11 +251,10 @@ async def version(inter):
 
 @fwew_bot.slash_command(name="name-single", description="Generate a valid Na'vi word to use as a name")
 async def name(inter,
-               s2=Param(name="b",
-                        description="name length", gt=0, le=4, default=0),
-               dialect=Param(name="dialect", description="which dialect the names should fit",
-                        choices=["interdialect", "forest", "reef"], default="interdialect"),
-               n=Param(description="number of names to generate", gt=1, le=50, default=1)):
+        n=Param(name = "name count", description="number of names to generate", gt=1, le=50, default=1),
+        dialect=Param(name="dialect", description="which dialect the names should fit",
+                choices=["interdialect", "forest", "reef"], default="interdialect"),
+        s=Param(name="syllables", description="name syllable count", gt=0, le=4, default=0)):
     """
     generate full Na'vi name(s) out of preexisting Na'vi words
 
@@ -265,21 +264,18 @@ async def name(inter,
     dialect: dialect the names would fit into (interdialect, forest, reef)
     n: number of names to generate
     """
-    await inter.response.send_message(get_single_name_discord(s2, dialect, n))
+    await inter.response.send_message(get_single_name_discord(n, dialect, s))
 
 @fwew_bot.slash_command(name="name", description="generate Na'vi full names")
 async def name(inter,
-               s1=Param(name="a",
-                        description="first name length", gt=0, le=4, default=0),
-               s2=Param(name="b",
-                        description="family name length", gt=0, le=4, default=0),
-               s3=Param(name="c",
-                        description="parent's name length", gt=0, le=4, default=0),
-               dialect=Param(name="dialect", description="which dialect the names should fit",
-                        choices=["interdialect", "forest", "reef"], default="interdialect"),
-               ending=commands.Param(
-                   description="'ite (daughter) or 'itan (son)", choices=["'ite", "'itan"]),
-               n=Param(description="number of names to generate", gt=1, le=50, default=1)):
+        ending=commands.Param(
+                description="'ite (daughter) or 'itan (son)", choices=["'ite", "'itan"]),
+        n=Param(name = "name count", description="number of names to generate", gt=1, le=50, default=1),
+        dialect=Param(name="dialect", description="which dialect the names should fit",
+                choices=["interdialect", "forest", "reef"], default="interdialect"),
+        s1=Param(name="syllables 1", description="first name syllable count", gt=0, le=4, default=0),
+        s2=Param(name="syllables 2", description="family name syllable count", gt=0, le=4, default=0),
+        s3=Param(name="syllables 3", description="parent's name syllable count", gt=0, le=4, default=0)):
     """
     generate full Na'vi name(s)
 
@@ -292,19 +288,18 @@ async def name(inter,
     ending: 'ite (daughter) or 'itan (son)
     n: number of names to generate
     """
-    await inter.response.send_message(get_name(s1, s2, s3, ending, dialect, n))
+    await inter.response.send_message(get_name(ending, n, dialect, s1, s2, s3))
 
 
 @fwew_bot.slash_command(name="name-alu", description="Use existing Na'vi words to generate Na'vi names")
 async def name(inter,
-               adj_mode=commands.Param(description="type of adjective for the noun",
-                   choices=["any", "something", "none", "normal adjective", "genitive noun", "origin noun"],
-                   default="something"),
-               s2=Param(name="b",
-                        description="name length", gt=0, le=4, default=0),
-               dialect=Param(name="dialect", description="which dialect the names should fit",
-                        choices=["interdialect", "forest", "reef"], default="interdialect"),
-               n=Param(description="number of names to generate", gt=1, le=50, default=1)):
+        n=Param(name = "name count", description="number of names to generate", gt=1, le=50, default=1),
+        dialect=Param(name="dialect", description="which dialect the names should fit",
+                choices=["interdialect", "forest", "reef"], default="interdialect"),
+        s=Param(name="syllables", description="name syllable count", gt=0, le=4, default=0),
+        adj_mode=commands.Param(name="adjective mode", description="type of adjective for the noun",
+                choices=["any", "something", "none", "normal adjective", "genitive noun", "origin noun"],
+                default="something")):
     """
     generate full Na'vi name(s) out of preexisting Na'vi words
 
@@ -315,7 +310,7 @@ async def name(inter,
     dialect: dialect the names would fit into (interdialect, forest, reef)
     n: number of names to generate
     """
-    await inter.response.send_message(get_name_alu(s2, dialect, adj_mode, n))
+    await inter.response.send_message(get_name_alu(n, dialect, s, adj_mode))
 
 
 @fwew_bot.slash_command(name="phoneme-frequency", description="show how often a phoneme appears")
