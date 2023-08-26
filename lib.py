@@ -456,14 +456,14 @@ def get_translation(text: str, languageCode: str) -> str:
     return results
 
 def get_single_name_discord(n: int, dialect: str, s: int):
-    loader = ""
+    results = ""
     
     if not valid(int(n), [int(s)]):
         results = "Max n is 50, max s is 4"
-
-    for k in range(0,rand_if_zero(n)):
-        loader += get_single_name(s,dialect) + "\n"
-    return loader
+    else:
+        for k in range(0,rand_if_zero(n)):
+            results += get_single_name(s,dialect) + "\n"
+    return results
 
 def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> str:
     results = ""
