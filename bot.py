@@ -251,7 +251,7 @@ async def version(inter):
 
 @fwew_bot.slash_command(name="name-single", description="Generate a valid Na'vi word to use as a name")
 async def name(inter,
-        n=Param(name = "name count", description="number of names to generate", gt=1, le=50, default=1),
+        n=Param(name = "name-count", description="number of names to generate", gt=1, le=50, default=1),
         dialect=Param(name="dialect", description="which dialect the names should fit",
                 choices=["interdialect", "forest", "reef"], default="interdialect"),
         s=Param(name="syllables", description="name syllable count", gt=0, le=4, default=0)):
@@ -273,9 +273,9 @@ async def name(inter,
         n=Param(name = "name count", description="number of names to generate", gt=1, le=50, default=1),
         dialect=Param(name="dialect", description="which dialect the names should fit",
                 choices=["interdialect", "forest", "reef"], default="interdialect"),
-        s1=Param(name="syllables 1", description="first name syllable count", gt=0, le=4, default=0),
-        s2=Param(name="syllables 2", description="family name syllable count", gt=0, le=4, default=0),
-        s3=Param(name="syllables 3", description="parent's name syllable count", gt=0, le=4, default=0)):
+        s1=Param(name="syllables-1", description="first name syllable count", gt=0, le=4, default=0),
+        s2=Param(name="syllables-2", description="family name syllable count", gt=0, le=4, default=0),
+        s3=Param(name="syllables-3", description="parent's name syllable count", gt=0, le=4, default=0)):
     """
     generate full Na'vi name(s)
 
@@ -293,7 +293,7 @@ async def name(inter,
 
 @fwew_bot.slash_command(name="name-alu", description="Use existing Na'vi words to generate Na'vi names")
 async def name(inter,
-        n=Param(name = "name count", description="number of names to generate", gt=1, le=50, default=1),
+        n=Param(name = "name-count", description="number of names to generate", gt=1, le=50, default=1),
         dialect=Param(name="dialect", description="which dialect the names should fit",
                 choices=["interdialect", "forest", "reef"], default="interdialect"),
         s=Param(name="syllables", description="name syllable count", gt=0, le=4, default=0),

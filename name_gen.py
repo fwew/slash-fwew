@@ -311,7 +311,7 @@ def glottal_caps(s: str):
     return s.capitalize()
 
 
-# For use with the command "name"
+# For use with the commands "name", "name-alu" and "name-single"
 def valid(n, s_arr) -> bool:
     """
     Validate the input vars from the URL - No ridiculousness this time -- at all. :P
