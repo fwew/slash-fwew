@@ -459,7 +459,7 @@ def get_single_name_discord(n: int, dialect: str, s: int):
     results = ""
     
     if not valid(int(n), [int(s)]):
-        results = "Max n is 50, max s is 4"
+        results = "Max name-count is 50, max syllables is 4"
     else:
         for k in range(0,rand_if_zero(n)):
             results += get_single_name(s,dialect) + "\n"
@@ -470,7 +470,7 @@ def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> st
     # for temp storage before appending to results
     loader = ""
     if not valid(int(n), [int(s1), int(s2), int(s3)]):
-        results = "Max n is 50, max s1, s2 and s3 are 4"
+        results = "Max name-count is 50, max syllables-1/2/3 are 4"
     else:
         n, s1, s2, s3 = int(n), int(s1), int(s2), int(s3)
         mk = 0
@@ -504,7 +504,7 @@ def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> st
 def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
     results = ""
     if not valid(int(n), [int(s)]):
-        results = "Max n is 50, max s is 4"
+        results = "Max name-count is 50, max syllables is 4"
     else:
         n, s = int(n), int(s)
 
