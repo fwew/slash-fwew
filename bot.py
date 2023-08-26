@@ -270,7 +270,7 @@ async def name(inter,
 async def name(inter,
         ending=commands.Param(
                 description="'ite (daughter) or 'itan (son)", choices=["'ite", "'itan"]),
-        n=Param(name = "name count", description="number of names to generate", gt=1, le=50, default=1),
+        n=Param(name = "name-count", description="number of names to generate", gt=1, le=50, default=1),
         dialect=Param(name="dialect", description="which dialect the names should fit",
                 choices=["interdialect", "forest", "reef"], default="interdialect"),
         s1=Param(name="syllables-1", description="first name syllable count", gt=0, le=4, default=0),
