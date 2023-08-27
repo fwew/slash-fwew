@@ -213,7 +213,7 @@ def get_single_name(i: int, dialect: str):
             if random.randint(1,5) == 5: # was almost exactly 4 to 1 (615 to 158)
                 nucleus = "ù"
         
-        if dialect == "reef" and len(loader) == 1: # In reef dialect,
+        if dialect == "reef" and len(loader) > 1: # In reef dialect,
             if loader[-1] == "x": # If there's an ejective in the onset
                 if not (len(loader) > 2 and loader[-3] in ["s", "f"]): # that's not in a cluster,
                     loader = reef_ejective(loader) # it becomes a voiced plosive
