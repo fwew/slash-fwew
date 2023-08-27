@@ -166,7 +166,7 @@ def get_single_name(i: int, dialect: str):
                     onset = ["'"]
             # If no onset, disallow the previous coda from imitating the psuedovowel
             elif len(loader) > 0:
-                if loader[-1] == nucleus[0] or loader[-1] in ["a", "e", "ì", "o", "u", "i", "ä", "ù"]:
+                if loader[-1] == nucleus[0] or loader[-1] in ["a", "e", "u", "ì", "o", "i", "ä"]:#, "ù"]:
                     onset = ["'"]
             # No onset or loader thing?  Needs a thing to start
             else:
@@ -208,24 +208,29 @@ def get_single_name(i: int, dialect: str):
         for k in onset:
             loader += k
         
-        # Syllable-initial ejectives become voiced plosives in reef
-        if dialect == "reef" and len(loader) > 1: # In reef dialect,
+        # If only we didn't have to hardcode the likelihood of ù compared to u :ìì:
+        if nucleus == "u" and dialect != "forest": # As of August 2023, the ratio of u to ù
+            if random.randint(1,5) == 5: # was almost exactly 4 to 1 (615 to 158)
+                nucleus = "ù"
+        
+        if dialect == "reef" and len(loader) == 1: # In reef dialect,
             if loader[-1] == "x": # If there's an ejective in the onset
                 if not (len(loader) > 2 and loader[-3] in ["s", "f"]): # that's not in a cluster,
                     loader = reef_ejective(loader) # it becomes a voiced plosive
                     if len(loader) > 2 and loader[-2] == "x": # adge/egdu exception
                         loader = reef_ejective(loader[:-1]) + loader[-1]
             elif not psuedovowel and len(loader) > 2 and loader[-1] == "'" and loader[-2] != nucleus[0]: # 'a'aw is optionally 'aaw (the generator leaves it in)
-                if loader[-2] in ["a", "e", "ì", "o", "u", "i", "ä", "ù"]:#, "w", "y"]: does kaw'it become kawit?
+                if loader[-2] in ["a", "e", "u", "ì", "o", "i", "ä",]:# "ù"]:#, "w", "y"]: does kaw'it become kawit?
                     # if nucleus[0] in ["a", "e", "ì", "o", "u", "i", "ä", "ù"]: # psudeovowel boolean takes care of this
                     loader = loader[:-1]
 
         # Nucleus and coda
         loader += (nucleus + coda)
 
+    # For if we ever have frequencyscript-ipa.py calculate how often ù appears compared to u
     # Forest has no u/ù distinction
-    if dialect == "forest":
-        loader = loader.replace("ù","u")
+    #if dialect == "forest":
+    #    loader = loader.replace("ù","u")
 
     return glottal_caps(loader)
 
