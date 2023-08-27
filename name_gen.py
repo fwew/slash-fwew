@@ -220,7 +220,7 @@ def get_single_name(i: int, dialect: str):
                     if len(loader) > 2 and loader[-2] == "x": # adge/egdu exception
                         loader = reef_ejective(loader[:-1]) + loader[-1]
             elif not psuedovowel and len(loader) > 2 and loader[-1] == "'" and loader[-2] != nucleus[0]: # 'a'aw is optionally 'aaw (the generator leaves it in)
-                if loader[-2] in ["a", "e", "u", "ì", "o", "i", "ä",]:# "ù"]:#, "w", "y"]: does kaw'it become kawit?
+                if loader[-2] in ["a", "e", "ì", "o", "u", "i", "ä", "ù"]:#, "w", "y"]: does kaw'it become kawit?
                     # if nucleus[0] in ["a", "e", "ì", "o", "u", "i", "ä", "ù"]: # psudeovowel boolean takes care of this
                     loader = loader[:-1]
 
