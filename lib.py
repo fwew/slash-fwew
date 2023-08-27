@@ -461,8 +461,8 @@ def get_single_name_discord(n: int, dialect: str, s: int):
     if not valid(int(n), [int(s)]):
         results = "Max name-count is 50, max syllables is 4"
     else:
-        for k in range(0,rand_if_zero(n)):
-            results += get_single_name(s,dialect) + "\n"
+        for k in range(0,int(n)):
+            results += get_single_name(int(s),dialect) + "\n"
     return results
 
 def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> str:
