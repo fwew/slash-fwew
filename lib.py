@@ -568,7 +568,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                 # Forest doesn't duplicate an a in apxa   | Even if after a noun | le-adjectives don't need an a
                 if (not two_word_noun) and (adj[0] != 'a' or dialect != "forest") and (not adj.startswith("le")):
                     adj = "a" + adj
-                elif two_word_nouns and (adj[-1] != 'a' or dialect != "forest"):
+                elif two_word_noun and (adj[-1] != 'a' or dialect != "forest"):
                     adj += "a"
                 
                 results += glottal_caps(adj)
