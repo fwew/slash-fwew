@@ -570,7 +570,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                 if (not two_word_noun) and (adj[0] != 'a' or dialect != "forest") and (adj in fake_le_adjectives or not adj.startswith("le")):
                     adj = "a" + adj
                 elif two_word_noun and (adj[-1] != 'a' or dialect != "forest"):
-                    adj += "a"
+                    adj += "a "
                 
                 results += glottal_caps(adj)
             # GENITIVE OR ORIGIN NOUN
