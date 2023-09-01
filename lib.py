@@ -564,9 +564,10 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                 query = requests.get(f"{api_url}/random/1/pos is adj.")
                 buffer = json.loads(query.text)
                 adj = buffer[0]['Navi']
-                a_before = True
+                # Unlike the other le-adjectives, these don't put le- in front of a preexisting word.
+                fake_le_adjectives = ["ler", "leyr"]
                 # Forest doesn't duplicate an a in apxa   | Even if after a noun | le-adjectives don't need an a
-                if (not two_word_noun) and (adj[0] != 'a' or dialect != "forest") and (not adj.startswith("le")):
+                if (not two_word_noun) and (adj[0] != 'a' or dialect != "forest") and (adj in fake_le_adjectives or not adj.startswith("le")):
                     adj = "a" + adj
                 elif two_word_noun and (adj[-1] != 'a' or dialect != "forest"):
                     adj += "a"
@@ -606,24 +607,24 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                             if wordList[i] == "ayll":
                                 loader += "Ylla "
                             elif wordList[i].startswith("le"):
-                                loader += wordList[i] + "a "
+                                loader += glottal_caps(wordList[i]) + "a "
                             elif wordList[i].endswith("yä"):
-                                loader += wordList[i] + " "
+                                loader += glottal_caps(wordList[i]) + " "
                             elif wordList[i].endswith("ia"): # aungia, meuia, soaia, tìftia, kemuia
-                                loader += wordList[i][:-1] + "ä "
+                                loader += glottal_caps(wordList[i][:-1]) + "ä "
                             elif wordList[i][-1] in yvowels:
-                                loader += wordList[i] + "yä "
+                                loader += glottal_caps(wordList[i]) + "yä "
                             else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
-                                loader += wordList[i] + "ä "
-                            results += glottal_caps(loader.capitalize())
+                                loader += glottal_caps(wordList[i]) + "ä "
+                            results += loader
                     else:
                         first = True
                         loader = ""
                         for i in wordList:
-                            # The only a-attributed word in the dictionary, part of "swoasey ayll"
+                            # Only put the genitive on the first word in the noun
                             if first:
                                 if i.endswith("ia"): # aungia, meuia, soaia, tìftia, kemuia
-                                    loader += i[:-1] + "ä "
+                                    loader += glottal_caps(i[:-1]) + "ä "
                                 elif i[-1] in yvowels:
                                     loader += glottal_caps(i) + "yä "
                                 else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
@@ -646,23 +647,24 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                     # elif words in ["kalweyaveng", "kurkung", "la'ang",
                     #                "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
                     #     results += "Skxawngta "i
-                    elif two_word_noun:
+                    elif two_word_noun: # Origin noun goes before the noun
                         for i in range(len(wordList) - 1, -1, -1):
                             loader = ""
                             # The only a-attributed word in the dictionary, part of "swoasey ayll"
                             if wordList[i] == "ayll":
                                 loader += "Ylla "
                             elif wordList[i].startswith("le"):
-                                loader += wordList[i] + "a "
+                                loader += glottal_caps(wordList[i]) + "a "
                             elif wordList[i].endswith("yä"):
-                                loader += wordList[i]
+                                loader += glottal_caps(wordList[i]) + " "
                             else:
-                                loader += "ta " + wordList[i] + " "
-                            results += glottal_caps(loader.capitalize())
-                    else:
+                                loader += "ta " + glottal_caps(wordList[i]) + " "
+                            results += loader
+                    else: # Origin noun goes after the noun
                         first = True
                         loader = ""
                         for i in wordList:
+                            # Only put the origin on the first noun
                             if first:
                                 loader += "ta " + glottal_caps(i)
                                 first = False
@@ -670,9 +672,10 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                             loader += " " + glottal_caps(i)
                         results += loader
             
+            # If the adjective came first, put the two-word noun on.
             if two_word_noun:
                 for n in noun:
-                    results += " " + glottal_caps(n)
+                    results += glottal_caps(n)
 
             # ADD ENDING
             results += "\n"
