@@ -669,7 +669,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                         results += glottal_caps(loader.capitalize())
             
             if two_word_noun:
-                for n in nouns:
+                for n in noun:
                     results += " " + glottal_caps(n)
 
             # ADD ENDING
