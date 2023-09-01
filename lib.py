@@ -600,7 +600,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                     # elif words in ["kalweyaveng", "kurkung", "la'ang",
                     #               "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
                     #    results += "Skxawngä "
-                    elif two_word_noun:
+                    elif two_word_noun: # Origin noun goes before the noun
                         for i in range(len(wordList) - 1, -1, -1):
                             loader = ""
                             # The only a-attributed word in the dictionary, part of "swoasey ayll"
@@ -617,7 +617,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                             else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
                                 loader += glottal_caps(wordList[i]) + "ä "
                             results += loader
-                    else:
+                    else: # Origin noun goes after the noun
                         first = True
                         loader = ""
                         for i in wordList:
@@ -627,11 +627,11 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                                     loader += glottal_caps(i[:-1]) + "ä "
                                 elif i[-1] in yvowels:
                                     loader += glottal_caps(i) + "yä "
-                                else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
+                                else: #If's it's a conosonent, psuedovowel, diphthong, o or u
                                     loader += glottal_caps(i) + "ä "
                                 first = False
                                 continue
-                            loader += " " + glottal_caps(i)
+                            loader += glottal_caps(i)
                         results += loader
                 # Origin noun
                 elif mode == 4:
