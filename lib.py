@@ -2,6 +2,7 @@ import json
 import os
 import re
 from pathlib import Path
+from operator import xor
 
 import requests
 from dotenv import load_dotenv
@@ -524,9 +525,30 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
         # Do entire generator process n times
         for mk in range(n): #loop k times
             # For building names before appending them to results
-            loader = ""
+            noun = ""
 
             results += get_single_name(s,dialect) + " alu "
+
+            # GET PRIMARY NOUN
+            noun = ""
+            query = requests.get(f"{api_url}/random/1/pos is n.")
+            buffer = json.loads(query.text)
+            noun = buffer[0]['Navi']
+            # Wivatch youä profanitit
+            # if noun in ["kalweyaveng", "kurkung", "la'ang",
+            #            "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
+            #    noun = "Skxawng"
+
+            two_word_noun = False
+
+            adj = ""
+            noun = noun.split()
+
+            # If there's more than one word in the noun, the adjective comes first
+            if len(noun) > 1:
+                two_word_noun = True
+            else:
+                results += glottal_caps(noun[0]) + " "
 
             # if not specified, pick randomly
             if adj_mode == "something": # cannot pick "none"
@@ -538,19 +560,21 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
 
             # ADJECTIVE
             if mode == 2:
-                loader = ""
                 # Get adjectives
                 query = requests.get(f"{api_url}/random/1/pos is adj.")
                 buffer = json.loads(query.text)
-                loader += buffer[0]['Navi']
-                # Make sure there's no a before we add an a (like in "hona" or "apxa")
-                if(len(loader) > 0 and loader[len(loader) - 1] != 'a'):
-                    loader += "a "
-                else:
-                    loader += " "
+                adj = buffer[0]['Navi']
+                a_before = True
+                # Forest doesn't duplicate an a in apxa   | Even if after a noun | le-adjectives don't need an a
+                if (adj[0] != 'a' or dialect != "forest") and (not two_word_noun) and (not adj.startswith("le")):
+                    adj = "a" + adj
+                elif (adj[-1] != 'a' or dialect != "forest"):
+                    adj += "a"
                 
-                results += glottal_caps(loader.capitalize())
-            # ATTRIBUTIVE NOUN
+                loader += adj
+                
+                results += " " + glottal_caps(loader.capitalize())
+            # GENITIVE OR ORIGIN NOUN
             elif mode == 3 or mode == 4:
                 loader = ""
                 # Get nouns
@@ -560,22 +584,24 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
 
                 words = buffer[0]['Navi']
                 wordList = words.split()
+
+                yvowels = ['a', 'e', 'ì', 'i', 'ä']
+
                 # Genitive noun
                 if mode == 3:
                     # The only nouns put together using a space
                     if words == "tsko swizaw":
-                        results += "Tsko Swizawyä "
+                        results += "Tsko Swizawyä"
                     elif words == "toruk makto":
-                        results += "Torukä Maktoyuä "
+                        results += "Torukä Maktoyuä"
                     # the only noun with two spaces
                     elif words == "mo a fngä'":
-                        results += "Moä a Fgnä' "
+                        results += "Moä a Fgnä'"
                     # Watch your profanity
                     # elif words in ["kalweyaveng", "kurkung", "la'ang",
                     #               "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
                     #    results += "Skxawngä "
-                    else:
-                        yvowels = ['a', 'e', 'ì', 'i', 'ä']
+                    elif two_word_noun:
                         for i in range(len(wordList) - 1, -1, -1):
                             loader = ""
                             # The only a-attributed word in the dictionary, part of "swoasey ayll"
@@ -586,29 +612,41 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                             elif wordList[i].endswith("yä"):
                                 loader += wordList[i] + " "
                             elif wordList[i].endswith("ia"): # aungia, meuia, soaia, tìftia, kemuia
-                                loader += wordList[i]
-                                loader.removesuffix('a')
-                                loader += "ä "
+                                loader += wordList[i][:-1] + "ä "
                             elif wordList[i][-1] in yvowels:
                                 loader += wordList[i] + "yä "
                             else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
                                 loader += wordList[i] + "ä "
                             results += glottal_caps(loader.capitalize())
+                    else:
+                        first = True
+                        for i in wordList:
+                            loader = ""
+                            # The only a-attributed word in the dictionary, part of "swoasey ayll"
+                            if first:
+                                if wordList[i].endswith("ia"): # aungia, meuia, soaia, tìftia, kemuia
+                                    loader += wordList[i][:-1] + "ä "
+                                elif wordList[i][-1] in yvowels:
+                                    loader += wordList[i] + "yä "
+                                else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
+                                    loader += wordList[i] + "ä "
+                                first = False
+                            results += glottal_caps(loader.capitalize())
                 # Origin noun
                 elif mode == 4:
                     # The only nouns put together using a space
                     if words == "tsko swizaw":
-                        results += "Tsko Swizawta "
+                        results += "Tsko Swizawta"
                     elif words == "toruk makto":
-                        results += "Torukä Maktoyuta "
+                        results += "Torukä Maktoyuta"
                     # the only noun with two spaces
                     elif words == "mo a fngä'":
-                        results += "ta Mo a Fgnä' "
+                        results += "ta Mo a Fgnä'"
                     # Watch your profanity
                     # elif words in ["kalweyaveng", "kurkung", "la'ang",
                     #                "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
                     #     results += "Skxawngta "
-                    else:
+                    elif two_word_noun:
                         for i in range(len(wordList) - 1, -1, -1):
                             loader = ""
                             # The only a-attributed word in the dictionary, part of "swoasey ayll"
@@ -621,17 +659,18 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                             else:
                                 loader += wordList[i] + "ta "
                             results += glottal_caps(loader.capitalize())
+                    else:
+                        first = True
+                        for i in wordList:
+                            loader = ""
+                            # The only a-attributed word in the dictionary, part of "swoasey ayll"
+                            if first:
+                                loader += i + "ta "
+                                first = False
+                            results += glottal_caps(loader.capitalize())
             
-            # GET PRIMARY NOUN
-            loader = ""
-            query = requests.get(f"{api_url}/random/1/pos is n.")
-            buffer = json.loads(query.text)
-            loader = buffer[0]['Navi']
-            # Wivatch youä profanitit
-            # if loader in ["kalweyaveng", "kurkung", "la'ang",
-            #            "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
-            #    loader = "Skxawng"
-            results += glottal_caps(loader.capitalize())
+            if two_word_noun:
+                results += " " + glottal_caps(noun.capitalize())
 
             # ADD ENDING
             results += "\n"
