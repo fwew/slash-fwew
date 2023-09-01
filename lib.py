@@ -625,13 +625,13 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                                 if i.endswith("ia"): # aungia, meuia, soaia, tìftia, kemuia
                                     loader += i[:-1] + "ä "
                                 elif i[-1] in yvowels:
-                                    loader += i + "yä "
+                                    loader += glottal_caps(i) + "yä "
                                 else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
-                                    loader += i + "ä "
+                                    loader += glottal_caps(i) + "ä "
                                 first = False
                                 continue
-                            loader += " " + i
-                        results += glottal_caps(loader.capitalize())
+                            loader += " " + glottal_caps(i)
+                        results += loader
                 # Origin noun
                 elif mode == 4:
                     # The only nouns put together using a space
@@ -645,7 +645,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                     # Watch your profanity
                     # elif words in ["kalweyaveng", "kurkung", "la'ang",
                     #                "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
-                    #     results += "Skxawngta "
+                    #     results += "Skxawngta "i
                     elif two_word_noun:
                         for i in range(len(wordList) - 1, -1, -1):
                             loader = ""
@@ -667,8 +667,8 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                                 loader += "ta " + glottal_caps(i)
                                 first = False
                                 continue
-                            loader += " " + i
-                        results += glottal_caps(loader.capitalize())
+                            loader += " " + glottal_caps(i)
+                        results += loader
             
             if two_word_noun:
                 for n in noun:
