@@ -706,6 +706,8 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                                 adj += a
                     else:
                         adj += word
+                    if word != new_verb[-1]:
+                        adj += "-"
                 
                 # Forest doesn't duplicate an a in apxa   | Even if after a noun | le-adjectives don't need an a
                 if (not two_word_noun) and (adj[0] != 'a' or dialect != "forest"):
