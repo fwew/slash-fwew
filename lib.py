@@ -689,7 +689,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                 while len(new_verb) > 1 and new_verb[1] != "s..i":
                     query = requests.get(f"{api_url}/random/1/pos starts v")
                     buffer = json.loads(query.text)
-                    new_verb = buffer[0]['infixDots'].split()
+                    new_verb = buffer[0]['InfixDots'].split()
                 
                 #adj += adj_loader[0]
                 for word in new_verb:
