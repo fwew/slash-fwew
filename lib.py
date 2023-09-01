@@ -535,30 +535,31 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
 
             # GET PRIMARY NOUN
             noun = ""
+
+            two_word_noun = False
             # 1 in 5 chance of getting a -yu verb
             if random.randint(1,5) == 5:
                 query = requests.get(f"{api_url}/random/1/pos starts v")
                 buffer = json.loads(query.text)
                 noun = buffer[0]['Navi'] + "yu"
+                noun = noun.replace(" ","")
+                results += glottal_caps() + " "
             else:
                 query = requests.get(f"{api_url}/random/1/pos is n.")
                 buffer = json.loads(query.text)
                 noun = buffer[0]['Navi']
+                # If there's more than one word in the noun, the adjective comes first
+                if len(noun) > 1:
+                    two_word_noun = True
+                else:
+                    results += glottal_caps(noun[0]) + " "
             # Wivatch youä profanitit
             # if noun in ["kalweyaveng", "kurkung", "la'ang",
             #            "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
             #    noun = "Skxawng"
 
-            two_word_noun = False
-
             adj = ""
             noun = noun.split()
-
-            # If there's more than one word in the noun, the adjective comes first
-            if len(noun) > 1:
-                two_word_noun = True
-            else:
-                results += glottal_caps(noun[0]) + " "
 
             # if not specified, pick randomly
             if adj_mode == "something": # cannot pick "none"
@@ -713,6 +714,8 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                     adj = "a" + adj
                 elif two_word_noun and (adj[-1] != 'a' or dialect != "forest"):
                     adj += "a "
+                
+                word += glottal_caps(adj)
             
             # If the adjective came first, put the two-word noun on.
             if two_word_noun:
