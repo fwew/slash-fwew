@@ -618,8 +618,8 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                             results += glottal_caps(loader.capitalize())
                     else:
                         first = True
+                        loader = ""
                         for i in wordList:
-                            loader = ""
                             # The only a-attributed word in the dictionary, part of "swoasey ayll"
                             if first:
                                 if i.endswith("ia"): # aungia, meuia, soaia, tìftia, kemuia
@@ -629,7 +629,8 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                                 else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
                                     loader += i + "ä "
                                 first = False
-                            results += glottal_caps(loader.capitalize())
+                            loader += " "
+                        results += glottal_caps(loader.capitalize())
                 # Origin noun
                 elif mode == 4:
                     # The only nouns put together using a space
@@ -659,16 +660,17 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                             results += glottal_caps(loader.capitalize())
                     else:
                         first = True
+                        loader = ""
                         for i in wordList:
-                            loader = ""
-                            # The only a-attributed word in the dictionary, part of "swoasey ayll"
                             if first:
-                                loader += i + "ta "
+                                loader += "ta " + i
                                 first = False
-                            results += glottal_caps(loader.capitalize())
+                            loader += " "
+                        results += glottal_caps(loader.capitalize())
             
             if two_word_noun:
-                results += " " + glottal_caps(noun.capitalize())
+                for n in nouns:
+                    results += " " + glottal_caps(n)
 
             # ADD ENDING
             results += "\n"
