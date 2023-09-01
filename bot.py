@@ -162,6 +162,8 @@ async def alphabet(inter, letters=Param(description="the na'vi letter(s) for whi
 
 @fwew_bot.slash_command(name="list", description="list all words with certain characteristics")
 async def list(inter, where=Param(description="characteristics of the word, such as part of speech, number of syllables, etc."),
+                ipa=Param(description="set to true to show IPA",
+                        default=False, choices=["true", "false"]),
                 lang=Param(description="Language for results",
                         default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"])):
     """
@@ -174,11 +176,13 @@ async def list(inter, where=Param(description="characteristics of the word, such
     """
     if lang is None:
         lang = get_language(inter)
-    await inter.response.send_message(get_list(lang, where))
+    await inter.response.send_message(get_list(lang, where, ipa))
 
 
 @fwew_bot.slash_command(name="random", description="get given number of random entries with certain characteristics")
 async def random(inter, n=Param(description="the number of random words to get"), where=None,
+                ipa=Param(description="set to true to show IPA",
+                        default=False, choices=["true", "false"]),
                 lang=Param(description="Language for results",
                         default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"]) ):
     """
@@ -193,9 +197,9 @@ async def random(inter, n=Param(description="the number of random words to get")
     if lang is None:
         lang = get_language(inter)
     if where is None:
-        await inter.response.send_message(get_random(lang, n))
+        await inter.response.send_message(get_random(lang, n, ipa))
     else:
-        await inter.response.send_message(get_random_filter(lang, n, where))
+        await inter.response.send_message(get_random_filter(lang, n, where, ipa))
 
 
 @fwew_bot.slash_command(name="number", description="convert or translate numbers between decimal and octal/na'vi")

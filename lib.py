@@ -383,22 +383,22 @@ def get_alphabet(letters: str) -> str:
     return results
 
 
-def get_list(languageCode: str, args: str) -> str:
+def get_list(languageCode: str, args: str, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/list/{args}")
     text = res.text
-    return format(text, languageCode)
+    return format(text, languageCode, showIPA)
 
 
-def get_random(languageCode: str, n: int) -> str:
+def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random/{n}")
     text = res.text
-    return format(text, languageCode)
+    return format(text, languageCode, showIPA)
 
 
-def get_random_filter(languageCode: str, n: int, args: str) -> str:
+def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random/{n}/{args}")
     text = res.text
-    return format(text, languageCode)
+    return format(text, languageCode, showIPA)
 
 
 def get_number(word: str) -> str:
@@ -531,9 +531,15 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
 
             # GET PRIMARY NOUN
             noun = ""
-            query = requests.get(f"{api_url}/random/1/pos is n.")
-            buffer = json.loads(query.text)
-            noun = buffer[0]['Navi']
+            # 1 in 5 chance of getting a -yu verb
+            if random.randint(1,5) == 5:
+                query = requests.get(f"{api_url}/random/1/pos starts v")
+                buffer = json.loads(query.text)
+                noun = buffer[0]['Navi'] + "yu"
+            else:
+                query = requests.get(f"{api_url}/random/1/pos is n.")
+                buffer = json.loads(query.text)
+                noun = buffer[0]['Navi']
             # Wivatch youä profanitit
             # if noun in ["kalweyaveng", "kurkung", "la'ang",
             #            "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
