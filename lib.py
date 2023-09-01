@@ -521,6 +521,10 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
             mode = 3
         elif adj_mode == "origin noun":
             mode = 4
+        elif adj_mode == "active participle verb":
+            mode = 5
+        elif adj_mode == "passive participle verb":
+            mode = 6
 
         # Do entire generator process n times
         for mk in range(n): #loop k times
@@ -558,11 +562,11 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
 
             # if not specified, pick randomly
             if adj_mode == "something": # cannot pick "none"
-                mode = random.randint(1,4)
-                if mode == 1: # 50% chance of normal adjective
+                mode = random.randint(-1,6)
+                if mode < 2: # 50% chance of normal adjective
                     mode = 2
-            elif adj_mode == "any": # can pick "none"
-                mode = random.randint(1,4)
+            elif adj_mode == "any": # can pick "none", equal chance of anything
+                mode = random.randint(1,6)
 
             # ADJECTIVE
             if mode == 2:
@@ -677,6 +681,38 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                                 continue
                             loader += " " + glottal_caps(i)
                         results += loader
+            # VERB AS AN ADJECTIVE
+            elif mode == 5 or mode == 6:
+                new_verb = ["",""]
+                query = ""
+                buffer = ""
+                while len(new_verb) > 1 and new_verb[1] != "s..i":
+                    query = requests.get(f"{api_url}/random/1/pos starts v")
+                    buffer = json.loads(query.text)
+                    new_verb = buffer[0]['infixDots'].split()
+                
+                #adj += adj_loader[0]
+                for word in new_verb:
+                    if "." in word:
+                        found_dots = False
+                        for a in word:
+                            if a == ".":
+                                if not found_dots:
+                                    if mode == 6:
+                                        adj += "awn"
+                                    else:
+                                        adj += "us"
+                                    found_dots = True
+                            else:
+                                adj += a
+                    else:
+                        adj += word
+                
+                # Forest doesn't duplicate an a in apxa   | Even if after a noun | le-adjectives don't need an a
+                if (not two_word_noun) and (adj[0] != 'a' or dialect != "forest"):
+                    adj = "a" + adj
+                elif two_word_noun and (adj[-1] != 'a' or dialect != "forest"):
+                    adj += "a "
             
             # If the adjective came first, put the two-word noun on.
             if two_word_noun:

@@ -309,7 +309,7 @@ async def name(inter,
                 choices=["interdialect", "forest", "reef"], default="interdialect"),
         s=Param(name="syllables", description="name syllable count", gt=0, le=4, default=0),
         adj_mode=commands.Param(name="adjective-mode", description="type of adjective for the noun",
-                choices=["any", "something", "none", "normal adjective", "genitive noun", "origin noun"],
+                choices=["any", "something", "none", "normal adjective", "genitive noun", "origin noun", "active participle verb", "passive participle verb"],
                 default="something")):
     """
     generate full Na'vi name(s) out of preexisting Na'vi words
