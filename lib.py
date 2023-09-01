@@ -675,7 +675,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
             # If the adjective came first, put the two-word noun on.
             if two_word_noun:
                 for n in noun:
-                    results += glottal_caps(n)
+                    results += glottal_caps(n) + " "
 
             # ADD ENDING
             results += "\n"
