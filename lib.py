@@ -571,9 +571,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                 elif (adj[-1] != 'a' or dialect != "forest"):
                     adj += "a"
                 
-                loader += adj
-                
-                results += " " + glottal_caps(loader.capitalize())
+                results += " " + glottal_caps(adj)
             # GENITIVE OR ORIGIN NOUN
             elif mode == 3 or mode == 4:
                 loader = ""
@@ -636,9 +634,9 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                 elif mode == 4:
                     # The only nouns put together using a space
                     if words == "tsko swizaw":
-                        results += "Tsko Swizawta"
+                        results += "ta Tsko Swizaw"
                     elif words == "toruk makto":
-                        results += "Torukä Maktoyuta"
+                        results += "ta Torukä Maktoyu"
                     # the only noun with two spaces
                     elif words == "mo a fngä'":
                         results += "ta Mo a Fgnä'"
@@ -657,7 +655,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                             elif wordList[i].endswith("yä"):
                                 loader += wordList[i]
                             else:
-                                loader += wordList[i] + "ta "
+                                loader += "ta " + wordList[i] + " "
                             results += glottal_caps(loader.capitalize())
                     else:
                         first = True
