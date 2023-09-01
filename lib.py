@@ -543,7 +543,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                 buffer = json.loads(query.text)
                 noun = buffer[0]['Navi'] + "yu"
                 noun = noun.replace(" ","")
-                results += glottal_caps() + " "
+                results += glottal_caps(noun) + " "
             else:
                 query = requests.get(f"{api_url}/random/1/pos is n.")
                 buffer = json.loads(query.text)
