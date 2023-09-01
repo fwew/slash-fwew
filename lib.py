@@ -663,7 +663,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                         loader = ""
                         for i in wordList:
                             if first:
-                                loader += "ta " + i
+                                loader += "ta " + glottal_caps(i)
                                 first = False
                             loader += " "
                         results += glottal_caps(loader.capitalize())
