@@ -571,7 +571,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                 elif (adj[-1] != 'a' or dialect != "forest"):
                     adj += "a"
                 
-                results += " " + glottal_caps(adj)
+                results += glottal_caps(adj)
             # GENITIVE OR ORIGIN NOUN
             elif mode == 3 or mode == 4:
                 loader = ""
@@ -622,12 +622,12 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                             loader = ""
                             # The only a-attributed word in the dictionary, part of "swoasey ayll"
                             if first:
-                                if wordList[i].endswith("ia"): # aungia, meuia, soaia, tìftia, kemuia
-                                    loader += wordList[i][:-1] + "ä "
-                                elif wordList[i][-1] in yvowels:
-                                    loader += wordList[i] + "yä "
+                                if i.endswith("ia"): # aungia, meuia, soaia, tìftia, kemuia
+                                    loader += i[:-1] + "ä "
+                                elif i[-1] in yvowels:
+                                    loader += i + "yä "
                                 else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
-                                    loader += wordList[i] + "ä "
+                                    loader += i + "ä "
                                 first = False
                             results += glottal_caps(loader.capitalize())
                 # Origin noun
