@@ -685,14 +685,20 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                 new_verb = ["",""]
                 query = ""
                 buffer = ""
-                while len(new_verb) > 1 and new_verb[1] != "s..i":
-                    query = requests.get(f"{api_url}/random/1/pos starts v")
-                    buffer = json.loads(query.text)
-                    new_verb = buffer[0]['InfixDots'].split()
+                if mode == 5: # Any verb can have <us>
+                    while len(new_verb) > 1 and new_verb[1] != "s..i":
+                        query = requests.get(f"{api_url}/random/1/pos starts v")
+                        buffer = json.loads(query.text)
+                        new_verb = buffer[0]['InfixDots'].split()
+                else: # Only transitive verbs can have <awn>
+                    while len(new_verb) > 1:
+                        query = requests.get(f"{api_url}/random/1/pos is vtr.")
+                        buffer = json.loads(query.text)
+                        new_verb = buffer[0]['InfixDots'].split()
                 
                 #adj += adj_loader[0]
                 for word in new_verb:
-                    if "." in word:
+                    if "." in word: # This word gets the infixes
                         found_dots = False
                         for a in word:
                             if a == ".":
@@ -704,8 +710,9 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                                     found_dots = True
                             else:
                                 adj += a
-                    else:
+                    else: # Other words:
                         adj += word
+                    # Hyphens for word-s<us>i:
                     if word != new_verb[-1]:
                         adj += "-"
                 
