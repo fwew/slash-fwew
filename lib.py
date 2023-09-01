@@ -547,7 +547,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
             else:
                 query = requests.get(f"{api_url}/random/1/pos is n.")
                 buffer = json.loads(query.text)
-                noun = buffer[0]['Navi']
+                noun = buffer[0]['Navi'].split()
                 # If there's more than one word in the noun, the adjective comes first
                 if len(noun) > 1:
                     two_word_noun = True
@@ -559,8 +559,6 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
             #    noun = "Skxawng"
 
             adj = ""
-            noun = noun.split()
-
             # if not specified, pick randomly
             if adj_mode == "something": # cannot pick "none"
                 mode = random.randint(-1,6)
@@ -715,7 +713,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                 elif two_word_noun and (adj[-1] != 'a' or dialect != "forest"):
                     adj += "a "
                 
-                word += glottal_caps(adj)
+                results += glottal_caps(adj)
             
             # If the adjective came first, put the two-word noun on.
             if two_word_noun:
