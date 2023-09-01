@@ -629,7 +629,8 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                                 else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
                                     loader += i + "ä "
                                 first = False
-                            loader += " "
+                                continue
+                            loader += " " + i
                         results += glottal_caps(loader.capitalize())
                 # Origin noun
                 elif mode == 4:
@@ -665,7 +666,8 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                             if first:
                                 loader += "ta " + glottal_caps(i)
                                 first = False
-                            loader += " "
+                                continue
+                            loader += " " + i
                         results += glottal_caps(loader.capitalize())
             
             if two_word_noun:
