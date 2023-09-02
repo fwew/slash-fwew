@@ -606,7 +606,7 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
                 mode = random.randint(-1,6)
                 if mode < 2: # 50% chance of normal adjective
                     mode = 2
-                if mode < 5: # Verb participles get two sides of the die
+                if mode > 5: # Verb participles get two sides of the die
                     mode = 5
             elif adj_mode == "any": # can pick "none", equal chance of anything
                 # verb participles get one side, just like every option
