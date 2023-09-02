@@ -464,11 +464,11 @@ def one_word_verb(intransitive_or_si_allowed: bool):
     if intransitive_or_si_allowed:
         # one word and not si: allowed (e.g. "takuk")
         # two words and not si: disallowed (e.g. "tswìk kxenerit")
-        # one word and si: disallowed ("si" is the only example)
+        # one word and si: disallowed ("si" only)
         # two words and si: allowed (e.g. "unil si")
-        # Any three-word verb: Disallowed
+        # Any three-word verb: disallowed ("eltur tìtxen si" only)
         # != is used as an exclusive "or"
-        while (len(new_verb) == 2) != (new_verb[-1] != "s..i"):
+        while (len(new_verb) == 2) != (new_verb[-1] == "s..i"):
             query = requests.get(f"{api_url}/random/1/pos starts v")
             buffer = json.loads(query.text)
             new_verb = buffer[0]['InfixDots'].split()
