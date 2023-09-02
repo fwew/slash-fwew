@@ -726,7 +726,7 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
                     if "." in word: # This word gets the infixes
                         for a in word:
                             if a == ".":
-                                if found_dots:
+                                if not found_dots:
                                     if mode == 6:
                                         adj += "awn"
                                     else:
