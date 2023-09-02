@@ -726,7 +726,7 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
                         results += loader
             # PARTICIPLES
             elif mode >= 5:
-                new_verb, pos = ""
+                new_verb, pos = "", ""
                 infix = "us" # greater than 50% chance of <us> if left random
                 # VERB WITH UNSPECIFIED PARTICIPLE INFIX
                 if mode == 5:
