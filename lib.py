@@ -462,7 +462,7 @@ def one_word_verb(intransitive_or_si_allowed: bool):
     query = ""
     buffer = ""
     if intransitive_or_si_allowed: 
-        while len(new_verb) > 1 and new_verb[-1] != "s..i":
+        while new_verb[0] != "s..i" and len(new_verb) > 1 and new_verb[-1] != "s..i":
             query = requests.get(f"{api_url}/random/1/pos starts v")
             buffer = json.loads(query.text)
             new_verb = buffer[0]['InfixDots'].split()
