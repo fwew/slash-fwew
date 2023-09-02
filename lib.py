@@ -2,7 +2,6 @@ import json
 import os
 import re
 from pathlib import Path
-from operator import xor
 
 import requests
 from dotenv import load_dotenv
@@ -461,12 +460,18 @@ def one_word_verb(intransitive_or_si_allowed: bool):
     new_verb = ["",""]
     query = ""
     buffer = ""
+    # Transitive or intransitive allowed
     if intransitive_or_si_allowed: 
-        while new_verb[0] != "s..i" and len(new_verb) > 1 and new_verb[-1] != "s..i":
+        # one word and not si: allowed (e.g. "takuk")
+        # two words and not si: disallowed (e.g. "tswìk kxenerit")
+        # one word and si: disallowed ("si" is the only example)
+        # two words and si: allowed (e.g. "unil si")
+        # != is used as an exclusive "or"
+        while len(new_verb) > 1 != new_verb[-1] != "s..i":
             query = requests.get(f"{api_url}/random/1/pos starts v")
             buffer = json.loads(query.text)
             new_verb = buffer[0]['InfixDots'].split()
-    else:
+    else: # Transitive verbs only
         while len(new_verb) > 1:
             query = requests.get(f"{api_url}/random/1/pos is vtr.")
             buffer = json.loads(query.text)
