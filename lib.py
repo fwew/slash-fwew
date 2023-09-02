@@ -456,6 +456,24 @@ def get_translation(text: str, languageCode: str) -> str:
         return f"translation exceeds character limit of {char_limit}"
     return results
 
+# Helper function for name-alu()
+def one_word_verb(intransitive_or_si_allowed: bool):
+    new_verb = ["",""]
+    query = ""
+    buffer = ""
+    if intransitive_or_si_allowed: 
+        while len(new_verb) > 1 and new_verb[1] != "s..i":
+            query = requests.get(f"{api_url}/random/1/pos starts v")
+            buffer = json.loads(query.text)
+            new_verb = buffer[0]['InfixDots'].split()
+    else:
+        while len(new_verb) > 1:
+            query = requests.get(f"{api_url}/random/1/pos is vtr.")
+            buffer = json.loads(query.text)
+            new_verb = buffer[0]['InfixDots'].split()
+    return new_verb
+
+# One-word names to be sent to Discord
 def get_single_name_discord(n: int, dialect: str, s: int):
     results = ""
     
@@ -466,6 +484,7 @@ def get_single_name_discord(n: int, dialect: str, s: int):
             results += get_single_name(int(s),dialect) + "\n"
     return results
 
+# Full names to be sent to Discord
 def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> str:
     results = ""
     # for temp storage before appending to results
@@ -501,8 +520,8 @@ def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> st
 
     return results
 
-
-def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
+# [name] the [adjective] [noun] format names to be sent to Discord
+def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) -> str:
     results = ""
     if not valid(int(n), [int(s)]):
         results = "Max name-count is 50, max syllables is 4"
@@ -512,6 +531,14 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
         # Adjectives and nouns can be shared across loops
         buffer = ""
 
+        # Pick a noun mode
+        noun_num = 0
+        if noun_mode == "normal noun":
+            noun_num = 1
+        if noun_mode == "verb-er":
+            noun_num = 2
+
+        # Pick an adjective mode
         mode = 3
         if adj_mode == "none":
             mode = 1
@@ -536,13 +563,20 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
             # GET PRIMARY NOUN
             noun = ""
 
+            if noun_mode == "something":
+                noun_num = random.randint(1,5)
+                if noun_num < 2: # 80% chance of normal noun
+                    noun_num = 2
+
             two_word_noun = False
-            # 1 in 5 chance of getting a -yu verb
-            if random.randint(1,5) == 5:
-                query = requests.get(f"{api_url}/random/1/pos starts v")
-                buffer = json.loads(query.text)
-                noun = buffer[0]['Navi'] + "yu"
-                noun = noun.replace(" ","")
+            
+            # What kind of noun do we have?
+            if noun_num == 2: #verb-er noun
+                new_verb = one_word_verb(True) # intransitive and si-verbs are allowed
+                
+                for a in new_verb:
+                    noun += a
+                noun += "yu"
                 results += glottal_caps(noun) + " "
             else:
                 query = requests.get(f"{api_url}/random/1/pos is n.")
@@ -680,34 +714,23 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                                 continue
                             loader += " " + glottal_caps(i)
                         results += loader
-            # VERB AS AN ADJECTIVE
+            # VERB WITH PARTICIPLE INFIX
             elif mode == 5 or mode == 6:
-                new_verb = ["",""]
-                query = ""
-                buffer = ""
-                if mode == 5: # Any verb can have <us>
-                    while len(new_verb) > 1 and new_verb[1] != "s..i":
-                        query = requests.get(f"{api_url}/random/1/pos starts v")
-                        buffer = json.loads(query.text)
-                        new_verb = buffer[0]['InfixDots'].split()
-                else: # Only transitive verbs can have <awn>
-                    while len(new_verb) > 1:
-                        query = requests.get(f"{api_url}/random/1/pos is vtr.")
-                        buffer = json.loads(query.text)
-                        new_verb = buffer[0]['InfixDots'].split()
+                # Any verb can have <us>
+                # Only transitive verbs can have <awn>
+                new_verb = one_word_verb(mode == 5)
                 
                 #adj += adj_loader[0]
                 for word in new_verb:
                     if "." in word: # This word gets the infixes
                         found_dots = False
                         for a in word:
-                            if a == ".":
-                                if not found_dots:
-                                    if mode == 6:
-                                        adj += "awn"
-                                    else:
-                                        adj += "us"
-                                    found_dots = True
+                            if a == "." and not found_dots:
+                                if mode == 6:
+                                    adj += "awn"
+                                else:
+                                    adj += "us"
+                                found_dots = True
                             else:
                                 adj += a
                     else: # Other words:
@@ -716,7 +739,7 @@ def get_name_alu(n: int, dialect: str, s: int, adj_mode: str) -> str:
                     if word != new_verb[-1]:
                         adj += "-"
                 
-                # Forest doesn't duplicate an a in apxa   | Even if after a noun | le-adjectives don't need an a
+                # Forest doesn't duplicate an a in apxa   | Even if after a noun
                 if (not two_word_noun) and (adj[0] != 'a' or dialect != "forest"):
                     adj = "a" + adj
                 elif two_word_noun and (adj[-1] != 'a' or dialect != "forest"):

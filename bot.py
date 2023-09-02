@@ -308,6 +308,9 @@ async def name(inter,
         dialect=Param(name="dialect", description="which dialect the names should fit",
                 choices=["interdialect", "forest", "reef"], default="interdialect"),
         s=Param(name="syllables", description="name syllable count", gt=0, le=4, default=0),
+        adj_mode=commands.Param(name="noun-mode", description="type of noun",
+                choices=["something", "normal noun", "verb-er"],
+                default="something"),
         adj_mode=commands.Param(name="adjective-mode", description="type of adjective for the noun",
                 choices=["any", "something", "none", "normal adjective", "genitive noun", "origin noun", "active participle verb", "passive participle verb"],
                 default="something")):
@@ -321,7 +324,7 @@ async def name(inter,
     dialect: dialect the names would fit into (interdialect, forest, reef)
     n: number of names to generate
     """
-    await inter.response.send_message(get_name_alu(n, dialect, s, adj_mode))
+    await inter.response.send_message(get_name_alu(n, dialect, s, noun_mode, adj_mode))
 
 
 @fwew_bot.slash_command(name="phoneme-frequency", description="show how often a phoneme appears")
