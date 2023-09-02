@@ -461,7 +461,7 @@ def one_word_verb(intransitive_or_si_allowed: bool):
     query = ""
     buffer = ""
     # Transitive or intransitive allowed
-    if intransitive_or_si_allowed: 
+    if intransitive_or_si_allowed:
         # one word and not si: allowed (e.g. "takuk")
         # two words and not si: disallowed (e.g. "tswìk kxenerit")
         # one word and si: disallowed ("si" is the only example)
@@ -476,7 +476,7 @@ def one_word_verb(intransitive_or_si_allowed: bool):
             query = requests.get(f"{api_url}/random/1/pos is vtr.")
             buffer = json.loads(query.text)
             new_verb = buffer[0]['InfixDots'].split()
-    return new_verb
+    return new_verb, buffer[0]['PartOfSpeech']
 
 # One-word names to be sent to Discord
 def get_single_name_discord(n: int, dialect: str, s: int):
@@ -553,10 +553,12 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
             mode = 3
         elif adj_mode == "origin noun":
             mode = 4
-        elif adj_mode == "active participle verb":
+        elif adj_mode == "participle verb":
             mode = 5
-        elif adj_mode == "passive participle verb":
+        elif adj_mode == "active participle verb":
             mode = 6
+        elif adj_mode == "passive participle verb":
+            mode = 7
 
         # Do entire generator process n times
         for mk in range(n): #loop k times
@@ -574,12 +576,12 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
                     noun_num = 2
 
             two_word_noun = False
-            
+
             # What kind of noun do we have?
             if noun_num == 2: #verb-er noun
-                new_verb = one_word_verb(True) # intransitive and si-verbs are allowed
+                new_noun = one_word_verb(True) # intransitive and si-verbs are allowed
                 
-                for a in new_verb:
+                for a in new_noun:
                     noun += a.replace(".","")
                 noun += "yu"
                 results += glottal_caps(noun) + " "
@@ -603,8 +605,11 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
                 mode = random.randint(-1,6)
                 if mode < 2: # 50% chance of normal adjective
                     mode = 2
+                if mode < 5: # Verb participles get two sides of the die
+                    mode = 5
             elif adj_mode == "any": # can pick "none", equal chance of anything
-                mode = random.randint(1,6)
+                # verb participles get one side, just like every option
+                mode = random.randint(1,5)
 
             # ADJECTIVE
             if mode == 2:
@@ -719,11 +724,24 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
                                 continue
                             loader += " " + glottal_caps(i)
                         results += loader
-            # VERB WITH PARTICIPLE INFIX
-            elif mode == 5 or mode == 6:
-                # Any verb can have <us>
-                # Only transitive verbs can have <awn>
-                new_verb = one_word_verb(mode == 5)
+            # PARTICIPLES
+            elif mode >= 5:
+                new_verb, pos = ""
+                infix = "us" # greater than 50% chance of <us> if left random
+                # VERB WITH UNSPECIFIED PARTICIPLE INFIX
+                if mode == 5:
+                    new_verb, pos = one_word_verb(True)
+                    # If transitive verb, 50% chance of <awn>
+                    if pos == "vtr." and bool(random.getrandbits(1)):
+                        infix = "awn"
+                # VERB WITH SPECIFIED PARTICIPLE INFIX
+                elif mode == 6:
+                    # Any verb can have <us>
+                    new_verb, pos = one_word_verb(True)
+                else:
+                    # Only transitive verbs can have <awn>
+                    new_verb, pos = one_word_verb(False)
+                    infix = "awn"
                 
                 #adj += adj_loader[0]
                 for word in new_verb:
@@ -732,10 +750,7 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
                         for a in word:
                             if a == ".":
                                 if not found_dots:
-                                    if mode == 6:
-                                        adj += "awn"
-                                    else:
-                                        adj += "us"
+                                    adj += infix
                                     found_dots = True
                             else:
                                 adj += a

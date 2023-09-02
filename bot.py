@@ -312,7 +312,7 @@ async def name(inter,
                 choices=["something", "normal noun", "verb-er"],
                 default="something"),
         adj_mode=commands.Param(name="adjective-mode", description="type of adjective for the noun",
-                choices=["any", "something", "none", "normal adjective", "genitive noun", "origin noun", "active participle verb", "passive participle verb"],
+                choices=["any", "something", "none", "normal adjective", "genitive noun", "origin noun", "participle verb", "active participle verb", "passive participle verb"],
                 default="something")):
     """
     generate full Na'vi name(s) out of preexisting Na'vi words
