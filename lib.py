@@ -579,7 +579,7 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
 
             # What kind of noun do we have?
             if noun_num == 2: #verb-er noun
-                new_noun = one_word_verb(True) # intransitive and si-verbs are allowed
+                new_noun, pos = one_word_verb(True) # intransitive and si-verbs are allowed
                 
                 for a in new_noun:
                     noun += a.replace(".","")
