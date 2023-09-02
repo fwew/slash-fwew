@@ -575,7 +575,7 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
                 new_verb = one_word_verb(True) # intransitive and si-verbs are allowed
                 
                 for a in new_verb:
-                    noun += a
+                    noun += a.replace(".","")
                 noun += "yu"
                 results += glottal_caps(noun) + " "
             else:
@@ -722,10 +722,10 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
                 
                 #adj += adj_loader[0]
                 for word in new_verb:
+                    found_dots = False
                     if "." in word: # This word gets the infixes
-                        found_dots = False
                         for a in word:
-                            if a == "." and not found_dots:
+                            if found_dots == False and a == ".":
                                 if mode == 6:
                                     adj += "awn"
                                 else:
