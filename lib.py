@@ -528,7 +528,7 @@ def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> st
             
             # BEWARE THE 2000 CHARACTER LIMIT
             if len(loader) + len(results) > 1914: # 1914 picked though manual testing as the highest possible super reliable number
-                return results + loader + "\n(stopped at " + str(mk) + ". 2000 Character limit)"
+                return results + loader + "\n(stopped at " + str(mk + 1) + ". 2000 Character limit)"
             else:
                 results += loader + "\n"
 
