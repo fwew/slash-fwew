@@ -502,27 +502,35 @@ def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> st
         mk = 0
         # Do entire generator process n times
         for mk in range(0,n):
+            loader = ""
+
             # BUILD FIRST NAME
             # first syllable: CV
-            results += get_single_name(s1,dialect)
+            loader += get_single_name(s1,dialect)
 
-            results += " te "
+            loader += " te "
 
             # BUILD FAMILY NAME
-            results += get_single_name(s2,dialect)
+            loader += get_single_name(s2,dialect)
 
-            results += " "
+            loader += " "
 
             # BUILD PARENT'S NAME
-            results += get_single_name(s3,dialect)
+            loader += get_single_name(s3,dialect)
 
             # ADD ENDING
-            if results.endswith("'"):
-                results = results.removesuffix("'")
-            if dialect == "reef" and results[-1] in ["a", "e", "ì", "o", "u", "i", "ä", "ù"]:# , "w", "y"}: # does kaw'it become kawit?
-                results += ending[1:] + "\n"
+            if loader.endswith("'"):
+                loader = loader.removesuffix("'")
+            if dialect == "reef" and loader[-1] in ["a", "e", "ì", "o", "u", "i", "ä", "ù"]:# , "w", "y"}: # does kaw'it become kawit?
+                loader += ending[1:]
             else:
-                results += ending + "\n"
+                loader += ending
+            
+            # BEWARE THE 2000 CHARACTER LIMIT
+            if len(loader) + len(results) > 1914: # 1914 picked though manual testing as the highest possible super reliable number
+                return results + loader + "\n(stopped at " + str(mk) + ". 2000 Character limit)"
+            else:
+                results += loader + "\n"
 
     return results
 
