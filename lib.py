@@ -456,8 +456,9 @@ def get_translation(text: str, languageCode: str) -> str:
     return results
 
 # Helper function for name-alu()
-def one_word_verb(intransitive_or_si_allowed: bool):
-    new_verb = ["",""]
+def one_word_verb(intransitive_or_si_allowed: bool, current):
+    new_verb = current['InfixDots'].split()
+    pos = current['PartOfSpeech']
     query = ""
     buffer = ""
     # Transitive or intransitive allowed
@@ -472,12 +473,14 @@ def one_word_verb(intransitive_or_si_allowed: bool):
             query = requests.get(f"{api_url}/random/1/pos starts v")
             buffer = json.loads(query.text)
             new_verb = buffer[0]['InfixDots'].split()
+            pos = buffer[0]['PartOfSpeech']
     else: # Transitive verbs only
+        pos = "vtr."
         while len(new_verb) > 1:
             query = requests.get(f"{api_url}/random/1/pos is vtr.")
             buffer = json.loads(query.text)
             new_verb = buffer[0]['InfixDots'].split()
-    return new_verb, buffer[0]['PartOfSpeech']
+    return new_verb, pos
 
 # One-word names to be sent to Discord
 def get_single_name_discord(n: int, dialect: str, s: int):
@@ -545,59 +548,135 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
         # Adjectives and nouns can be shared across loops
         buffer = ""
 
-        # Pick a noun mode
-        noun_num = 0
+        # Find out how many of these names we want and what kinds
+        name_kinds = []
+        nouns = 0
+        adjectives = 0
+        verbs = 0
+        transitive_verbs_only = 0
+
+        #
+        # STAGE 1:
+        # Decide what kind and how many nouns we need
+        #
+        
         if noun_mode == "normal noun":
-            noun_num = 1
-        if noun_mode == "verb-er":
-            noun_num = 2
-
-        # Pick an adjective mode
-        mode = 3
+            for mk in range(n):
+                name_kinds.append([1,2]) # normal noun, normal adjective
+                nouns += 1
+        elif noun_mode == "verb-er":
+            for mk in range(n):
+                name_kinds.append([2,2]) # verb-er, normal adjective
+                verbs += 1
+        else:
+            for mk in range(n):
+                a = random.randint(1,5)
+                if a == 1: # 80% chance of normal noun
+                    a = 2
+                    verbs += 1
+                else:
+                    a = 1
+                    nouns += 1
+                name_kinds.append([a,2]) # something, normal adjective
+        
+        # Same, but for adjectives
         if adj_mode == "none":
-            mode = 1
-        elif adj_mode == "normal adjective":
-            mode = 2
+            for mk in range(n):
+                nouns += 1
+                name_kinds[mk][1] = 1
+        if adj_mode == "normal adjective":
+            for mk in range(n):
+                adjectives += 1
+                # No need for name_kinds[mk][1] = 2.  We set that already
         elif adj_mode == "genitive noun":
-            mode = 3
+            for mk in range(n):
+                nouns += 1
+                name_kinds[mk][1] = 3
         elif adj_mode == "origin noun":
-            mode = 4
+            for mk in range(n):
+                nouns += 1
+                name_kinds[mk][1] = 4
         elif adj_mode == "participle verb":
-            mode = 5
+            for mk in range(n):
+                verbs += 1
+                name_kinds[mk][1] = 5
         elif adj_mode == "active participle verb":
-            mode = 6
+            for mk in range(n):
+                verbs += 1
+                name_kinds[mk][1] = 6
         elif adj_mode == "passive participle verb":
-            mode = 7
+            for mk in range(n):
+                #verbs += 1
+                name_kinds[mk][1] = 7
+                transitive_verbs_only += 1
+        elif adj_mode == "something": # cannot pick "none"
+            for mk in range(n):
+                mode = random.randint(-1,6)
+                if mode <= 2: # 50% chance of normal adjective
+                    mode = 2
+                    adjectives += 1
+                elif mode >= 5: # Verb participles get two sides of the die
+                    mode = 5
+                    verbs += 1
+                else:
+                    nouns += 1
+                name_kinds[mk][1] = mode
+        elif adj_mode == "any": # can pick "none", equal chance of anything
+            # verb participles get one side, just like every option
+            for mk in range(n):
+                mode = random.randint(0,5)
+                if mode == 2:
+                    adjectives += 1
+                elif mode <= 4:
+                    nouns += 1
+                else: # mode is 5
+                    verbs += 1
+                name_kinds[mk][1] = mode
 
-        # Do entire generator process n times
-        for mk in range(n): #loop k times
-            # For building names before appending them to results
-            noun = ""
-
+        #
+        # STAGE 2:
+        # Look up all the words we need
+        #
+        if nouns > 0:
+            query = requests.get(f"{api_url}/random/{nouns}/pos is n.")
+            nouns = json.loads(query.text)
+        
+        if verbs > 0:
+            query = requests.get(f"{api_url}/random/{verbs}/pos starts v")
+            verbs = json.loads(query.text)
+        
+        if adjectives > 0:
+            query = requests.get(f"{api_url}/random/{adjectives}/pos is adj.")
+            adjectives = json.loads(query.text)
+        
+        if transitive_verbs_only > 0:
+            query = requests.get(f"{api_url}/random/{transitive_verbs_only}/pos is vtr.")
+            transitive_verbs_only = json.loads(query.text)
+        
+        #
+        # STAGE 3:
+        # Apply the words as needed
+        #
+        
+        for kind in name_kinds:
             results += get_single_name(s,dialect) + " alu "
 
-            # GET PRIMARY NOUN
             noun = ""
 
-            if noun_mode == "something":
-                noun_num = random.randint(1,5)
-                if noun_num < 2: # 80% chance of normal noun
-                    noun_num = 2
-
             two_word_noun = False
-
             # What kind of noun do we have?
-            if noun_num == 2: #verb-er noun
-                new_noun, pos = one_word_verb(True) # intransitive and si-verbs are allowed
+            if kind[0] == 2: #verb-er noun
+                verber = verbs.pop(0)
+
+                # Throw us our current word if valid, get a new one if not
+                new_noun, pos = one_word_verb(True, verber) # intransitive and si-verbs are allowed
                 
                 for a in new_noun:
                     noun += a.replace(".","")
                 noun += "yu"
                 results += glottal_caps(noun) + " "
             else:
-                query = requests.get(f"{api_url}/random/1/pos is n.")
-                buffer = json.loads(query.text)
-                noun = buffer[0]['Navi'].split()
+                noun = nouns.pop(0)["Navi"].split()
                 # If there's more than one word in the noun, the adjective comes first
                 if len(noun) > 1:
                     two_word_noun = True
@@ -609,23 +688,12 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
             #    noun = "Skxawng"
 
             adj = ""
-            # if not specified, pick randomly
-            if adj_mode == "something": # cannot pick "none"
-                mode = random.randint(-1,6)
-                if mode < 2: # 50% chance of normal adjective
-                    mode = 2
-                if mode > 5: # Verb participles get two sides of the die
-                    mode = 5
-            elif adj_mode == "any": # can pick "none", equal chance of anything
-                # verb participles get one side, just like every option
-                mode = random.randint(1,5)
-
+            mode = kind[1]
+            
             # ADJECTIVE
             if mode == 2:
                 # Get adjectives
-                query = requests.get(f"{api_url}/random/1/pos is adj.")
-                buffer = json.loads(query.text)
-                adj = buffer[0]['Navi']
+                adj = adjectives.pop(0)["Navi"]
                 # Unlike the other le-adjectives, these don't put le- in front of a preexisting word.
                 fake_le_adjectives = ["ler", "leyr"]
                 # Forest doesn't duplicate an a in apxa   | Even if after a noun | le-adjectives don't need an a
@@ -639,11 +707,7 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
             elif mode == 3 or mode == 4:
                 loader = ""
                 # Get nouns
-                query = requests.get(f"{api_url}/random/1/pos is n.")
-
-                buffer = json.loads(query.text)
-
-                words = buffer[0]['Navi']
+                words = nouns.pop(0)["Navi"]
                 wordList = words.split()
 
                 yvowels = ['a', 'e', 'ì', 'i', 'ä']
@@ -739,17 +803,17 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
                 infix = "us" # greater than 50% chance of <us> if left random
                 # VERB WITH UNSPECIFIED PARTICIPLE INFIX
                 if mode == 5:
-                    new_verb, pos = one_word_verb(True)
+                    new_verb, pos = one_word_verb(True, verbs.pop(0))
                     # If transitive verb, 50% chance of <awn>
                     if pos == "vtr." and bool(random.getrandbits(1)):
                         infix = "awn"
                 # VERB WITH SPECIFIED PARTICIPLE INFIX
                 elif mode == 6:
                     # Any verb can have <us>
-                    new_verb, pos = one_word_verb(True)
+                    new_verb, pos = one_word_verb(True, verbs.pop(0))
                 else:
                     # Only transitive verbs can have <awn>
-                    new_verb, pos = one_word_verb(False)
+                    new_verb, pos = one_word_verb(False, transitive_verbs_only.pop(0))
                     infix = "awn"
                 
                 #adj += adj_loader[0]
