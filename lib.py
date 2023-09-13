@@ -553,21 +553,20 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
         nouns = 0
         adjectives = 0
         verbs = 0
-        transitive_verbs_only = 0
+        transitive_verbs = 0
 
         #
         # STAGE 1:
         # Decide what kind and how many nouns we need
         #
         
+        mode = 0
         if noun_mode == "normal noun":
             nouns = n # n nouns
-            for mk in range(n):
-                name_kinds.append([1,2]) # normal noun, normal adjective
+            mode = 1
         elif noun_mode == "verb-er":
             verbs = n # n verbs
-            for mk in range(n):
-                name_kinds.append([2,2]) # verb-er, normal adjective
+            mode = 2
         else:
             for mk in range(n):
                 a = random.randint(1,5)
@@ -579,55 +578,62 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
                     nouns += 1
                 name_kinds.append([a,2]) # something, normal adjective
         
+        # If the noun mode isn't "something",
+        # Input homogenous noun modes
+        if mode != 0:
+            for mk in range(n):
+                name_kinds.append([mode,2]) # mode, normal adjective
+        
+        mode = 0
         # Same, but for adjectives
         if adj_mode == "none":
-            for mk in range(n):
-                name_kinds[mk][1] = 1
+            mode = 1
         if adj_mode == "normal adjective":
             adjectives = n # It's the only thing that controls how Adjectives gets its value
             # No need for name_kinds[mk][1] = 2.  We set that already
         elif adj_mode == "genitive noun":
+            mode = 3
             nouns += n
-            for mk in range(n):
-                name_kinds[mk][1] = 3
         elif adj_mode == "origin noun":
+            mode = 4
             nouns += n
-            for mk in range(n):
-                name_kinds[mk][1] = 4
         elif adj_mode == "participle verb":
+            mode = 5
             verbs += n
-            for mk in range(n):
-                name_kinds[mk][1] = 5
         elif adj_mode == "active participle verb":
+            mode = 6
             verbs += n
-            for mk in range(n):
-                name_kinds[mk][1] = 6
         elif adj_mode == "passive participle verb":
-            transitive_verbs_only = n # Also has no other thing adding to it
-            for mk in range(n):
-                name_kinds[mk][1] = 7
+            mode = 7
+            transitive_verbs = n # Also has no other thing adding to it
         elif adj_mode == "something": # cannot pick "none"
             for mk in range(n):
-                mode = random.randint(-1,6)
-                if mode <= 2: # 50% chance of normal adjective
-                    mode = 2
+                mode_2 = random.randint(-1,6)
+                if mode_2 <= 2: # 50% chance of normal adjective
+                    mode_2 = 2
                     adjectives += 1
-                elif mode >= 5: # Verb participles get two sides of the die
-                    mode = 5
+                elif mode_2 >= 5: # Verb participles get two sides of the die
+                    mode_2 = 5
                     verbs += 1
                 else:
                     nouns += 1
-                name_kinds[mk][1] = mode
+                name_kinds[mk][1] = mode_2
         elif adj_mode == "any": # can pick "none", equal chance of anything
             # verb participles get one side, just like every option
             for mk in range(n):
-                mode = random.randint(0,5)
-                if mode == 2:
+                mode_2 = random.randint(0,5)
+                if mode_2 == 2:
                     adjectives += 1
-                elif mode <= 4:
+                elif mode_2 <= 4:
                     nouns += 1
                 else: # mode is 5
                     verbs += 1
+                name_kinds[mk][1] = mode_2
+        
+        # If adj_mode isn't "something" or "any",
+        # Input homogenous adjective modes
+        if mode != 0:
+            for mk in range(n):
                 name_kinds[mk][1] = mode
 
         #
@@ -646,9 +652,9 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
             query = requests.get(f"{api_url}/random/{adjectives}/pos is adj.")
             adjectives = json.loads(query.text)
         
-        if transitive_verbs_only > 0:
-            query = requests.get(f"{api_url}/random/{transitive_verbs_only}/pos is vtr.")
-            transitive_verbs_only = json.loads(query.text)
+        if transitive_verbs > 0: # allow transitive modal verbs, too
+            query = requests.get(f"{api_url}/random/{transitive_verbs}/pos starts vtr")
+            transitive_verbs = json.loads(query.text)
         
         #
         # STAGE 3:
@@ -802,7 +808,7 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
                 if mode == 5:
                     new_verb, pos = one_word_verb(True, verbs.pop(0))
                     # If transitive verb, 50% chance of <awn>
-                    if pos == "vtr." and bool(random.getrandbits(1)):
+                    if pos.startswith("vtr") and bool(random.getrandbits(1)):
                         infix = "awn"
                 # VERB WITH SPECIFIED PARTICIPLE INFIX
                 elif mode == 6:
@@ -810,7 +816,7 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
                     new_verb, pos = one_word_verb(True, verbs.pop(0))
                 else:
                     # Only transitive verbs can have <awn>
-                    new_verb, pos = one_word_verb(False, transitive_verbs_only.pop(0))
+                    new_verb, pos = one_word_verb(False, transitive_verbs.pop(0))
                     infix = "awn"
                 
                 #adj += adj_loader[0]
