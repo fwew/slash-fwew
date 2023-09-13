@@ -591,7 +591,7 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
             for mk in range(n):
                 name_kinds[mk][1] = 3
         elif adj_mode == "origin noun":
-            nound += n
+            nouns += n
             for mk in range(n):
                 name_kinds[mk][1] = 4
         elif adj_mode == "participle verb":
