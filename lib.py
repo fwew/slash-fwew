@@ -561,13 +561,13 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
         #
         
         if noun_mode == "normal noun":
+            nouns = n # n nouns
             for mk in range(n):
                 name_kinds.append([1,2]) # normal noun, normal adjective
-                nouns += 1
         elif noun_mode == "verb-er":
+            verbs = n # n verbs
             for mk in range(n):
                 name_kinds.append([2,2]) # verb-er, normal adjective
-                verbs += 1
         else:
             for mk in range(n):
                 a = random.randint(1,5)
@@ -582,33 +582,30 @@ def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) ->
         # Same, but for adjectives
         if adj_mode == "none":
             for mk in range(n):
-                nouns += 1
                 name_kinds[mk][1] = 1
         if adj_mode == "normal adjective":
-            for mk in range(n):
-                adjectives += 1
-                # No need for name_kinds[mk][1] = 2.  We set that already
+            adjectives = n # It's the only thing that controls how Adjectives gets its value
+            # No need for name_kinds[mk][1] = 2.  We set that already
         elif adj_mode == "genitive noun":
+            nouns += n
             for mk in range(n):
-                nouns += 1
                 name_kinds[mk][1] = 3
         elif adj_mode == "origin noun":
+            nound += n
             for mk in range(n):
-                nouns += 1
                 name_kinds[mk][1] = 4
         elif adj_mode == "participle verb":
+            verbs += n
             for mk in range(n):
-                verbs += 1
                 name_kinds[mk][1] = 5
         elif adj_mode == "active participle verb":
+            verbs += n
             for mk in range(n):
-                verbs += 1
                 name_kinds[mk][1] = 6
         elif adj_mode == "passive participle verb":
+            transitive_verbs_only = n # Also has no other thing adding to it
             for mk in range(n):
-                #verbs += 1
                 name_kinds[mk][1] = 7
-                transitive_verbs_only += 1
         elif adj_mode == "something": # cannot pick "none"
             for mk in range(n):
                 mode = random.randint(-1,6)
