@@ -477,7 +477,7 @@ def one_word_verb(intransitive_or_si_allowed: bool, current):
     else: # Transitive verbs only
         pos = "vtr."
         while len(new_verb) > 1:
-            query = requests.get(f"{api_url}/random/1/pos is vtr.")
+            query = requests.get(f"{api_url}/random/1/pos starts vtr")
             buffer = json.loads(query.text)
             new_verb = buffer[0]['InfixDots'].split()
     return new_verb, pos
