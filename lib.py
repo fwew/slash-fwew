@@ -305,13 +305,16 @@ def get_word_bundles(words: str) -> list[str]:
     return result
 
 
-def get_fwew(languageCode: str, words: str, showIPA: bool = False) -> str:
+def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True) -> str:
     results = ""
     word_list = get_word_bundles(words)
     for i, word in enumerate(word_list):
         if i != 0:
             results += "\n"
-        res = requests.get(f"{api_url}/fwew/{word}")
+        if fixesCheck or word == "pela'ang":
+            res = requests.get(f"{api_url}/fwew/{word}")
+        else:
+            res = requests.get(f"{api_url}/fwew-simple/{word}")
         text = res.text
         results += format(text, languageCode, showIPA)
     return results
@@ -331,7 +334,7 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False) -> st
 
 def get_profanity(lang: str, showIPA: bool) -> str:
     words = "skxawng kalweyaveng kurkung pela'ang pxasìk teylupil tsahey txanfwìngtu vonvä' wiya"
-    return get_fwew(lang, words, showIPA)
+    return get_fwew(lang, words, showIPA, fixesCheck=False)
 
 
 def get_source(words: str) -> str:
