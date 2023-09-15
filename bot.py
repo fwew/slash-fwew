@@ -67,7 +67,9 @@ async def fwew(inter,
                 ipa=Param(description="set to true to show IPA",
                         default=False, choices=["true", "false"]),
                 lang=Param(description="Language for results",
-                        default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"])):
+                        default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"]),
+                check_fixes=Param(name="check_fixes", description="Search faster by not checking for prefixes, suffixes and infixes",
+                        default="true", choices=["true", "false"])):
     """
     search word(s) na'vi -> english
 
@@ -80,7 +82,8 @@ async def fwew(inter,
     if lang is None:
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
-    await inter.response.send_message(get_fwew(lang, words, showIPA))
+    checkFixesString = True if check_fixes == "true" else False
+    await inter.response.send_message(get_fwew(lang, words, showIPA, checkFixesString))
 
 
 @fwew_bot.slash_command(name="search", description="search word(s) english -> na'vi")

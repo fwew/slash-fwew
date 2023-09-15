@@ -311,7 +311,7 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
     for i, word in enumerate(word_list):
         if i != 0:
             results += "\n"
-        if fixesCheck or word == "pela'ang":
+        if fixesCheck:# or word == "pela'ang":
             res = requests.get(f"{api_url}/fwew/{word}")
         else:
             res = requests.get(f"{api_url}/fwew-simple/{word}")
