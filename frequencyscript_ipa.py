@@ -144,6 +144,11 @@ def distros():
         words = entry['IPA'].split(' ')
         
         for word in words:
+            # "or" means there's more than one IPA just to say there's more than one syllable stress
+            # We don't want more than one IPA per word here
+            if word == "or":
+                break
+            
             syllables = word.split('.')
 
             for syllable in syllables:
