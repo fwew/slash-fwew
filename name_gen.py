@@ -239,82 +239,12 @@ def rand_if_zero(x: int):
         return random.randint(2,4)
     return x
 
-def chart_entry(x:str, y:int, width:int):
-    ys = str(y)
-    spaces = width - len(x) - len(ys)
-    stringtsyìp = x
-    for i in range(0,spaces):
-        stringtsyìp += " "
-    stringtsyìp += ys
-
-    return stringtsyìp + "|"
-
-def get_phoneme_frequency_chart():
-    entries = ["| Onset:|Nuclei:|Ending:|", "|=======|=======|=======|"]
-
-    # Onsets
-    i = 2
-    for a in non_clusters.keys():
-        entries.append("|" + chart_entry(a, non_clusters[a],7))
-        i += 1
-
-    # Nuclei
-    i = 2
-    for a in nucleus_keys:
-        entries[i] += chart_entry(a, nucleus_distros[a],7)
-        i += 1
-
-    while i < len(entries):
-        entries[i] += "       |"
-        i += 1
-
-    # Ends
-    i = 2
-    for a in end_keys:
-        entries[i] += chart_entry(a, end_distros[a],7)
-        i += 1
-    
-    while i < len(entries):
-        entries[i] += "       |"
-        i += 1
-
-    # Top
-    entries_2 = "```Phoneme distributions:\n"
-    for a in entries:
-        entries_2 += a + "\n"
-
-    # Clusters
-    entries = ["\nClusters:", "  | f:| s:|ts:|", "==|===|===|===|"]
-    
-    cluster_ends = ["k", "kx", "l", "m", "n", "ng", "p", "px", "t", "tx", "r", "w", "y"]
-
-    for a in cluster_ends:
-        entries.append(chart_entry(a,"",2))
-    
-    # "f" clusters
-    i = 3
-    for part_two in cluster_ends:
-        for part_one in clusters.keys():
-            if part_two in clusters[part_one]:
-                entries[i] += chart_entry("", clusters[part_one][part_two], 3)
-            else:
-                entries[i] += "   |"
-        i += 1
-    
-    for a in entries:
-        entries_2 += a + "\n"
-
-    entries_2 += "```"
-
-    return entries_2
-
 # Assistant command to capitalize words that begin with a glottal stop
 # If it begins with an apostrophe, capitalize the second letter
 def glottal_caps(s: str):
     if s.startswith("'"):
         return s[:1].lower() + s[1:].capitalize()
     return s.capitalize()
-
 
 # For use with the commands "name", "name-alu" and "name-single"
 def valid(n, s_arr) -> bool:

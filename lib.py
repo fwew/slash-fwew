@@ -305,13 +305,16 @@ def get_word_bundles(words: str) -> list[str]:
     return result
 
 
-def get_fwew(languageCode: str, words: str, showIPA: bool = False) -> str:
+def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True) -> str:
     results = ""
     word_list = get_word_bundles(words)
     for i, word in enumerate(word_list):
         if i != 0:
             results += "\n"
-        res = requests.get(f"{api_url}/fwew/{word}")
+        if fixesCheck:# or word == "pela'ang":
+            res = requests.get(f"{api_url}/fwew/{word}")
+        else:
+            res = requests.get(f"{api_url}/fwew-simple/{word}")
         text = res.text
         results += format(text, languageCode, showIPA)
     return results
@@ -331,7 +334,7 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False) -> st
 
 def get_profanity(lang: str, showIPA: bool) -> str:
     words = "skxawng kalweyaveng kurkung pela'ang pxasìk teylupil tsahey txanfwìngtu vonvä' wiya"
-    return get_fwew(lang, words, showIPA)
+    return get_fwew(lang, words, showIPA, fixesCheck=False)
 
 
 def get_source(words: str) -> str:
@@ -484,378 +487,97 @@ def one_word_verb(intransitive_or_si_allowed: bool, current):
 
 # One-word names to be sent to Discord
 def get_single_name_discord(n: int, dialect: str, s: int):
-    results = ""
-    
-    if not valid(int(n), [int(s)]):
-        results = "Max name-count is 50, max syllables is 4"
-    else:
-        for k in range(0,int(n)):
-            results += get_single_name(int(s),dialect) + "\n"
-    return results
+    return json.loads(requests.get(f"{api_url}/name/single/{n}/{s}/{dialect}").text)
 
 # Full names to be sent to Discord
 def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> str:
-    results = ""
-    # for temp storage before appending to results
-    loader = ""
-    if not valid(int(n), [int(s1), int(s2), int(s3)]):
-        results = "Max name-count is 50, max syllables-1/2/3 are 4"
-    else:
-        n, s1, s2, s3 = int(n), int(s1), int(s2), int(s3)
-        mk = 0
-        # Do entire generator process n times
-        for mk in range(0,n):
-            loader = ""
-
-            # BUILD FIRST NAME
-            # first syllable: CV
-            loader += get_single_name(s1,dialect)
-
-            loader += " te "
-
-            # BUILD FAMILY NAME
-            loader += get_single_name(s2,dialect)
-
-            loader += " "
-
-            # BUILD PARENT'S NAME
-            loader += get_single_name(s3,dialect)
-
-            # ADD ENDING
-            if loader.endswith("'"):
-                loader = loader.removesuffix("'")
-            if dialect == "reef" and loader[-1] in ["a", "e", "ì", "o", "u", "i", "ä", "ù"]:# , "w", "y"}: # does kaw'it become kawit?
-                loader += ending[1:]
-            else:
-                loader += ending
-            
-            # BEWARE THE 2000 CHARACTER LIMIT
-            if len(loader) + len(results) > 1914: # 1914 picked though manual testing as the highest possible super reliable number
-                return results + loader + "\n(stopped at " + str(mk + 1) + ". 2000 Character limit)"
-            else:
-                results += loader + "\n"
-
-    return results
+    return json.loads(requests.get(f"{api_url}/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}").text)
 
 # [name] the [adjective] [noun] format names to be sent to Discord
 def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) -> str:
-    results = ""
-    if not valid(int(n), [int(s)]):
-        results = "Max name-count is 50, max syllables is 4"
-    else:
-        n, s = int(n), int(s)
+    return json.loads(requests.get(f"{api_url}/name/alu/{n}/{s}/{noun_mode}/{adj_mode}/{dialect}").text)
 
-        # Adjectives and nouns can be shared across loops
-        buffer = ""
+def chart_entry(x:str, y:int, width:int):
+    ys = str(y)
+    spaces = width - len(x) - len(ys)
+    stringtsyìp = x
+    for i in range(0,spaces):
+        stringtsyìp += " "
+    stringtsyìp += ys
 
-        # Find out how many of these names we want and what kinds
-        name_kinds = []
-        nouns = 0
-        adjectives = 0
-        verbs = 0
-        transitive_verbs = 0
-
-        #
-        # STAGE 1:
-        # Decide what kind and how many nouns we need
-        #
-        
-        mode = 0
-        if noun_mode == "normal noun":
-            nouns = n # n nouns
-            mode = 1
-        elif noun_mode == "verb-er":
-            verbs = n # n verbs
-            mode = 2
-        else:
-            for mk in range(n):
-                a = random.randint(1,5)
-                if a == 1: # 80% chance of normal noun
-                    a = 2
-                    verbs += 1
-                else:
-                    a = 1
-                    nouns += 1
-                name_kinds.append([a,2]) # something, normal adjective
-        
-        # If the noun mode isn't "something",
-        # Input homogenous noun modes
-        if mode != 0:
-            for mk in range(n):
-                name_kinds.append([mode,2]) # mode, normal adjective
-        
-        mode = 0
-        # Same, but for adjectives
-        if adj_mode == "none":
-            mode = 1
-        if adj_mode == "normal adjective":
-            adjectives = n # It's the only thing that controls how Adjectives gets its value
-            # No need for name_kinds[mk][1] = 2.  We set that already
-        elif adj_mode == "genitive noun":
-            mode = 3
-            nouns += n
-        elif adj_mode == "origin noun":
-            mode = 4
-            nouns += n
-        elif adj_mode == "participle verb":
-            mode = 5
-            verbs += n
-        elif adj_mode == "active participle verb":
-            mode = 6
-            verbs += n
-        elif adj_mode == "passive participle verb":
-            mode = 7
-            transitive_verbs = n # Also has no other thing adding to it
-        elif adj_mode == "something": # cannot pick "none"
-            for mk in range(n):
-                mode_2 = random.randint(-1,6)
-                if mode_2 <= 2: # 50% chance of normal adjective
-                    mode_2 = 2
-                    adjectives += 1
-                elif mode_2 >= 5: # Verb participles get two sides of the die
-                    mode_2 = 5
-                    verbs += 1
-                else:
-                    nouns += 1
-                name_kinds[mk][1] = mode_2
-        elif adj_mode == "any": # can pick "none", equal chance of anything
-            # verb participles get one side, just like every option
-            for mk in range(n):
-                mode_2 = random.randint(0,5)
-                if mode_2 == 2:
-                    adjectives += 1
-                elif mode_2 <= 4:
-                    nouns += 1
-                else: # mode is 5
-                    verbs += 1
-                name_kinds[mk][1] = mode_2
-        
-        # If adj_mode isn't "something" or "any",
-        # Input homogenous adjective modes
-        if mode != 0:
-            for mk in range(n):
-                name_kinds[mk][1] = mode
-
-        #
-        # STAGE 2:
-        # Look up all the words we need
-        #
-        if nouns > 0:
-            query = requests.get(f"{api_url}/random/{nouns}/pos is n.")
-            nouns = json.loads(query.text)
-        
-        if verbs > 0:
-            query = requests.get(f"{api_url}/random/{verbs}/pos starts v")
-            verbs = json.loads(query.text)
-        
-        if adjectives > 0:
-            query = requests.get(f"{api_url}/random/{adjectives}/pos is adj.")
-            adjectives = json.loads(query.text)
-        
-        if transitive_verbs > 0: # allow transitive modal verbs, too
-            query = requests.get(f"{api_url}/random/{transitive_verbs}/pos starts vtr")
-            transitive_verbs = json.loads(query.text)
-        
-        #
-        # STAGE 3:
-        # Apply the words as needed
-        #
-        
-        for kind in name_kinds:
-            results += get_single_name(s,dialect) + " alu "
-
-            noun = ""
-
-            two_word_noun = False
-            # What kind of noun do we have?
-            if kind[0] == 2: #verb-er noun
-                verber = verbs.pop(0)
-
-                # Throw us our current word if valid, get a new one if not
-                new_noun, pos = one_word_verb(True, verber) # intransitive and si-verbs are allowed
-                
-                for a in new_noun:
-                    noun += a.replace(".","")
-                noun += "yu"
-                results += glottal_caps(noun) + " "
-            else:
-                noun = nouns.pop(0)["Navi"].split()
-                # If there's more than one word in the noun, the adjective comes first
-                if len(noun) > 1:
-                    two_word_noun = True
-                else:
-                    results += glottal_caps(noun[0]) + " "
-            # Wivatch youä profanitit
-            # if noun in ["kalweyaveng", "kurkung", "la'ang",
-            #            "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
-            #    noun = "Skxawng"
-
-            adj = ""
-            mode = kind[1]
-            
-            # ADJECTIVE
-            if mode == 2:
-                # Get adjectives
-                adj = adjectives.pop(0)["Navi"]
-                # Unlike the other le-adjectives, these don't put le- in front of a preexisting word.
-                fake_le_adjectives = ["ler", "leyr"]
-                # Forest doesn't duplicate an a in apxa   | Even if after a noun | le-adjectives don't need an a
-                if (not two_word_noun) and (adj[0] != 'a' or dialect != "forest") and (adj in fake_le_adjectives or not adj.startswith("le")):
-                    adj = "a" + adj
-                elif two_word_noun and (adj[-1] != 'a' or dialect != "forest"):
-                    adj += "a "
-                
-                results += glottal_caps(adj)
-            # GENITIVE OR ORIGIN NOUN
-            elif mode == 3 or mode == 4:
-                loader = ""
-                # Get nouns
-                words = nouns.pop(0)["Navi"]
-                wordList = words.split()
-
-                yvowels = ['a', 'e', 'ì', 'i', 'ä']
-
-                # Genitive noun
-                if mode == 3:
-                    # The only nouns put together using a space
-                    if words == "tsko swizaw":
-                        results += "Tsko Swizawyä"
-                    elif words == "toruk makto":
-                        results += "Torukä Maktoyuä"
-                    # the only noun with two spaces
-                    elif words == "mo a fngä'":
-                        results += "Moä a Fgnä'"
-                    # Watch your profanity
-                    # elif words in ["kalweyaveng", "kurkung", "la'ang",
-                    #               "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
-                    #    results += "Skxawngä "
-                    elif two_word_noun: # Origin noun goes before the noun
-                        for i in range(len(wordList) - 1, -1, -1):
-                            loader = ""
-                            # The only a-attributed word in the dictionary, part of "swoasey ayll"
-                            if wordList[i] == "ayll":
-                                loader += "Ylla "
-                            elif wordList[i].startswith("le"):
-                                loader += glottal_caps(wordList[i]) + "a "
-                            elif wordList[i].endswith("yä"):
-                                loader += glottal_caps(wordList[i]) + " "
-                            elif wordList[i].endswith("ia"): # aungia, meuia, soaia, tìftia, kemuia
-                                loader += glottal_caps(wordList[i][:-1]) + "ä "
-                            elif wordList[i][-1] in yvowels:
-                                loader += glottal_caps(wordList[i]) + "yä "
-                            else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
-                                loader += glottal_caps(wordList[i]) + "ä "
-                            results += loader
-                    else: # Origin noun goes after the noun
-                        first = True
-                        loader = ""
-                        for i in wordList:
-                            # Only put the genitive on the first word in the noun
-                            if first:
-                                if i.endswith("ia"): # aungia, meuia, soaia, tìftia, kemuia
-                                    loader += glottal_caps(i[:-1]) + "ä "
-                                elif i[-1] in yvowels:
-                                    loader += glottal_caps(i) + "yä "
-                                else: #If's it's a conosonent, psuedovowel, diphthong, o or u
-                                    loader += glottal_caps(i) + "ä "
-                                first = False
-                                continue
-                            loader += glottal_caps(i)
-                        results += loader
-                # Origin noun
-                elif mode == 4:
-                    # The only nouns put together using a space
-                    if words == "tsko swizaw":
-                        results += "ta Tsko Swizaw"
-                    elif words == "toruk makto":
-                        results += "ta Torukä Maktoyu"
-                    # the only noun with two spaces
-                    elif words == "mo a fngä'":
-                        results += "ta Mo a Fgnä'"
-                    # Watch your profanity
-                    # elif words in ["kalweyaveng", "kurkung", "la'ang",
-                    #                "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
-                    #     results += "Skxawngta "i
-                    elif two_word_noun: # Origin noun goes before the noun
-                        for i in range(len(wordList) - 1, -1, -1):
-                            loader = ""
-                            # The only a-attributed word in the dictionary, part of "swoasey ayll"
-                            if wordList[i] == "ayll":
-                                loader += "Ylla "
-                            elif wordList[i].startswith("le"):
-                                loader += glottal_caps(wordList[i]) + "a "
-                            elif wordList[i].endswith("yä"):
-                                loader += glottal_caps(wordList[i]) + " "
-                            else:
-                                loader += "ta " + glottal_caps(wordList[i]) + " "
-                            results += loader
-                    else: # Origin noun goes after the noun
-                        first = True
-                        loader = ""
-                        for i in wordList:
-                            # Only put the origin on the first noun
-                            if first:
-                                loader += "ta " + glottal_caps(i)
-                                first = False
-                                continue
-                            loader += " " + glottal_caps(i)
-                        results += loader
-            # PARTICIPLES
-            elif mode >= 5:
-                new_verb, pos = "", ""
-                infix = "us" # greater than 50% chance of <us> if left random
-                # VERB WITH UNSPECIFIED PARTICIPLE INFIX
-                if mode == 5:
-                    new_verb, pos = one_word_verb(True, verbs.pop(0))
-                    # If transitive verb, 50% chance of <awn>
-                    if pos.startswith("vtr") and bool(random.getrandbits(1)):
-                        infix = "awn"
-                # VERB WITH SPECIFIED PARTICIPLE INFIX
-                elif mode == 6:
-                    # Any verb can have <us>
-                    new_verb, pos = one_word_verb(True, verbs.pop(0))
-                else:
-                    # Only transitive verbs can have <awn>
-                    new_verb, pos = one_word_verb(False, transitive_verbs.pop(0))
-                    infix = "awn"
-                
-                #adj += adj_loader[0]
-                for word in new_verb:
-                    found_dots = False
-                    if "." in word: # This word gets the infixes
-                        for a in word:
-                            if a == ".":
-                                if not found_dots:
-                                    adj += infix
-                                    found_dots = True
-                            else:
-                                adj += a
-                    else: # Other words:
-                        adj += word
-                    # Hyphens for word-s<us>i:
-                    if word != new_verb[-1]:
-                        adj += "-"
-                
-                # Forest doesn't duplicate an a in apxa   | Even if after a noun
-                if (not two_word_noun) and (adj[0] != 'a' or dialect != "forest"):
-                    adj = "a" + adj
-                elif two_word_noun and (adj[-1] != 'a' or dialect != "forest"):
-                    adj += "a "
-                
-                results += glottal_caps(adj)
-            
-            # If the adjective came first, put the two-word noun on.
-            if two_word_noun:
-                for n in noun:
-                    results += glottal_caps(n) + " "
-
-            # ADD ENDING
-            results += "\n"
-
-    return results
+    return stringtsyìp + "|"
 
 def get_phonemes() -> str:
-    return get_phoneme_frequency_chart()
+    all_frequencies = json.loads(requests.get(f"{api_url}/phonemedistros").text)
+    entries = ["| Onset:|Nuclei:|Ending:|", "|=======|=======|=======|"]
+
+    # Onsets
+    onset_tuples = []
+    for a in all_frequencies["Others"]["Onsets"].keys():
+        onset_tuples.append( (all_frequencies["Others"]["Onsets"][a], a) )
+
+    onset_tuples.sort(reverse=True)
+    for a in onset_tuples:
+        entries.append("|" + chart_entry(a[1], a[0],7))
+
+    # Nuclei
+    i = 2
+    nuclei_tuples = []
+    for a in all_frequencies["Others"]["Nuclei"].keys():
+        nuclei_tuples.append( (all_frequencies["Others"]["Nuclei"][a], a) )
+
+    nuclei_tuples.sort(reverse=True)
+    for a in nuclei_tuples:
+        entries[i] += chart_entry(a[1], a[0],7)
+        i += 1
+
+    while i < len(entries):
+        entries[i] += "       |"
+        i += 1
+
+    # Ends
+    i = 2
+    coda_tuples = []
+    for a in all_frequencies["Others"]["Codas"].keys():
+        coda_tuples.append( (all_frequencies["Others"]["Codas"][a], a) )
+
+    coda_tuples.sort(reverse=True)
+    for a in coda_tuples:
+        entries[i] += chart_entry(a[1], a[0],7)
+        i += 1
+
+    while i < len(entries):
+        entries[i] += "       |"
+        i += 1
+
+    # Top
+    entries_2 = "## Phoneme distributions:\n```\n"
+    for a in entries:
+        entries_2 += a + "\n"
+
+    # Clusters
+    entries = ["\nClusters:", "  | f:| s:|ts:|", "==|===|===|===|"]
+    
+    cluster_ends = ["k", "kx", "l", "m", "n", "ng", "p", "px", "r", "t", "tx", "w", "y"]
+
+    for a in cluster_ends:
+        entries.append(chart_entry(a,"",2))
+    
+    # "f" clusters
+    i = 3
+    for part_two in cluster_ends:
+        for part_one in all_frequencies["Clusters"].keys():
+            if part_two in all_frequencies["Clusters"][part_one].keys():
+                entries[i] += chart_entry("", all_frequencies["Clusters"][part_one][part_two], 3)
+            else:
+                entries[i] += "   |" # still waiting on tspx
+        i += 1
+    
+    for a in entries:
+        entries_2 += a + "\n"
+
+    entries_2 += "```"
+    return entries_2
 
 
 def get_lenition() -> str:
