@@ -458,33 +458,6 @@ def get_translation(text: str, languageCode: str) -> str:
         return f"translation exceeds character limit of {char_limit}"
     return results
 
-# Helper function for name-alu()
-def one_word_verb(intransitive_or_si_allowed: bool, current):
-    new_verb = current['InfixDots'].split()
-    pos = current['PartOfSpeech']
-    query = ""
-    buffer = ""
-    # Transitive or intransitive allowed
-    if intransitive_or_si_allowed:
-        # one word and not si: allowed (e.g. "takuk")
-        # two words and not si: disallowed (e.g. "tswìk kxenerit")
-        # one word and si: disallowed ("si" only)
-        # two words and si: allowed (e.g. "unil si")
-        # Any three-word verb: disallowed ("eltur tìtxen si" only)
-        # != is used as an exclusive "or"
-        while (len(new_verb) == 2) != (new_verb[-1] == "s..i"):
-            query = requests.get(f"{api_url}/random/1/pos starts v")
-            buffer = json.loads(query.text)
-            new_verb = buffer[0]['InfixDots'].split()
-            pos = buffer[0]['PartOfSpeech']
-    else: # Transitive verbs only
-        while len(new_verb) > 1:
-            query = requests.get(f"{api_url}/random/1/pos starts vtr")
-            buffer = json.loads(query.text)
-            new_verb = buffer[0]['InfixDots'].split()
-            pos = buffer[0]['PartOfSpeech']
-    return new_verb, pos
-
 # One-word names to be sent to Discord
 def get_single_name_discord(n: int, dialect: str, s: int):
     return json.loads(requests.get(f"{api_url}/name/single/{n}/{s}/{dialect}").text)
