@@ -497,8 +497,87 @@ def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> st
 def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) -> str:
     return json.loads(requests.get(f"{api_url}/name/alu/{n}/{s}/{noun_mode}/{adj_mode}/{dialect}").text)
 
+def chart_entry(x:str, y:int, width:int):
+    ys = str(y)
+    spaces = width - len(x) - len(ys)
+    stringtsyìp = x
+    for i in range(0,spaces):
+        stringtsyìp += " "
+    stringtsyìp += ys
+
+    return stringtsyìp + "|"
+
 def get_phonemes() -> str:
-    return get_phoneme_frequency_chart()
+    all_frequencies = json.loads(requests.get(f"{api_url}/phonemedistros").text)
+    entries = ["| Onset:|Nuclei:|Ending:|", "|=======|=======|=======|"]
+
+    # Onsets
+    onset_tuples = []
+    for a in all_frequencies["Others"]["Onsets"].keys():
+        onset_tuples.append( (all_frequencies["Others"]["Onsets"][a], a) )
+
+    onset_tuples.sort(reverse=True)
+    for a in onset_tuples:
+        entries.append("|" + chart_entry(a[1], a[0],7))
+
+    # Nuclei
+    i = 2
+    nuclei_tuples = []
+    for a in all_frequencies["Others"]["Nuclei"].keys():
+        nuclei_tuples.append( (all_frequencies["Others"]["Nuclei"][a], a) )
+
+    nuclei_tuples.sort(reverse=True)
+    for a in nuclei_tuples:
+        entries[i] += chart_entry(a[1], a[0],7)
+        i += 1
+
+    while i < len(entries):
+        entries[i] += "       |"
+        i += 1
+
+    # Ends
+    i = 2
+    coda_tuples = []
+    for a in all_frequencies["Others"]["Codas"].keys():
+        coda_tuples.append( (all_frequencies["Others"]["Codas"][a], a) )
+
+    coda_tuples.sort(reverse=True)
+    for a in coda_tuples:
+        entries[i] += chart_entry(a[1], a[0],7)
+        i += 1
+
+    while i < len(entries):
+        entries[i] += "       |"
+        i += 1
+
+    # Top
+    entries_2 = "## Phoneme distributions:\n```\n"
+    for a in entries:
+        entries_2 += a + "\n"
+
+    # Clusters
+    entries = ["\nClusters:", "  | f:| s:|ts:|", "==|===|===|===|"]
+    
+    cluster_ends = ["k", "kx", "l", "m", "n", "ng", "p", "px", "r", "t", "tx", "w", "y"]
+
+    for a in cluster_ends:
+        entries.append(chart_entry(a,"",2))
+    
+    # "f" clusters
+    i = 3
+    for part_two in cluster_ends:
+        for part_one in all_frequencies["Clusters"].keys():
+            if part_two in all_frequencies["Clusters"][part_one].keys():
+                entries[i] += chart_entry("", all_frequencies["Clusters"][part_one][part_two], 3)
+            else:
+                entries[i] += "   |" # still waiting on tspx
+        i += 1
+    
+    for a in entries:
+        entries_2 += a + "\n"
+
+    entries_2 += "```"
+    return entries_2
 
 
 def get_lenition() -> str:

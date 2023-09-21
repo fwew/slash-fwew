@@ -299,7 +299,7 @@ async def name(inter,
     family_name_num_syllables: family name number of syllables
     parent_name_num_syllables: parent's name number of syllables
     dialect: dialect the names would fit into (interdialect, forest, reef)
-    ending: 'ite (daughter) or 'itan (son)
+    ending: 'ite (daughter) or ' itan (son)
     n: number of names to generate
     """
     await inter.response.send_message(get_name(ending, n, dialect, s1, s2, s3))
