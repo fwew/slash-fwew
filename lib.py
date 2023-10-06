@@ -308,7 +308,6 @@ def get_word_bundles(words: str) -> list[str]:
     i = 0
     while i < len(list_words): # Check all the words
         match = False
-        print(list_words[i] + " " + str(i))
         if list_words[i] in multiword_map: # Compare them to the words with spaces
             for index_val in multiword_map[list_words[i]]: # and get their index values
                 old_i = i
@@ -316,7 +315,6 @@ def get_word_bundles(words: str) -> list[str]:
                 # If we found the start of one,
                 for a in multiword_words[index_val]: # Make sure it matches all the way through
                     # If it doesn't match or we run to the end,
-                    print("searching: " + str(i))
                     if i >= len(list_words) or a != list_words[i]:
                         match = False # we haven't found it
                         i = old_i # var i pretends it never happened
@@ -326,15 +324,12 @@ def get_word_bundles(words: str) -> list[str]:
                     new_string = ""
                     for a in multiword_words[index_val]:
                         new_string += a + " "
-                    print("found multi: " + str(i))
                     result.append(new_string[:-1])
                     break
             if not match:
-                print("found compatible single:" + str(i))
                 result.append(list_words[i])
                 i += 1
         else:
-            print("found single:" + str(i))
             result.append(list_words[i])
             i += 1
 
