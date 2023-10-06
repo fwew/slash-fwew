@@ -289,19 +289,55 @@ def format_number(response_text: str) -> str:
 
 
 def get_word_bundles(words: str) -> list[str]:
+    # List all the words searched
+    list_words = words.lower().split(" ")
+    # Get a list of all words with spaces
+    multiword_words = json.loads(requests.get(f"{api_url}/multiwordwords").text)
+    multiword_map = {}
+
+    i = 0
+    while i < len(multiword_words):
+        if multiword_words[i][0] in multiword_map:
+            multiword_map[multiword_words[i][0]].append(i)
+        else:
+            multiword_map[multiword_words[i][0]] = [i]
+        i += 1
+
     result = []
-    for pattern in patterns:
-        if words[0] == '"' and words[-1] == '"':
-            break
+
+    i = 0
+    while i < len(list_words): # Check all the words
+        match = False
+        print(list_words[i] + " " + str(i))
+        if list_words[i] in multiword_map: # Compare them to the words with spaces
+            for index_val in multiword_map[list_words[i]]: # and get their index values
+                old_i = i
+                match = True
+                # If we found the start of one,
+                for a in multiword_words[index_val]: # Make sure it matches all the way through
+                    # If it doesn't match or we run to the end,
+                    print("searching: " + str(i))
+                    if i >= len(list_words) or a != list_words[i]:
+                        match = False # we haven't found it
+                        i = old_i # var i pretends it never happened
+                        break
+                    i += 1
+                if match:
+                    new_string = ""
+                    for a in multiword_words[index_val]:
+                        new_string += a + " "
+                    print("found multi: " + str(i))
+                    result.append(new_string[:-1])
+                    break
+            if not match:
+                print("found compatible single:" + str(i))
+                result.append(list_words[i])
+                i += 1
         else:
-            words = re.sub(pattern, r'"\1"', words)
-    yy = [c for c in re.split(r'("\w+ \w+\s?\w*")', words) if len(c) > 0]
-    for w in yy:
-        if w.startswith('"') and w.endswith('"'):
-            result.append(w[1:-1])
-        else:
-            result.extend(w.split())
-    result = [r for r in result if r != '"']
+            print("found single:" + str(i))
+            result.append(list_words[i])
+            i += 1
+
     return result
 
 
@@ -311,7 +347,7 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
     for i, word in enumerate(word_list):
         if i != 0:
             results += "\n"
-        if fixesCheck:# or word == "pela'ang":
+        if fixesCheck:
             res = requests.get(f"{api_url}/fwew/{word}")
         else:
             res = requests.get(f"{api_url}/fwew-simple/{word}")
@@ -457,33 +493,6 @@ def get_translation(text: str, languageCode: str) -> str:
     if len(results) > char_limit:
         return f"translation exceeds character limit of {char_limit}"
     return results
-
-# Helper function for name-alu()
-def one_word_verb(intransitive_or_si_allowed: bool, current):
-    new_verb = current['InfixDots'].split()
-    pos = current['PartOfSpeech']
-    query = ""
-    buffer = ""
-    # Transitive or intransitive allowed
-    if intransitive_or_si_allowed:
-        # one word and not si: allowed (e.g. "takuk")
-        # two words and not si: disallowed (e.g. "tswìk kxenerit")
-        # one word and si: disallowed ("si" only)
-        # two words and si: allowed (e.g. "unil si")
-        # Any three-word verb: disallowed ("eltur tìtxen si" only)
-        # != is used as an exclusive "or"
-        while (len(new_verb) == 2) != (new_verb[-1] == "s..i"):
-            query = requests.get(f"{api_url}/random/1/pos starts v")
-            buffer = json.loads(query.text)
-            new_verb = buffer[0]['InfixDots'].split()
-            pos = buffer[0]['PartOfSpeech']
-    else: # Transitive verbs only
-        while len(new_verb) > 1:
-            query = requests.get(f"{api_url}/random/1/pos starts vtr")
-            buffer = json.loads(query.text)
-            new_verb = buffer[0]['InfixDots'].split()
-            pos = buffer[0]['PartOfSpeech']
-    return new_verb, pos
 
 # One-word names to be sent to Discord
 def get_single_name_discord(n: int, dialect: str, s: int):
