@@ -287,60 +287,9 @@ def format_number(response_text: str) -> str:
     return f"`  na'vi`: {name}\n`  octal`: {octal}\n`decimal`: {decimal}"
 
 
-# def get_word_bundles(words: str) -> list[str]:
-#     # List all the words searched
-#     list_words = words.lower().split(" ")
-#     # Get a list of all words with spaces
-#     multiword_words = json.loads(requests.get(f"{api_url}/multiwordwords").text)
-#     multiword_map = {}
-
-#     i = 0
-#     while i < len(multiword_words):
-#         if multiword_words[i][0] in multiword_map:
-#             multiword_map[multiword_words[i][0]].append(i)
-#         else:
-#             multiword_map[multiword_words[i][0]] = [i]
-#         i += 1
-
-#     result = []
-
-#     i = 0
-#     while i < len(list_words): # Check all the words
-#         match = False
-#         if list_words[i] in multiword_map: # Compare them to the words with spaces
-#             for index_val in multiword_map[list_words[i]]: # and get their index values
-#                 old_i = i
-#                 match = True
-#                 # If we found the start of one,
-#                 for a in multiword_words[index_val]: # Make sure it matches all the way through
-#                     # If it doesn't match or we run to the end,
-#                     if i >= len(list_words) or a != list_words[i]:
-#                         match = False # we haven't found it
-#                         i = old_i # var i pretends it never happened
-#                         break
-#                     i += 1
-#                 if match:
-#                     new_string = ""
-#                     for a in multiword_words[index_val]:
-#                         new_string += a + " "
-#                     result.append(new_string[:-1])
-#                     break
-#             if not match:
-#                 result.append(list_words[i])
-#                 i += 1
-#         else:
-#             result.append(list_words[i])
-#             i += 1
-
-#     return result
-
-
 def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True) -> str:
     results = ""
-    #word_list = get_word_bundles(words)
-    #for i, word in enumerate(word_list):
-    #    if i != 0:
-    #        results += "\n"
+
     if fixesCheck:
         res = requests.get(f"{api_url}/fwew/{words}")
     else:
@@ -352,13 +301,10 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
 
 def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False) -> str:
     results = ""
-    word_list = words.split()
-    for i, word in enumerate(word_list):
-        if i != 0:
-            results += "\n"
-        res = requests.get(f"{api_url}/fwew/r/{languageCode.lower()}/{word}")
-        text = res.text
-        results += format(text, languageCode, showIPA)
+
+    res = requests.get(f"{api_url}/fwew/r/{languageCode.lower()}/{words}")
+    text = res.text
+    results += format(text, languageCode, showIPA)
     return results
 
 
@@ -369,25 +315,19 @@ def get_profanity(lang: str, showIPA: bool) -> str:
 
 def get_source(words: str) -> str:
     results = ""
-    word_list = get_word_bundles(words)
-    for i, word in enumerate(word_list):
-        if i != 0:
-            results += "\n"
-        res = requests.get(f"{api_url}/fwew/{word}")
-        text = res.text
-        results += format_source(text)
+
+    res = requests.get(f"{api_url}/fwew/{words}")
+    text = res.text
+    results += format_source(text)
     return results
 
 
 def get_audio(words: str) -> str:
     results = ""
-    word_list = get_word_bundles(words)
-    for i, word in enumerate(word_list):
-        if i != 0:
-            results += "\n"
-        res = requests.get(f"{api_url}/fwew/{word}")
-        text = res.text
-        results += format_audio(text)
+
+    res = requests.get(f"{api_url}/fwew/{words}")
+    text = res.text
+    results += format_audio(text)
     return results
 
 
@@ -455,37 +395,6 @@ def get_line_ending(word: str) -> str:
     if match and match.group() is not None:
         results += match.group()
         results += "\n\n"
-    return results
-
-
-def get_translation(text: str, languageCode: str) -> str:
-    results = ""
-    word_list = get_word_bundles(text)
-    for i, word in enumerate(word_list):
-        if i != 0 and not results.endswith("\n"):
-            results += " **|** "
-        word = word_list[i]
-        if re.match(r"hrh", word):
-            results += f"lol{get_line_ending(word)}"
-            continue
-        elif word == "a":
-            results += "that"
-            continue
-        elif re.match(si_pattern, word):
-            results += f"do / make{get_line_ending(word)}"
-            continue
-        elif word == "srake":
-            results += "(yes/no question)"
-            continue
-        elif re.match(r"srak", word):
-            results += f"(yes/no question){get_line_ending(word)}"
-            continue
-        res = requests.get(f"{api_url}/fwew/{word}")
-        text = res.text
-        results += format_translation(text, languageCode)
-        results += get_line_ending(word)
-    if len(results) > char_limit:
-        return f"translation exceeds character limit of {char_limit}"
     return results
 
 # One-word names to be sent to Discord

@@ -380,14 +380,5 @@ async def leave(inter, server_id=Param(description="the server id")):
         await inter.edit_original_message(content="you are not authorized to use this command")
 
 
-@fwew_bot.message_command(name="fwew translate") # default_permission=True)
-async def translate_message(inter, message):
-    """
-    translate this message using Fwew
-    """
-    await inter.response.defer(ephemeral=True)
-    await inter.edit_original_message(content=get_translation(message.content, "en"))
-
-
 if __name__ == "__main__":
     fwew_bot.run(token)
