@@ -141,30 +141,32 @@ def format_lenition(word: dict) -> str:
     return results
 
 
-def format_source(response_text: str) -> str:
-    word = json.loads(response_text)
-    if isinstance(word, dict) and "message" in word:
-        return word["message"]
+def format_source(words: str) -> str:
     results = ""
-    for i in range(1, len(word) + 1):
-        w = word[i - 1]
-        if w['Source'] is None:
-            results += f"[{i}] **{w['Navi']}**: no source results\n"
-        else:
-            w['Source'] = re.sub(url_pattern, r"<\1>", w['Source'])
-            results += f"[{i}] **{w['Navi']}** @ {w['Source']}\n"
+    for word in words:
+        if isinstance(word, dict) and "message" in word:
+            return word["message"]
+        for i in range(1, len(word) + 1):
+            w = word[i - 1]
+            if w['Source'] is None:
+                results += f"[{i}] **{w['Navi']}**: no source results\n"
+            else:
+                w['Source'] = re.sub(url_pattern, r"<\1>", w['Source'])
+                results += f"[{i}] **{w['Navi']}** @ {w['Source']}\n"
+        results += "\n"
     return results
 
 
-def format_audio(response_text: str) -> str:
-    word = json.loads(response_text)
-    if isinstance(word, dict) and "message" in word:
-        return word["message"]
+def format_audio(words: str) -> str:
     results = ""
-    for i in range(1, len(word) + 1):
-        w = word[i - 1]
-        syllables = do_underline(w['Stressed'], w['Syllables'])
-        results += f"[{i}] **{w['Navi']}** ({syllables}) :speaker: [click here to listen](https://s.learnnavi.org/audio/vocab/{w['ID']}.mp3)\n"
+    for word in words:
+        if isinstance(word, dict) and "message" in word:
+            return word["message"]
+        for i in range(1, len(word) + 1):
+            w = word[i - 1]
+            syllables = do_underline(w['Stressed'], w['Syllables'])
+            results += f"[{i}] **{w['Navi']}** ({syllables}) :speaker: [click here to listen](https://s.learnnavi.org/audio/vocab/{w['ID']}.mp3)\n"
+        results += "\n"
     return results
 
 
@@ -186,29 +188,34 @@ def format_alphabet(letter: str, letters_dict: dict, names_dict: dict, i: int) -
     return f"[{i + 1}] **{current_letter}** ({current_letter_name}) :speaker: [click here to listen](https://s.learnnavi.org/audio/alphabet/{letter_id}.mp3)\n"
 
 
-def format(response_text: str, languageCode: str, showIPA: bool = False) -> str:
-    words = json.loads(response_text)
+def format(words: str, languageCode: str, showIPA: bool = False) -> str:
     if isinstance(words, dict) and "message" in words:
         return words["message"]
     results = ""
     for i in range(1, len(words) + 1):
+        preResults = ""
         someWord = words[i - 1]
         if len(someWord) == 0:
-            results += "[" + str(i) + "] word not found\n"
+            preResults += "[" + str(i) + "] word not found\n"
+        j = 0
         for word in someWord:
+            j += 1
             ipa = word['IPA']
             breakdown = format_breakdown(word)
             if showIPA:
-                results += f"[{i}] **{word['Navi']}** [{ipa}] ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+                preResults += f"[{j}] **{word['Navi']}** [{ipa}] ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
             else:
-                results += f"[{i}] **{word['Navi']}** ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
-            results += format_prefixes(word)
-            results += format_infixes(word)
-            results += format_suffixes(word)
-            results += format_lenition(word)
-            results += format_comment(word)
-    if len(results) > char_limit:
-        return f"{len(words)} results. please search a more specific list, or use /random with number and same args"
+                preResults += f"[{j}] **{word['Navi']}** ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+            preResults += format_prefixes(word)
+            preResults += format_infixes(word)
+            preResults += format_suffixes(word)
+            preResults += format_lenition(word)
+            preResults += format_comment(word)
+        preResults += "\n"
+        if len(preResults) > char_limit:
+            results += f"{len(someWord)} results. please search a more specific list, or use /random with number and same args\n\n"
+        else:
+            results += preResults
     return results
 
 
@@ -295,7 +302,8 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
     else:
         res = requests.get(f"{api_url}/fwew-simple/{words}")
     text = res.text
-    results += format(text, languageCode, showIPA)
+    words = json.loads(text)
+    results += format(words, languageCode, showIPA)
     return results
 
 
@@ -304,7 +312,8 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False) -> st
 
     res = requests.get(f"{api_url}/fwew/r/{languageCode.lower()}/{words}")
     text = res.text
-    results += format(text, languageCode, showIPA)
+    words = json.loads(text)
+    results += format(words, languageCode, showIPA)
     return results
 
 
@@ -318,7 +327,8 @@ def get_source(words: str) -> str:
 
     res = requests.get(f"{api_url}/fwew/{words}")
     text = res.text
-    results += format_source(text)
+    words = json.loads(text)
+    results += format_source(words)
     return results
 
 
@@ -327,7 +337,8 @@ def get_audio(words: str) -> str:
 
     res = requests.get(f"{api_url}/fwew/{words}")
     text = res.text
-    results += format_audio(text)
+    words = json.loads(text)
+    results += format_audio(words)
     return results
 
 
@@ -358,19 +369,22 @@ def get_alphabet(letters: str) -> str:
 def get_list(languageCode: str, args: str, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/list/{args}")
     text = res.text
-    return format(text, languageCode, showIPA)
+    words = [json.loads(text)]
+    return format(words, languageCode, showIPA)
 
 
 def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random/{n}")
     text = res.text
-    return format(text, languageCode, showIPA)
+    words = [json.loads(text)]
+    return format(words, languageCode, showIPA)
 
 
 def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random/{n}/{args}")
     text = res.text
-    return format(text, languageCode, showIPA)
+    words = [json.loads(text)]
+    return format(words, languageCode, showIPA)
 
 
 def get_number(word: str) -> str:
