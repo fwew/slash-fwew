@@ -54,10 +54,6 @@ def get_language(inter):
     return server_languages[inter.guild_id]
 
 
-def format_ipa(word: dict) -> str:
-    return word['IPA']
-
-
 def do_underline(stressed: str, syllables: str) -> str:
     syllables = syllables.replace(" ", "-")
     if "-" not in syllables:
@@ -196,18 +192,21 @@ def format(response_text: str, languageCode: str, showIPA: bool = False) -> str:
         return words["message"]
     results = ""
     for i in range(1, len(words) + 1):
-        word = words[i - 1]
-        ipa = format_ipa(word)
-        breakdown = format_breakdown(word)
-        if showIPA:
-            results += f"[{i}] **{word['Navi']}** [{ipa}] ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
-        else:
-            results += f"[{i}] **{word['Navi']}** ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
-        results += format_prefixes(word)
-        results += format_infixes(word)
-        results += format_suffixes(word)
-        results += format_lenition(word)
-        results += format_comment(word)
+        someWord = words[i - 1]
+        if len(someWord) == 0:
+            results += "[" + str(i) + "] word not found\n"
+        for word in someWord:
+            ipa = word['IPA']
+            breakdown = format_breakdown(word)
+            if showIPA:
+                results += f"[{i}] **{word['Navi']}** [{ipa}] ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+            else:
+                results += f"[{i}] **{word['Navi']}** ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+            results += format_prefixes(word)
+            results += format_infixes(word)
+            results += format_suffixes(word)
+            results += format_lenition(word)
+            results += format_comment(word)
     if len(results) > char_limit:
         return f"{len(words)} results. please search a more specific list, or use /random with number and same args"
     return results
@@ -288,66 +287,66 @@ def format_number(response_text: str) -> str:
     return f"`  na'vi`: {name}\n`  octal`: {octal}\n`decimal`: {decimal}"
 
 
-def get_word_bundles(words: str) -> list[str]:
-    # List all the words searched
-    list_words = words.lower().split(" ")
-    # Get a list of all words with spaces
-    multiword_words = json.loads(requests.get(f"{api_url}/multiwordwords").text)
-    multiword_map = {}
+# def get_word_bundles(words: str) -> list[str]:
+#     # List all the words searched
+#     list_words = words.lower().split(" ")
+#     # Get a list of all words with spaces
+#     multiword_words = json.loads(requests.get(f"{api_url}/multiwordwords").text)
+#     multiword_map = {}
 
-    i = 0
-    while i < len(multiword_words):
-        if multiword_words[i][0] in multiword_map:
-            multiword_map[multiword_words[i][0]].append(i)
-        else:
-            multiword_map[multiword_words[i][0]] = [i]
-        i += 1
+#     i = 0
+#     while i < len(multiword_words):
+#         if multiword_words[i][0] in multiword_map:
+#             multiword_map[multiword_words[i][0]].append(i)
+#         else:
+#             multiword_map[multiword_words[i][0]] = [i]
+#         i += 1
 
-    result = []
+#     result = []
 
-    i = 0
-    while i < len(list_words): # Check all the words
-        match = False
-        if list_words[i] in multiword_map: # Compare them to the words with spaces
-            for index_val in multiword_map[list_words[i]]: # and get their index values
-                old_i = i
-                match = True
-                # If we found the start of one,
-                for a in multiword_words[index_val]: # Make sure it matches all the way through
-                    # If it doesn't match or we run to the end,
-                    if i >= len(list_words) or a != list_words[i]:
-                        match = False # we haven't found it
-                        i = old_i # var i pretends it never happened
-                        break
-                    i += 1
-                if match:
-                    new_string = ""
-                    for a in multiword_words[index_val]:
-                        new_string += a + " "
-                    result.append(new_string[:-1])
-                    break
-            if not match:
-                result.append(list_words[i])
-                i += 1
-        else:
-            result.append(list_words[i])
-            i += 1
+#     i = 0
+#     while i < len(list_words): # Check all the words
+#         match = False
+#         if list_words[i] in multiword_map: # Compare them to the words with spaces
+#             for index_val in multiword_map[list_words[i]]: # and get their index values
+#                 old_i = i
+#                 match = True
+#                 # If we found the start of one,
+#                 for a in multiword_words[index_val]: # Make sure it matches all the way through
+#                     # If it doesn't match or we run to the end,
+#                     if i >= len(list_words) or a != list_words[i]:
+#                         match = False # we haven't found it
+#                         i = old_i # var i pretends it never happened
+#                         break
+#                     i += 1
+#                 if match:
+#                     new_string = ""
+#                     for a in multiword_words[index_val]:
+#                         new_string += a + " "
+#                     result.append(new_string[:-1])
+#                     break
+#             if not match:
+#                 result.append(list_words[i])
+#                 i += 1
+#         else:
+#             result.append(list_words[i])
+#             i += 1
 
-    return result
+#     return result
 
 
 def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True) -> str:
     results = ""
-    word_list = get_word_bundles(words)
-    for i, word in enumerate(word_list):
-        if i != 0:
-            results += "\n"
-        if fixesCheck:
-            res = requests.get(f"{api_url}/fwew/{word}")
-        else:
-            res = requests.get(f"{api_url}/fwew-simple/{word}")
-        text = res.text
-        results += format(text, languageCode, showIPA)
+    #word_list = get_word_bundles(words)
+    #for i, word in enumerate(word_list):
+    #    if i != 0:
+    #        results += "\n"
+    if fixesCheck:
+        res = requests.get(f"{api_url}/fwew/{words}")
+    else:
+        res = requests.get(f"{api_url}/fwew-simple/{words}")
+    text = res.text
+    results += format(text, languageCode, showIPA)
     return results
 
 
