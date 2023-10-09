@@ -199,18 +199,18 @@ def format(words: str, languageCode: str, showIPA: bool = False) -> str:
             preResults += "[" + str(i) + "] word not found\n"
         j = 0
         for word in someWord:
-            j += 1
             ipa = word['IPA']
             breakdown = format_breakdown(word)
             if showIPA:
-                preResults += f"[{j}] **{word['Navi']}** [{ipa}] ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+                preResults += f"[{i}{chr(ord('a') + j)}] **{word['Navi']}** [{ipa}] ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
             else:
-                preResults += f"[{j}] **{word['Navi']}** ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+                preResults += f"[{i}{chr(ord('a') + j)}] **{word['Navi']}** ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
             preResults += format_prefixes(word)
             preResults += format_infixes(word)
             preResults += format_suffixes(word)
             preResults += format_lenition(word)
             preResults += format_comment(word)
+            j += 1
         preResults += "\n"
         if len(preResults) > char_limit:
             results += f"{len(someWord)} results. please search a more specific list, or use /random with number and same args\n\n"
