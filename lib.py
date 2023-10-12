@@ -197,27 +197,60 @@ def format(words: str, languageCode: str, showIPA: bool = False) -> str:
         someWord = words[i - 1]
         if len(someWord) == 0:
             preResults += "[" + str(i) + "] word not found\n"
-        j = 0
-        for word in someWord:
-            ipa = word['IPA']
-            breakdown = format_breakdown(word)
-            if showIPA:
-                preResults += f"[{i}{chr(ord('a') + j)}] **{word['Navi']}** [{ipa}] ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
-            else:
-                preResults += f"[{i}{chr(ord('a') + j)}] **{word['Navi']}** ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
-            preResults += format_prefixes(word)
-            preResults += format_infixes(word)
-            preResults += format_suffixes(word)
-            preResults += format_lenition(word)
-            preResults += format_comment(word)
-            j += 1
-        preResults += "\n"
+        elif len(someWord) == 1:
+            breakdown = format_breakdown(someWord[0])
+            preResults += f"[{str(i)}] **{someWord[0]['Navi']}** [{someWord[0]['IPA']}] ({breakdown}) *{someWord[0]['PartOfSpeech']}* {someWord[0][languageCode.upper()]}\n"
+        else:
+            j = 0
+            for word in someWord:
+                ipa = word['IPA']
+                breakdown = format_breakdown(word)
+                if showIPA:
+                    preResults += f"[{i}{chr(ord('a') + j)}] **{word['Navi']}** [{ipa}] ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+                else:
+                    preResults += f"[{i}{chr(ord('a') + j)}] **{word['Navi']}** ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+                preResults += format_prefixes(word)
+                preResults += format_infixes(word)
+                preResults += format_suffixes(word)
+                preResults += format_lenition(word)
+                preResults += format_comment(word)
+                j += 1
+            preResults += "\n"
         if len(preResults) > char_limit:
             results += f"{len(someWord)} results. please search a more specific list, or use /random with number and same args\n\n"
         else:
             results += preResults
     return results
 
+# For list and random commands
+def format1d(words: str, languageCode: str, showIPA: bool = False) -> str:
+    if isinstance(words, dict) and "message" in words:
+        return words["message"]
+    results = ""
+
+    preResults = ""
+    if len(words) == 0:
+        preResults += "[" + str(j) + "] word not found\n"
+    j = 0
+    for word in words:
+        ipa = word['IPA']
+        breakdown = format_breakdown(word)
+        if showIPA:
+            preResults += f"[{j + 1}] **{word['Navi']}** [{ipa}] ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+        else:
+            preResults += f"[{j + 1}] **{word['Navi']}** ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+        preResults += format_prefixes(word)
+        preResults += format_infixes(word)
+        preResults += format_suffixes(word)
+        preResults += format_lenition(word)
+        preResults += format_comment(word)
+        j += 1
+    preResults += "\n"
+    if len(preResults) > char_limit:
+        results += f"{len(words)} results. please search a more specific list, or use /random with number and same args\n\n"
+    else:
+        results += preResults
+    return results
 
 def get_naive_plural_en(word_en: str) -> str:
     if word_en == 'stomach':
@@ -369,22 +402,22 @@ def get_alphabet(letters: str) -> str:
 def get_list(languageCode: str, args: str, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/list/{args}")
     text = res.text
-    words = [json.loads(text)]
-    return format(words, languageCode, showIPA)
+    words = json.loads(text)
+    return format1d(words, languageCode, showIPA)
 
 
 def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random/{n}")
     text = res.text
-    words = [json.loads(text)]
-    return format(words, languageCode, showIPA)
+    words = json.loads(text)
+    return format1d(words, languageCode, showIPA)
 
 
 def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random/{n}/{args}")
     text = res.text
-    words = [json.loads(text)]
-    return format(words, languageCode, showIPA)
+    words = json.loads(text)
+    return format1d(words, languageCode, showIPA)
 
 
 def get_number(word: str) -> str:
