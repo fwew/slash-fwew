@@ -197,23 +197,28 @@ def format(words: str, languageCode: str, showIPA: bool = False) -> str:
         someWord = words[i - 1]
         if len(someWord) == 0:
             preResults += "[" + str(i) + "] word not found\n"
-        elif len(someWord) == 1:
-            breakdown = format_breakdown(someWord[0])
-            preResults += f"[{str(i)}] **{someWord[0]['Navi']}** [{someWord[0]['IPA']}] ({breakdown}) *{someWord[0]['PartOfSpeech']}* {someWord[0][languageCode.upper()]}\n"
         else:
             j = 0
             for word in someWord:
+                if len(someWord) == 1:
+                    preResults += f"[{i}] "
+                else:
+                    preResults += f"[{i}{chr(ord('a') + j)}] "
+                
+                preResults += f"**{word['Navi']}** "
+
                 ipa = word['IPA']
                 breakdown = format_breakdown(word)
                 if showIPA:
-                    preResults += f"[{i}{chr(ord('a') + j)}] **{word['Navi']}** [{ipa}] ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
-                else:
-                    preResults += f"[{i}{chr(ord('a') + j)}] **{word['Navi']}** ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+                    preResults += f"[{ipa}] "
+                preResults += f"({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+
                 preResults += format_prefixes(word)
                 preResults += format_infixes(word)
                 preResults += format_suffixes(word)
                 preResults += format_lenition(word)
                 preResults += format_comment(word)
+
                 j += 1
             preResults += "\n"
         if len(preResults) > char_limit:
