@@ -355,6 +355,16 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False) -> st
     return results
 
 
+def get_search(languageCode: str, words: str, showIPA: bool = False) -> str:
+    results = ""
+
+    res = requests.get(f"{api_url}/search/{languageCode.lower()}/{words}")
+    text = res.text
+    words = json.loads(text)
+    results += format(words, languageCode, showIPA)
+    return results
+
+
 def get_profanity(lang: str, showIPA: bool) -> str:
     words = "skxawng kalweyaveng kurkung pela'ang pxasìk teylupil tsahey txanfwìngtu vonvä' wiya"
     return get_fwew(lang, words, showIPA, fixesCheck=False)
