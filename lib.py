@@ -221,8 +221,12 @@ def format(words: str, languageCode: str, showIPA: bool = False) -> str:
 
                 j += 1
             preResults += "\n"
+        tooLongMessage = "(stopped at #. 2000 character limit)"
         if len(preResults) > char_limit:
             results += f"{len(someWord)} results. please search a more specific list, or use /random with number and same args\n\n"
+        elif len(results) + len(preResults) > char_limit - len(tooLongMessage):
+            results += str.replace(tooLongMessage, "#", str(i - 1))
+            return results
         else:
             results += preResults
     return results
