@@ -3,6 +3,8 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+import Paginator
+
 import disnake
 from disnake.ext import commands
 from disnake.ext.commands import Param
@@ -83,7 +85,7 @@ async def fwew(inter,
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
     checkFixesString = True if check_fixes == "true" else False
-    await inter.response.send_message(get_fwew(lang, words, showIPA, checkFixesString))
+    await Paginator.Simple().start(inter,pages=get_fwew(lang, words, showIPA, checkFixesString))
 
 
 @fwew_bot.slash_command(name="search-classic", description="search word(s) english -> na'vi")
@@ -104,7 +106,7 @@ async def search(inter,
     if lang is None:
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
-    await inter.response.send_message(get_fwew_reverse(lang, words, showIPA))
+    await Paginator.Simple().start(inter,pages=get_fwew_reverse(lang, words, showIPA))
 
 
 @fwew_bot.slash_command(name="search", description="search word(s) any direction")
@@ -125,7 +127,8 @@ async def search(inter,
     if lang is None:
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
-    await inter.response.send_message(get_search(lang, words, showIPA))
+    await Paginator.Simple().start(inter,pages=get_search(lang, words, showIPA))
+    #await inter.response.send_message(get_search(lang, words, showIPA))
 
 
 @fwew_bot.slash_command(name="profanity", description="get the list of Na'vi vulgar curse words / profanity")
@@ -200,7 +203,7 @@ async def list(inter, where=Param(description="characteristics of the word, such
     """
     if lang is None:
         lang = get_language(inter)
-    await inter.response.send_message(get_list(lang, where, ipa))
+    await Paginator.Simple().start(inter,pages=get_list(lang, where, ipa))
 
 
 @fwew_bot.slash_command(name="random", description="get given number of random entries with certain characteristics")
@@ -221,9 +224,9 @@ async def random(inter, n=Param(description="the number of random words to get")
     if lang is None:
         lang = get_language(inter)
     if where is None:
-        await inter.response.send_message(get_random(lang, n, ipa))
+        await Paginator.Simple().start(inter,pages=get_random(lang, n, ipa))
     else:
-        await inter.response.send_message(get_random_filter(lang, n, where, ipa))
+        await Paginator.Simple().start(inter,pages=get_random_filter(lang, n, where, ipa))
 
 
 @fwew_bot.slash_command(name="number", description="convert or translate numbers between decimal and octal/na'vi")
