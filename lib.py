@@ -192,6 +192,7 @@ def format_pages(words: str, languageCode: str, showIPA: bool = False):
     if isinstance(words, dict) and "message" in words:
         return words["message"]
     results = ""
+    total = 0
     if len(words) == 1:
         results += format_pages_helper(words[0], languageCode, showIPA, 0)
     else:
@@ -208,13 +209,17 @@ def format_pages(words: str, languageCode: str, showIPA: bool = False):
             complete_pages.append(a + "\n")
         else:
             complete_pages[-1] += a + "\n"
+        # How we know it's a result and not an affix check
+        if len(a) > 0 and a[0] == "[":
+            total += 1
 
-    return complete_pages
+    return complete_pages, total
 
 def format_pages_1d(words: str, languageCode: str, showIPA: bool = False):
     if isinstance(words, dict) and "message" in words:
         return words["message"]
     results = format_pages_helper(words, languageCode, showIPA)
+    total = 0
 
     # Make 2000 character pages
     split_results = results.split("\n")
@@ -225,8 +230,11 @@ def format_pages_1d(words: str, languageCode: str, showIPA: bool = False):
             complete_pages.append(a + "\n")
         else:
             complete_pages[-1] += a + "\n"
+        # How we know if it's a result and not an affix check
+        if len(a) > 0 and a[0] == "[":
+            total += 1
 
-    return complete_pages
+    return complete_pages, total
 
 def format_pages_helper(words: str, languageCode: str, showIPA: bool = False, row: int = 0) -> str:
     results = ""
@@ -343,15 +351,22 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
         res = requests.get(f"{api_url}/fwew-simple/{words}")
     text = res.text
     words = json.loads(text)
-    results = format_pages(words, languageCode, showIPA)
+    results, total = format_pages(words, languageCode, showIPA)
     
     embeds = []
 
     # Create a list of embeds to paginate.
     i = 0
+    firstResult = 0
+
     for a in results:
         i += 1
-        embeds.append(disnake.Embed(title="page " + str(i),description=a))
+        lastResult = 0
+        for b in a.split("\n"):
+            if len(b) > 0 and b[0] == "[":
+                lastResult += 1
+        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+        firstResult += lastResult
 
     return embeds
 
@@ -360,15 +375,22 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False):
     res = requests.get(f"{api_url}/fwew/r/{languageCode.lower()}/{words}")
     text = res.text
     words = json.loads(text)
-    results = format_pages(words, languageCode, showIPA)
+    results, total = format_pages(words, languageCode, showIPA)
     
     embeds = []
 
     # Create a list of embeds to paginate.
     i = 0
+    firstResult = 0
+
     for a in results:
         i += 1
-        embeds.append(disnake.Embed(title="page " + str(i),description=a))
+        lastResult = 0
+        for b in a.split("\n"):
+            if len(b) > 0 and b[0] == "[":
+                lastResult += 1
+        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+        firstResult += lastResult
 
     return embeds
 
@@ -377,15 +399,22 @@ def get_search(languageCode: str, words: str, showIPA: bool = False):
     res = requests.get(f"{api_url}/search/{languageCode.lower()}/{words}")
     text = res.text
     words = json.loads(text)
-    results = format_pages(words, languageCode, showIPA)
+    results, total = format_pages(words, languageCode, showIPA)
 
     embeds = []
 
     # Create a list of embeds to paginate.
     i = 0
+    firstResult = 0
+
     for a in results:
         i += 1
-        embeds.append(disnake.Embed(title="page " + str(i),description=a))
+        lastResult = 0
+        for b in a.split("\n"):
+            if len(b) > 0 and b[0] == "[":
+                lastResult += 1
+        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+        firstResult += lastResult
 
     return embeds
 
@@ -443,15 +472,22 @@ def get_list(languageCode: str, args: str, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/list/{args}")
     text = res.text
     words = json.loads(text)
-    results = format_pages_1d(words, languageCode, showIPA)
+    results, total = format_pages_1d(words, languageCode, showIPA)
     
     embeds = []
 
     # Create a list of embeds to paginate.
     i = 0
+    firstResult = 0
+
     for a in results:
         i += 1
-        embeds.append(disnake.Embed(title="page " + str(i),description=a))
+        lastResult = 0
+        for b in a.split("\n"):
+            if len(b) > 0 and b[0] == "[":
+                lastResult += 1
+        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+        firstResult += lastResult
 
     return embeds
 
@@ -460,15 +496,22 @@ def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random/{n}")
     text = res.text
     words = json.loads(text)
-    results = format_pages_1d(words, languageCode, showIPA)
+    results, total = format_pages_1d(words, languageCode, showIPA)
     
     embeds = []
 
     # Create a list of embeds to paginate.
     i = 0
+    firstResult = 0
+
     for a in results:
         i += 1
-        embeds.append(disnake.Embed(title="page " + str(i),description=a))
+        lastResult = 0
+        for b in a.split("\n"):
+            if len(b) > 0 and b[0] == "[":
+                lastResult += 1
+        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+        firstResult += lastResult
 
     return embeds
 
@@ -477,15 +520,22 @@ def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool) -> st
     res = requests.get(f"{api_url}/random/{n}/{args}")
     text = res.text
     words = json.loads(text)
-    results = format_pages_1d(words, languageCode, showIPA)
+    results, total = format_pages_1d(words, languageCode, showIPA)
     
     embeds = []
 
     # Create a list of embeds to paginate.
     i = 0
+    firstResult = 0
+
     for a in results:
         i += 1
-        embeds.append(disnake.Embed(title="page " + str(i),description=a))
+        lastResult = 0
+        for b in a.split("\n"):
+            if len(b) > 0 and b[0] == "[":
+                lastResult += 1
+        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+        firstResult += lastResult
 
     return embeds
 
