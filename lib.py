@@ -233,10 +233,14 @@ def format_pages_helper(words: str, languageCode: str, showIPA: bool = False, ro
         j = 0
         for word in words:
             j += 1
+            results += "["
             if row == 0:
-                results += f"[{j}] "
+                results += f"{j}"
+            elif len(words) == 1:
+                results += f"{row}"
             else:
-                results += f"[{row}-{j}] "
+                results += f"{row}-{j}"
+            results += "] "
                
             results += f"**{word['Navi']}** "
 
