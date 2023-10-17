@@ -193,9 +193,8 @@ def format_pages(words: str, languageCode: str, showIPA: bool = False):
         return words["message"]
     results = ""
     for i in range(1, len(words) + 1):
-        preResults = ""
         someWord = words[i - 1]
-        results += format_pages_helper(someWord, languageCode, showIPA)
+        results += format_pages_helper(someWord, languageCode, showIPA, i)
 
     # Make 2000 character pages
     split_results = results.split("\n")
@@ -226,7 +225,7 @@ def format_pages_1d(words: str, languageCode: str, showIPA: bool = False):
 
     return complete_pages
 
-def format_pages_helper(words: str, languageCode: str, showIPA: bool = False) -> str:
+def format_pages_helper(words: str, languageCode: str, showIPA: bool = False, row: int = 0) -> str:
     results = ""
     if len(words) == 0:
         results += "[" + str(j) + "] word not found\n"
@@ -234,7 +233,10 @@ def format_pages_helper(words: str, languageCode: str, showIPA: bool = False) ->
         j = 0
         for word in words:
             j += 1
-            results += f"[{j}] "
+            if row == 0:
+                results += f"[{j}] "
+            else:
+                results += f"[{row}-{j}] "
                
             results += f"**{word['Navi']}** "
 
