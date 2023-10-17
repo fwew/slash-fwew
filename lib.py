@@ -192,9 +192,12 @@ def format_pages(words: str, languageCode: str, showIPA: bool = False):
     if isinstance(words, dict) and "message" in words:
         return words["message"]
     results = ""
-    for i in range(1, len(words) + 1):
-        someWord = words[i - 1]
-        results += format_pages_helper(someWord, languageCode, showIPA, i)
+    if len(words) == 1:
+        results += format_pages_helper(words[0], languageCode, showIPA, 0)
+    else:
+        for i in range(1, len(words) + 1):
+            someWord = words[i - 1]
+            results += format_pages_helper(someWord, languageCode, showIPA, i)
 
     # Make 2000 character pages
     split_results = results.split("\n")
