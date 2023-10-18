@@ -190,7 +190,7 @@ def format_alphabet(letter: str, letters_dict: dict, names_dict: dict, i: int) -
 
 def format_pages(words: str, languageCode: str, showIPA: bool = False):
     if isinstance(words, dict) and "message" in words:
-        return words["message"]
+        return words["message"], 1
     results = ""
     total = 0
     if len(words) == 1:
@@ -217,7 +217,7 @@ def format_pages(words: str, languageCode: str, showIPA: bool = False):
 
 def format_pages_1d(words: str, languageCode: str, showIPA: bool = False):
     if isinstance(words, dict) and "message" in words:
-        return words["message"]
+        return words["message"], 1
     results = format_pages_helper(words, languageCode, showIPA)
     total = 0
 
@@ -239,7 +239,9 @@ def format_pages_1d(words: str, languageCode: str, showIPA: bool = False):
 def format_pages_helper(words: str, languageCode: str, showIPA: bool = False, row: int = 0) -> str:
     results = ""
     if len(words) == 0:
-        results += "[" + str(j) + "] word not found\n"
+        if row == 0:
+            row = 1
+        results += "[" + str(row) + "] word not found\n"
     else:
         j = 0
         for word in words:
@@ -350,8 +352,8 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
     else:
         res = requests.get(f"{api_url}/fwew-simple/{words}")
     text = res.text
-    words = json.loads(text)
-    results, total = format_pages(words, languageCode, showIPA)
+    words2 = json.loads(text)
+    results, total = format_pages(words2, languageCode, showIPA)
     
     embeds = []
 
@@ -359,14 +361,21 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
     i = 0
     firstResult = 0
 
+    hasWords = False
+
     for a in results:
         i += 1
         lastResult = 0
         for b in a.split("\n"):
             if len(b) > 0 and b[0] == "[":
                 lastResult += 1
+                if not b.endswith("not found"):
+                    hasWords = True
         embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
         firstResult += lastResult
+    
+    if not hasWords:
+        embeds = [disnake.Embed(title="No words found",description="No Na'vi words found for:\n" + words)]
 
     return embeds
 
@@ -374,8 +383,8 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
 def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False):
     res = requests.get(f"{api_url}/fwew/r/{languageCode.lower()}/{words}")
     text = res.text
-    words = json.loads(text)
-    results, total = format_pages(words, languageCode, showIPA)
+    words2 = json.loads(text)
+    results, total = format_pages(words2, languageCode, showIPA)
     
     embeds = []
 
@@ -383,14 +392,21 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False):
     i = 0
     firstResult = 0
 
+    hasWords = False
+
     for a in results:
         i += 1
         lastResult = 0
         for b in a.split("\n"):
             if len(b) > 0 and b[0] == "[":
                 lastResult += 1
+                if not b.endswith("not found"):
+                    hasWords = True
         embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
         firstResult += lastResult
+    
+    if not hasWords:
+        embeds.append(disnake.Embed(title="No words found",description="No natural language words found for:\n" + words))
 
     return embeds
 
@@ -398,8 +414,8 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False):
 def get_search(languageCode: str, words: str, showIPA: bool = False):
     res = requests.get(f"{api_url}/search/{languageCode.lower()}/{words}")
     text = res.text
-    words = json.loads(text)
-    results, total = format_pages(words, languageCode, showIPA)
+    words2 = json.loads(text)
+    results, total = format_pages(words2, languageCode, showIPA)
 
     embeds = []
 
@@ -407,14 +423,21 @@ def get_search(languageCode: str, words: str, showIPA: bool = False):
     i = 0
     firstResult = 0
 
+    hasWords = False
+
     for a in results:
         i += 1
         lastResult = 0
         for b in a.split("\n"):
             if len(b) > 0 and b[0] == "[":
                 lastResult += 1
+                if not b.endswith("not found"):
+                    hasWords = True
         embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
         firstResult += lastResult
+    
+    if not hasWords:
+        embeds.append(disnake.Embed(title="No words found",description="No Na'vi or natural language words matching your parameters:\n" + words))
 
     return embeds
 
@@ -471,8 +494,8 @@ def get_alphabet(letters: str) -> str:
 def get_list(languageCode: str, args: str, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/list/{args}")
     text = res.text
-    words = json.loads(text)
-    results, total = format_pages_1d(words, languageCode, showIPA)
+    words2 = json.loads(text)
+    results, total = format_pages_1d(words2, languageCode, showIPA)
     
     embeds = []
 
@@ -480,14 +503,18 @@ def get_list(languageCode: str, args: str, showIPA: bool) -> str:
     i = 0
     firstResult = 0
 
-    for a in results:
-        i += 1
-        lastResult = 0
-        for b in a.split("\n"):
-            if len(b) > 0 and b[0] == "[":
-                lastResult += 1
-        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
-        firstResult += lastResult
+    if len(results) == 0 or results.endswith("no results"):
+        embeds.append(disnake.Embed(title="No words found",description="No words matching your parameters:\n" + args))
+    else:
+        for a in results:
+            i += 1
+            lastResult = 0
+            for b in a.split("\n"):
+                if len(b) > 0 and b[0] == "[":
+                    lastResult += 1
+
+            embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+            firstResult += lastResult
 
     return embeds
 
@@ -495,8 +522,8 @@ def get_list(languageCode: str, args: str, showIPA: bool) -> str:
 def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random/{n}")
     text = res.text
-    words = json.loads(text)
-    results, total = format_pages_1d(words, languageCode, showIPA)
+    words2 = json.loads(text)
+    results, total = format_pages_1d(words2, languageCode, showIPA)
     
     embeds = []
 
@@ -504,14 +531,17 @@ def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     i = 0
     firstResult = 0
 
-    for a in results:
-        i += 1
-        lastResult = 0
-        for b in a.split("\n"):
-            if len(b) > 0 and b[0] == "[":
-                lastResult += 1
-        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
-        firstResult += lastResult
+    if len(results) == 0 or results.endswith("no results"):
+        embeds.append(disnake.Embed(title="Random failed",description="You should not be seeing this on Discord"))
+    else:
+        for a in results:
+            i += 1
+            lastResult = 0
+            for b in a.split("\n"):
+                if len(b) > 0 and b[0] == "[":
+                    lastResult += 1
+            embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+            firstResult += lastResult
 
     return embeds
 
@@ -519,23 +549,26 @@ def get_random(languageCode: str, n: int, showIPA: bool) -> str:
 def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random/{n}/{args}")
     text = res.text
-    words = json.loads(text)
-    results, total = format_pages_1d(words, languageCode, showIPA)
+    words2 = json.loads(text)
+    results, total = format_pages_1d(words2, languageCode, showIPA)
     
     embeds = []
 
     # Create a list of embeds to paginate.
     i = 0
     firstResult = 0
-
-    for a in results:
-        i += 1
-        lastResult = 0
-        for b in a.split("\n"):
-            if len(b) > 0 and b[0] == "[":
-                lastResult += 1
-        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
-        firstResult += lastResult
+    
+    if len(results) == 0 or results.endswith("no results"):
+        embeds.append(disnake.Embed(title="No words found",description="No words matching your parameters:\n" + args))
+    else:
+        for a in results:
+            i += 1
+            lastResult = 0
+            for b in a.split("\n"):
+                if len(b) > 0 and b[0] == "[":
+                    lastResult += 1
+            embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+            firstResult += lastResult
 
     return embeds
 
