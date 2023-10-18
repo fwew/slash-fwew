@@ -510,7 +510,6 @@ def get_list(languageCode: str, args: str, showIPA: bool) -> str:
             i += 1
             lastResult = 0
             for b in a.split("\n"):
-                print(b)
                 if len(b) > 0 and b[0] == "[":
                     lastResult += 1
 
