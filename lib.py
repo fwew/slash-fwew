@@ -503,13 +503,14 @@ def get_list(languageCode: str, args: str, showIPA: bool) -> str:
     i = 0
     firstResult = 0
 
-    if len(results) == 0 or results.endswith("no results"):
+    if type(results) == str:
         embeds.append(disnake.Embed(title="No words found",description="No words matching your parameters:\n" + args))
     else:
         for a in results:
             i += 1
             lastResult = 0
             for b in a.split("\n"):
+                print(b)
                 if len(b) > 0 and b[0] == "[":
                     lastResult += 1
 
@@ -531,7 +532,7 @@ def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     i = 0
     firstResult = 0
 
-    if len(results) == 0 or results.endswith("no results"):
+    if type(results) == str:
         embeds.append(disnake.Embed(title="Random failed",description="You should not be seeing this on Discord"))
     else:
         for a in results:
@@ -558,7 +559,7 @@ def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool) -> st
     i = 0
     firstResult = 0
     
-    if len(results) == 0 or results.endswith("no results"):
+    if type(results) == str:
         embeds.append(disnake.Embed(title="No words found",description="No words matching your parameters:\n" + args))
     else:
         for a in results:
