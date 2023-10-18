@@ -406,7 +406,7 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False):
         firstResult += lastResult
     
     if not hasWords:
-        embeds.append(disnake.Embed(title="No words found",description="No natural language words found for:\n" + words))
+        embeds = [disnake.Embed(title="No words found",description="No natural language words found for:\n" + words)]
 
     return embeds
 
@@ -437,7 +437,7 @@ def get_search(languageCode: str, words: str, showIPA: bool = False):
         firstResult += lastResult
     
     if not hasWords:
-        embeds.append(disnake.Embed(title="No words found",description="No Na'vi or natural language words matching your parameters:\n" + words))
+        embeds = [disnake.Embed(title="No words found",description="No Na'vi or natural language words matching your parameters:\n" + words)]
 
     return embeds
 
