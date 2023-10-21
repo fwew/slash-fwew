@@ -347,6 +347,15 @@ def format_number(response_text: str) -> str:
 
 
 def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True):
+    embeds = []
+
+    if words.lower() == "hrh":
+        hrh = "https://youtu.be/-AgnLH7Dw3w?t=274\n"
+        hrh += "> What would LOL be?\n"
+        hrh += "> It would have to do with the word herangham... maybe HRH"
+        embeds.append(disnake.Embed(title="HRH",description=hrh))
+        return embeds
+
     if fixesCheck:
         res = requests.get(f"{api_url}/fwew/{words}")
     else:
@@ -354,8 +363,6 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
     text = res.text
     words2 = json.loads(text)
     results, total = format_pages(words2, languageCode, showIPA)
-    
-    embeds = []
 
     # Create a list of embeds to paginate.
     i = 0
@@ -381,6 +388,15 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
 
 
 def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False):
+    embeds = []
+    
+    if words.lower() == "hrh":
+        hrh = "https://youtu.be/-AgnLH7Dw3w?t=274\n"
+        hrh += "> What would LOL be?\n"
+        hrh += "> It would have to do with the word herangham... maybe HRH"
+        embeds.append(disnake.Embed(title="HRH",description=hrh))
+        return embeds
+    
     res = requests.get(f"{api_url}/fwew/r/{languageCode.lower()}/{words}")
     text = res.text
     words2 = json.loads(text)
@@ -412,6 +428,15 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False):
 
 
 def get_search(languageCode: str, words: str, showIPA: bool = False):
+    embeds = []
+    
+    if words.lower() == "hrh":
+        hrh = "https://youtu.be/-AgnLH7Dw3w?t=274\n"
+        hrh += "> What would LOL be?\n"
+        hrh += "> It would have to do with the word herangham... maybe HRH"
+        embeds.append(disnake.Embed(title="HRH",description=hrh))
+        return embeds
+    
     res = requests.get(f"{api_url}/search/{languageCode.lower()}/{words}")
     text = res.text
     words2 = json.loads(text)
