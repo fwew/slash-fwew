@@ -148,7 +148,7 @@ async def profanity(inter,
     if lang is None:
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
-    await inter.response.send_message(get_profanity(lang, showIPA))
+    await Paginator.Simple().start(inter,pages=get_profanity(lang, showIPA))
 
 
 @fwew_bot.slash_command(name="source", description="look up the source of na'vi word(s)")
