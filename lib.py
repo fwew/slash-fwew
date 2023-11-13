@@ -622,6 +622,7 @@ def get_line_ending(word: str) -> str:
         results += "\n\n"
     return results
 
+
 # One-word names to be sent to Discord
 def get_single_name_discord(n: int, dialect: str, s: int):
     return json.loads(requests.get(f"{api_url}/name/single/{n}/{s}/{dialect}").text)
