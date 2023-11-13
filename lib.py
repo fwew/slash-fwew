@@ -2,6 +2,7 @@ import json
 import os
 import re
 from pathlib import Path
+import disnake
 
 import requests
 from dotenv import load_dotenv
@@ -52,10 +53,6 @@ def get_language(inter):
     if inter.guild_id not in server_languages:
         server_languages[inter.guild_id] = "en"
     return server_languages[inter.guild_id]
-
-
-def format_ipa(word: dict) -> str:
-    return word['IPA']
 
 
 def do_underline(stressed: str, syllables: str) -> str:
@@ -145,30 +142,32 @@ def format_lenition(word: dict) -> str:
     return results
 
 
-def format_source(response_text: str) -> str:
-    word = json.loads(response_text)
-    if isinstance(word, dict) and "message" in word:
-        return word["message"]
+def format_source(words: str) -> str:
     results = ""
-    for i in range(1, len(word) + 1):
-        w = word[i - 1]
-        if w['Source'] is None:
-            results += f"[{i}] **{w['Navi']}**: no source results\n"
-        else:
-            w['Source'] = re.sub(url_pattern, r"<\1>", w['Source'])
-            results += f"[{i}] **{w['Navi']}** @ {w['Source']}\n"
+    for word in words:
+        if isinstance(word, dict) and "message" in word:
+            return word["message"]
+        for i in range(1, len(word) + 1):
+            w = word[i - 1]
+            if w['Source'] is None:
+                results += f"[{i}] **{w['Navi']}**: no source results\n"
+            else:
+                w['Source'] = re.sub(url_pattern, r"<\1>", w['Source'])
+                results += f"[{i}] **{w['Navi']}** @ {w['Source']}\n"
+        results += "\n"
     return results
 
 
-def format_audio(response_text: str) -> str:
-    word = json.loads(response_text)
-    if isinstance(word, dict) and "message" in word:
-        return word["message"]
+def format_audio(words: str) -> str:
     results = ""
-    for i in range(1, len(word) + 1):
-        w = word[i - 1]
-        syllables = do_underline(w['Stressed'], w['Syllables'])
-        results += f"[{i}] **{w['Navi']}** ({syllables}) :speaker: [click here to listen](https://s.learnnavi.org/audio/vocab/{w['ID']}.mp3)\n"
+    for word in words:
+        if isinstance(word, dict) and "message" in word:
+            return word["message"]
+        for i in range(1, len(word) + 1):
+            w = word[i - 1]
+            syllables = do_underline(w['Stressed'], w['Syllables'])
+            results += f"[{i}] **{w['Navi']}** ({syllables}) :speaker: [click here to listen](https://s.learnnavi.org/audio/vocab/{w['ID']}.mp3)\n"
+        results += "\n"
     return results
 
 
@@ -189,29 +188,88 @@ def format_alphabet(letter: str, letters_dict: dict, names_dict: dict, i: int) -
         return f"[{i + 1}] **{letter}**: no results\n"
     return f"[{i + 1}] **{current_letter}** ({current_letter_name}) :speaker: [click here to listen](https://s.learnnavi.org/audio/alphabet/{letter_id}.mp3)\n"
 
-
-def format(response_text: str, languageCode: str, showIPA: bool = False) -> str:
-    words = json.loads(response_text)
+def format_pages(words: str, languageCode: str, showIPA: bool = False):
     if isinstance(words, dict) and "message" in words:
-        return words["message"]
+        return words["message"], 1
     results = ""
-    for i in range(1, len(words) + 1):
-        word = words[i - 1]
-        ipa = format_ipa(word)
-        breakdown = format_breakdown(word)
-        if showIPA:
-            results += f"[{i}] **{word['Navi']}** [{ipa}] ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
-        else:
-            results += f"[{i}] **{word['Navi']}** ({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
-        results += format_prefixes(word)
-        results += format_infixes(word)
-        results += format_suffixes(word)
-        results += format_lenition(word)
-        results += format_comment(word)
-    if len(results) > char_limit:
-        return f"{len(words)} results. please search a more specific list, or use /random with number and same args"
-    return results
+    total = 0
+    if len(words) == 1:
+        results += format_pages_helper(words[0], languageCode, showIPA, 0)
+    else:
+        for i in range(1, len(words) + 1):
+            someWord = words[i - 1]
+            results += format_pages_helper(someWord, languageCode, showIPA, i)
 
+    # Make 2000 character pages
+    split_results = results.split("\n")
+    complete_pages = [""]
+
+    for a in split_results:
+        if len(a) + len(complete_pages[-1]) > 2000:
+            complete_pages.append(a + "\n")
+        else:
+            complete_pages[-1] += a + "\n"
+        # How we know it's a result and not an affix check
+        if len(a) > 0 and a[0] == "[":
+            total += 1
+
+    return complete_pages, total
+
+def format_pages_1d(words: str, languageCode: str, showIPA: bool = False):
+    if isinstance(words, dict) and "message" in words:
+        return words["message"], 1
+    results = format_pages_helper(words, languageCode, showIPA)
+    total = 0
+
+    # Make 2000 character pages
+    split_results = results.split("\n")
+    complete_pages = [""]
+
+    for a in split_results:
+        if len(a) + len(complete_pages[-1]) > 2000:
+            complete_pages.append(a + "\n")
+        else:
+            complete_pages[-1] += a + "\n"
+        # How we know if it's a result and not an affix check
+        if len(a) > 0 and a[0] == "[":
+            total += 1
+
+    return complete_pages, total
+
+def format_pages_helper(words: str, languageCode: str, showIPA: bool = False, row: int = 0) -> str:
+    results = ""
+    if len(words) == 0:
+        if row == 0:
+            row = 1
+        results += "[" + str(row) + "] word not found\n"
+    else:
+        j = 0
+        for word in words:
+            j += 1
+            results += "["
+            if row == 0:
+                results += f"{j}"
+            elif len(words) == 1:
+                results += f"{row}"
+            else:
+                results += f"{row}-{j}"
+            results += "] "
+               
+            results += f"**{word['Navi']}** "
+
+            ipa = word['IPA']
+            breakdown = format_breakdown(word)
+            if showIPA:
+                results += f"[{ipa}] "
+            results += f"({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+
+            results += format_prefixes(word)
+            results += format_infixes(word)
+            results += format_suffixes(word)
+            results += format_lenition(word)
+            results += format_comment(word)
+        
+    return results
 
 def get_naive_plural_en(word_en: str) -> str:
     if word_en == 'stomach':
@@ -288,48 +346,125 @@ def format_number(response_text: str) -> str:
     return f"`  na'vi`: {name}\n`  octal`: {octal}\n`decimal`: {decimal}"
 
 
-def get_word_bundles(words: str) -> list[str]:
-    result = []
-    for pattern in patterns:
-        if words[0] == '"' and words[-1] == '"':
-            break
-        else:
-            words = re.sub(pattern, r'"\1"', words)
-    yy = [c for c in re.split(r'("\w+ \w+\s?\w*")', words) if len(c) > 0]
-    for w in yy:
-        if w.startswith('"') and w.endswith('"'):
-            result.append(w[1:-1])
-        else:
-            result.extend(w.split())
-    result = [r for r in result if r != '"']
-    return result
+def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True):
+    embeds = []
+
+    if words.lower() == "hrh":
+        hrh = "https://youtu.be/-AgnLH7Dw3w?t=274\n"
+        hrh += "> What would LOL be?\n"
+        hrh += "> It would have to do with the word herangham... maybe HRH"
+        embeds.append(disnake.Embed(title="HRH",description=hrh))
+        return embeds
+
+    if fixesCheck:
+        res = requests.get(f"{api_url}/fwew/{words}")
+    else:
+        res = requests.get(f"{api_url}/fwew-simple/{words}")
+    text = res.text
+    words2 = json.loads(text)
+    results, total = format_pages(words2, languageCode, showIPA)
+
+    # Create a list of embeds to paginate.
+    i = 0
+    firstResult = 0
+
+    hasWords = False
+
+    for a in results:
+        i += 1
+        lastResult = 0
+        for b in a.split("\n"):
+            if len(b) > 0 and b[0] == "[":
+                lastResult += 1
+                if not b.endswith("not found"):
+                    hasWords = True
+        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+        firstResult += lastResult
+    
+    if not hasWords:
+        embeds = [disnake.Embed(title="No words found",description="No Na'vi words found for:\n" + words)]
+
+    return embeds
 
 
-def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True) -> str:
-    results = ""
-    word_list = get_word_bundles(words)
-    for i, word in enumerate(word_list):
-        if i != 0:
-            results += "\n"
-        if fixesCheck:# or word == "pela'ang":
-            res = requests.get(f"{api_url}/fwew/{word}")
-        else:
-            res = requests.get(f"{api_url}/fwew-simple/{word}")
-        text = res.text
-        results += format(text, languageCode, showIPA)
-    return results
+def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False):
+    embeds = []
+    
+    if words.lower() == "hrh":
+        hrh = "https://youtu.be/-AgnLH7Dw3w?t=274\n"
+        hrh += "> What would LOL be?\n"
+        hrh += "> It would have to do with the word herangham... maybe HRH"
+        embeds.append(disnake.Embed(title="HRH",description=hrh))
+        return embeds
+    
+    res = requests.get(f"{api_url}/fwew/r/{languageCode.lower()}/{words}")
+    text = res.text
+    words2 = json.loads(text)
+    results, total = format_pages(words2, languageCode, showIPA)
+    
+    embeds = []
+
+    # Create a list of embeds to paginate.
+    i = 0
+    firstResult = 0
+
+    hasWords = False
+
+    for a in results:
+        i += 1
+        lastResult = 0
+        for b in a.split("\n"):
+            if len(b) > 0 and b[0] == "[":
+                lastResult += 1
+                if not b.endswith("not found"):
+                    hasWords = True
+        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+        firstResult += lastResult
+    
+    if not hasWords:
+        embeds = [disnake.Embed(title="No words found",description="No natural language words found for:\n" + words)]
+
+    return embeds
 
 
-def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False) -> str:
-    results = ""
-    word_list = words.split()
-    for i, word in enumerate(word_list):
-        if i != 0:
-            results += "\n"
-        res = requests.get(f"{api_url}/fwew/r/{languageCode.lower()}/{word}")
-        text = res.text
-        results += format(text, languageCode, showIPA)
-    return results
+def get_search(languageCode: str, words: str, showIPA: bool = False):
+    embeds = []
+    
+    if words.lower() == "hrh":
+        hrh = "https://youtu.be/-AgnLH7Dw3w?t=274\n"
+        hrh += "> What would LOL be?\n"
+        hrh += "> It would have to do with the word herangham... maybe HRH"
+        embeds.append(disnake.Embed(title="HRH",description=hrh))
+        return embeds
+    
+    res = requests.get(f"{api_url}/search/{languageCode.lower()}/{words}")
+    text = res.text
+    words2 = json.loads(text)
+    results, total = format_pages(words2, languageCode, showIPA)
+
+    embeds = []
+
+    # Create a list of embeds to paginate.
+    i = 0
+    firstResult = 0
+
+    hasWords = False
+
+    for a in results:
+        i += 1
+        lastResult = 0
+        for b in a.split("\n"):
+            if len(b) > 0 and b[0] == "[":
+                lastResult += 1
+                if not b.endswith("not found"):
+                    hasWords = True
+        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+        firstResult += lastResult
+    
+    if not hasWords:
+        embeds = [disnake.Embed(title="No words found",description="No Na'vi or natural language words found for:\n" + words)]
+
+    return embeds
 
 
 def get_profanity(lang: str, showIPA: bool) -> str:
@@ -339,25 +474,21 @@ def get_profanity(lang: str, showIPA: bool) -> str:
 
 def get_source(words: str) -> str:
     results = ""
-    word_list = get_word_bundles(words)
-    for i, word in enumerate(word_list):
-        if i != 0:
-            results += "\n"
-        res = requests.get(f"{api_url}/fwew/{word}")
-        text = res.text
-        results += format_source(text)
+
+    res = requests.get(f"{api_url}/fwew/{words}")
+    text = res.text
+    words = json.loads(text)
+    results += format_source(words)
     return results
 
 
 def get_audio(words: str) -> str:
     results = ""
-    word_list = get_word_bundles(words)
-    for i, word in enumerate(word_list):
-        if i != 0:
-            results += "\n"
-        res = requests.get(f"{api_url}/fwew/{word}")
-        text = res.text
-        results += format_audio(text)
+
+    res = requests.get(f"{api_url}/fwew/{words}")
+    text = res.text
+    words = json.loads(text)
+    results += format_audio(words)
     return results
 
 
@@ -388,19 +519,83 @@ def get_alphabet(letters: str) -> str:
 def get_list(languageCode: str, args: str, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/list/{args}")
     text = res.text
-    return format(text, languageCode, showIPA)
+    words2 = json.loads(text)
+    results, total = format_pages_1d(words2, languageCode, showIPA)
+    
+    embeds = []
+
+    # Create a list of embeds to paginate.
+    i = 0
+    firstResult = 0
+
+    if type(results) == str:
+        embeds.append(disnake.Embed(title="No words found",description="No words matching your parameters:\n" + args))
+    else:
+        for a in results:
+            i += 1
+            lastResult = 0
+            for b in a.split("\n"):
+                if len(b) > 0 and b[0] == "[":
+                    lastResult += 1
+
+            embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+            firstResult += lastResult
+
+    return embeds
 
 
 def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random/{n}")
     text = res.text
-    return format(text, languageCode, showIPA)
+    words2 = json.loads(text)
+    results, total = format_pages_1d(words2, languageCode, showIPA)
+    
+    embeds = []
+
+    # Create a list of embeds to paginate.
+    i = 0
+    firstResult = 0
+
+    if type(results) == str:
+        embeds.append(disnake.Embed(title="Random failed",description="You should not be seeing this on Discord"))
+    else:
+        for a in results:
+            i += 1
+            lastResult = 0
+            for b in a.split("\n"):
+                if len(b) > 0 and b[0] == "[":
+                    lastResult += 1
+            embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+            firstResult += lastResult
+
+    return embeds
 
 
 def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random/{n}/{args}")
     text = res.text
-    return format(text, languageCode, showIPA)
+    words2 = json.loads(text)
+    results, total = format_pages_1d(words2, languageCode, showIPA)
+    
+    embeds = []
+
+    # Create a list of embeds to paginate.
+    i = 0
+    firstResult = 0
+    
+    if type(results) == str:
+        embeds.append(disnake.Embed(title="No words found",description="No words matching your parameters:\n" + args))
+    else:
+        for a in results:
+            i += 1
+            lastResult = 0
+            for b in a.split("\n"):
+                if len(b) > 0 and b[0] == "[":
+                    lastResult += 1
+            embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+            firstResult += lastResult
+
+    return embeds
 
 
 def get_number(word: str) -> str:
@@ -427,36 +622,6 @@ def get_line_ending(word: str) -> str:
         results += "\n\n"
     return results
 
-
-def get_translation(text: str, languageCode: str) -> str:
-    results = ""
-    word_list = get_word_bundles(text)
-    for i, word in enumerate(word_list):
-        if i != 0 and not results.endswith("\n"):
-            results += " **|** "
-        word = word_list[i]
-        if re.match(r"hrh", word):
-            results += f"lol{get_line_ending(word)}"
-            continue
-        elif word == "a":
-            results += "that"
-            continue
-        elif re.match(si_pattern, word):
-            results += f"do / make{get_line_ending(word)}"
-            continue
-        elif word == "srake":
-            results += "(yes/no question)"
-            continue
-        elif re.match(r"srak", word):
-            results += f"(yes/no question){get_line_ending(word)}"
-            continue
-        res = requests.get(f"{api_url}/fwew/{word}")
-        text = res.text
-        results += format_translation(text, languageCode)
-        results += get_line_ending(word)
-    if len(results) > char_limit:
-        return f"translation exceeds character limit of {char_limit}"
-    return results
 
 # One-word names to be sent to Discord
 def get_single_name_discord(n: int, dialect: str, s: int):

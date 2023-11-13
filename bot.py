@@ -3,6 +3,8 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+import Paginator
+
 import disnake
 from disnake.ext import commands
 from disnake.ext.commands import Param
@@ -83,10 +85,10 @@ async def fwew(inter,
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
     checkFixesString = True if check_fixes == "true" else False
-    await inter.response.send_message(get_fwew(lang, words, showIPA, checkFixesString))
+    await Paginator.Simple().start(inter,pages=get_fwew(lang, words, showIPA, checkFixesString))
 
 
-@fwew_bot.slash_command(name="search", description="search word(s) english -> na'vi")
+@fwew_bot.slash_command(name="search-classic", description="search word(s) english -> na'vi")
 async def search(inter,
                 words=Param(description="the english word(s) to look up"),
                 ipa=Param(description="set to true to show IPA",
@@ -104,7 +106,29 @@ async def search(inter,
     if lang is None:
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
-    await inter.response.send_message(get_fwew_reverse(lang, words, showIPA))
+    await Paginator.Simple().start(inter,pages=get_fwew_reverse(lang, words, showIPA))
+
+
+@fwew_bot.slash_command(name="search", description="search word(s) any direction")
+async def search(inter,
+                words=Param(description="the word(s) to look up"),
+                ipa=Param(description="set to true to show IPA",
+                        default=False, choices=["true", "false"]),
+                lang=Param(description="Language for results", default="en",
+                        choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"])):
+    """
+    search words (direction idependent)
+
+    Parameters
+    ----------
+    words: the word(s) to look up
+    lang: the two-letter language-code for results (default: en)
+    """
+    if lang is None:
+        lang = get_language(inter)
+    showIPA = True if ipa == "true" else False
+    await Paginator.Simple().start(inter,pages=get_search(lang, words, showIPA))
+    #await inter.response.send_message(get_search(lang, words, showIPA))
 
 
 @fwew_bot.slash_command(name="profanity", description="get the list of Na'vi vulgar curse words / profanity")
@@ -124,7 +148,7 @@ async def profanity(inter,
     if lang is None:
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
-    await inter.response.send_message(get_profanity(lang, showIPA))
+    await Paginator.Simple().start(inter,pages=get_profanity(lang, showIPA))
 
 
 @fwew_bot.slash_command(name="source", description="look up the source of na'vi word(s)")
@@ -179,7 +203,7 @@ async def list(inter, where=Param(description="characteristics of the word, such
     """
     if lang is None:
         lang = get_language(inter)
-    await inter.response.send_message(get_list(lang, where, ipa))
+    await Paginator.Simple().start(inter,pages=get_list(lang, where, ipa))
 
 
 @fwew_bot.slash_command(name="random", description="get given number of random entries with certain characteristics")
@@ -200,9 +224,9 @@ async def random(inter, n=Param(description="the number of random words to get")
     if lang is None:
         lang = get_language(inter)
     if where is None:
-        await inter.response.send_message(get_random(lang, n, ipa))
+        await Paginator.Simple().start(inter,pages=get_random(lang, n, ipa))
     else:
-        await inter.response.send_message(get_random_filter(lang, n, where, ipa))
+        await Paginator.Simple().start(inter,pages=get_random_filter(lang, n, where, ipa))
 
 
 @fwew_bot.slash_command(name="number", description="convert or translate numbers between decimal and octal/na'vi")
@@ -378,15 +402,6 @@ async def leave(inter, server_id=Param(description="the server id")):
     else:
         await inter.response.defer(ephemeral=True)
         await inter.edit_original_message(content="you are not authorized to use this command")
-
-
-@fwew_bot.message_command(name="fwew translate") # default_permission=True)
-async def translate_message(inter, message):
-    """
-    translate this message using Fwew
-    """
-    await inter.response.defer(ephemeral=True)
-    await inter.edit_original_message(content=get_translation(message.content, "en"))
 
 
 if __name__ == "__main__":
