@@ -305,13 +305,16 @@ def get_word_bundles(words: str) -> list[str]:
     return result
 
 
-def get_fwew(languageCode: str, words: str, showIPA: bool = False) -> str:
+def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True) -> str:
     results = ""
     word_list = get_word_bundles(words)
     for i, word in enumerate(word_list):
         if i != 0:
             results += "\n"
-        res = requests.get(f"{api_url}/fwew/{word}")
+        if fixesCheck:# or word == "pela'ang":
+            res = requests.get(f"{api_url}/fwew/{word}")
+        else:
+            res = requests.get(f"{api_url}/fwew-simple/{word}")
         text = res.text
         results += format(text, languageCode, showIPA)
     return results
@@ -331,7 +334,7 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False) -> st
 
 def get_profanity(lang: str, showIPA: bool) -> str:
     words = "skxawng kalweyaveng kurkung pela'ang pxasìk teylupil tsahey txanfwìngtu vonvä' wiya"
-    return get_fwew(lang, words, showIPA)
+    return get_fwew(lang, words, showIPA, fixesCheck=False)
 
 
 def get_source(words: str) -> str:
@@ -382,22 +385,22 @@ def get_alphabet(letters: str) -> str:
     return results
 
 
-def get_list(languageCode: str, args: str) -> str:
+def get_list(languageCode: str, args: str, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/list/{args}")
     text = res.text
-    return format(text, languageCode)
+    return format(text, languageCode, showIPA)
 
 
-def get_random(languageCode: str, n: int) -> str:
+def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random/{n}")
     text = res.text
-    return format(text, languageCode)
+    return format(text, languageCode, showIPA)
 
 
-def get_random_filter(languageCode: str, n: int, args: str) -> str:
+def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random/{n}/{args}")
     text = res.text
-    return format(text, languageCode)
+    return format(text, languageCode, showIPA)
 
 
 def get_number(word: str) -> str:
@@ -455,192 +458,99 @@ def get_translation(text: str, languageCode: str) -> str:
         return f"translation exceeds character limit of {char_limit}"
     return results
 
-def get_single_name_discord(i: int, n: int):
-    loader = ""
-    
-    if int(i) > 4 or int(i) < 0:
-        return "Max b is 4, max n is 50"
-    n = int(n)
-    if n > 50 or n < 1:
-        return "Max b is 4, max n is 50"
+# One-word names to be sent to Discord
+def get_single_name_discord(n: int, dialect: str, s: int):
+    return json.loads(requests.get(f"{api_url}/name/single/{n}/{s}/{dialect}").text)
 
-    for k in range(0,rand_if_zero(n)):
-        loader += get_single_name(i) + "\n"
-    return loader
+# Full names to be sent to Discord
+def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> str:
+    return json.loads(requests.get(f"{api_url}/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}").text)
 
-def get_name(a: int, b: int, c: int, ending: str, k: int = 1) -> str:
-    results = ""
-    # for temp storage before appending to results
-    loader = ""
-    if not valid(int(a), int(b), int(c), int(k)):
-        results = "Max a, b and c are 4, max n is 50"
-    else:
-        a, b, c, k = int(a), int(b), int(c), int(k)
-        mk = 0
-        # Do entire generator process n times
-        for mk in range(0,k):
-            # BUILD FIRST NAME
-            # first syllable: CV
-            results += get_single_name(a)
+# [name] the [adjective] [noun] format names to be sent to Discord
+def get_name_alu(n: int, dialect: str, s: int, noun_mode: str, adj_mode: str) -> str:
+    return json.loads(requests.get(f"{api_url}/name/alu/{n}/{s}/{noun_mode}/{adj_mode}/{dialect}").text)
 
-            results += " te "
+def chart_entry(x:str, y:int, width:int):
+    ys = str(y)
+    spaces = width - len(x) - len(ys)
+    stringtsyìp = x
+    for i in range(0,spaces):
+        stringtsyìp += " "
+    stringtsyìp += ys
 
-            # BUILD FAMILY NAME
-            results += get_single_name(b)
-
-            results += " "
-
-            # BUILD PARENT'S NAME
-            results += get_single_name(c)
-
-            # ADD ENDING
-            if results.endswith("'"):
-                results = results.removesuffix("'")
-            results += ending + "\n"
-
-    return results
-
-
-def get_name_alu(a: int, adj_mode: str = "something", k: int = 1) -> str:
-    results = ""
-    if not valid_alu(adj_mode, int(a), int(k)):
-        results = "Max b is 4, max n is 50"
-    else:
-        
-        a, k = int(a), int(k)
-
-        # Adjectives and nouns can be shared across loops
-        buffer = ""
-
-        mode = 3
-        if adj_mode == "none":
-            mode = 1
-        elif adj_mode == "normal adjective":
-            mode = 2
-        elif adj_mode == "genitive noun":
-            mode = 3
-        elif adj_mode == "origin noun":
-            mode = 4
-
-        # Do entire generator process n times
-        for mk in range(k): #loop k times
-            # For building names before appending them to results
-            loader = ""
-
-            if a == 0:
-                b = random.randint(2,4)
-            else:
-                b = a
-
-            results += get_single_name(b) + " alu "
-
-            # if not specified, pick randomly
-            if adj_mode == "any" or adj_mode == "something":
-                mode = random.randint(1,4)
-            
-            if adj_mode == "something" and mode == 1:
-                mode = 2
-
-            # ADJECTIVE
-            if mode == 2:
-                loader = ""
-                # Get adjectives
-                query = requests.get(f"{api_url}/random/1/pos is adj.")
-                buffer = json.loads(query.text)
-                loader += buffer[0]['Navi']
-                # Make sure there's no a before we add an a (like in "hona" or "apxa")
-                if(len(loader) > 0 and loader[len(loader) - 1] != 'a'):
-                    loader += "a "
-                else:
-                    loader += " "
-                
-                results += glottal_caps(loader.capitalize())
-            # ATTRIBUTIVE NOUN
-            elif mode == 3 or mode == 4:
-                loader = ""
-                # Get nouns
-                query = requests.get(f"{api_url}/random/1/pos is n.")
-
-                buffer = json.loads(query.text)
-
-                words = buffer[0]['Navi']
-                wordList = words.split()
-                # Genitive noun
-                if mode == 3:
-                    # The only nouns put together using a space
-                    if words == "tsko swizaw":
-                        results += "Tsko Swizawyä "
-                    # the only noun with two spaces
-                    elif words == "mo a fngä'":
-                        results += "Moä a Fgnä' "
-                    # Watch your profanity
-                    # elif words in ["kalweyaveng", "kurkung", "la'ang",
-                    #               "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
-                    #    results += "Skxawngä "
-                    else:
-                        yvowels = ['a', 'ä', 'e', 'i', 'ì']
-                        for i in range(len(wordList) - 1, -1, -1):
-                            loader = ""
-                            # The only a-attributed word in the dictionary, part of "swoasey ayll"
-                            if wordList[i] == "ayll":
-                                loader += "Ylla "
-                            elif wordList[i].startswith("le"):
-                                loader += wordList[i] + "a "
-                            elif wordList[i].endswith("yä"):
-                                loader += wordList[i] + " "
-                            elif wordList[i].endswith("ia"): # aungia, meuia, soaia, tìftia, kemuia
-                                loader += wordList[i]
-                                loader.removesuffix('a')
-                                loader += "ä "
-                            elif wordList[i][-1] in yvowels:
-                                loader += wordList[i] + "yä "
-                            else: #If's it's a conosonent, psuedovowel, xdiphthong, o or u
-                                loader += wordList[i] + "ä "
-                            results += glottal_caps(loader.capitalize())
-                # Origin noun
-                elif mode == 4:
-                    # The only nouns put together using a space
-                    if words == "tsko swizaw":
-                        results += "Tsko Swizawta "
-                    # the only noun with two spaces
-                    elif words == "mo a fngä'":
-                        results += "ta Mo a Fgnä' "
-                    # Watch your profanity
-                    # elif words in ["kalweyaveng", "kurkung", "la'ang",
-                    #                "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
-                    #     results += "Skxawngta "
-                    else:
-                        for i in range(len(wordList) - 1, -1, -1):
-                            loader = ""
-                            # The only a-attributed word in the dictionary, part of "swoasey ayll"
-                            if wordList[i] == "ayll":
-                                loader += "Ylla "
-                            elif wordList[i].startswith("le"):
-                                loader += wordList[i] + "a "
-                            elif wordList[i].endswith("yä"):
-                                loader += wordList[i]
-                            else:
-                                loader += wordList[i] + "ta "
-                            results += glottal_caps(loader.capitalize())
-            
-            # GET PRIMARY NOUN
-            loader = ""
-            query = requests.get(f"{api_url}/random/1/pos is n.")
-            buffer = json.loads(query.text)
-            loader = buffer[0]['Navi']
-            # Wivatch youä profanitit
-            # if loader in ["kalweyaveng", "kurkung", "la'ang",
-            #            "skxawng", "teylupil", "txanfwìngtu", "vonvä'"]:
-            #    loader = "Skxawng"
-            results += glottal_caps(loader.capitalize())
-
-            # ADD ENDING
-            results += "\n"
-
-    return results
+    return stringtsyìp + "|"
 
 def get_phonemes() -> str:
-    return get_phoneme_frequency_chart()
+    all_frequencies = json.loads(requests.get(f"{api_url}/phonemedistros").text)
+    entries = ["| Onset:|Nuclei:|Ending:|", "|=======|=======|=======|"]
+
+    # Onsets
+    onset_tuples = []
+    for a in all_frequencies["Others"]["Onsets"].keys():
+        onset_tuples.append( (all_frequencies["Others"]["Onsets"][a], a) )
+
+    onset_tuples.sort(reverse=True)
+    for a in onset_tuples:
+        entries.append("|" + chart_entry(a[1], a[0],7))
+
+    # Nuclei
+    i = 2
+    nuclei_tuples = []
+    for a in all_frequencies["Others"]["Nuclei"].keys():
+        nuclei_tuples.append( (all_frequencies["Others"]["Nuclei"][a], a) )
+
+    nuclei_tuples.sort(reverse=True)
+    for a in nuclei_tuples:
+        entries[i] += chart_entry(a[1], a[0],7)
+        i += 1
+
+    while i < len(entries):
+        entries[i] += "       |"
+        i += 1
+
+    # Ends
+    i = 2
+    coda_tuples = []
+    for a in all_frequencies["Others"]["Codas"].keys():
+        coda_tuples.append( (all_frequencies["Others"]["Codas"][a], a) )
+
+    coda_tuples.sort(reverse=True)
+    for a in coda_tuples:
+        entries[i] += chart_entry(a[1], a[0],7)
+        i += 1
+
+    while i < len(entries):
+        entries[i] += "       |"
+        i += 1
+
+    # Top
+    entries_2 = "## Phoneme distributions:\n```\n"
+    for a in entries:
+        entries_2 += a + "\n"
+
+    # Clusters
+    entries = ["\nClusters:", "  | f:| s:|ts:|", "==|===|===|===|"]
+    
+    cluster_ends = ["k", "kx", "l", "m", "n", "ng", "p", "px", "r", "t", "tx", "w", "y"]
+
+    for a in cluster_ends:
+        entries.append(chart_entry(a,"",2))
+    
+    # "f" clusters
+    i = 3
+    for part_two in cluster_ends:
+        for part_one in all_frequencies["Clusters"].keys():
+            if part_two in all_frequencies["Clusters"][part_one].keys():
+                entries[i] += chart_entry("", all_frequencies["Clusters"][part_one][part_two], 3)
+            else:
+                entries[i] += "   |" # still waiting on tspx
+        i += 1
+    
+    for a in entries:
+        entries_2 += a + "\n"
+
+    entries_2 += "```"
+    return entries_2
 
 
 def get_lenition() -> str:
