@@ -622,6 +622,35 @@ def get_line_ending(word: str) -> str:
         results += "\n\n"
     return results
 
+def get_translation(text: str, languageCode: str) -> str:
+    results = ""
+    word_list = get_word_bundles(text)
+    for i, word in enumerate(word_list):
+        if i != 0 and not results.endswith("\n"):
+            results += " **|** "
+        word = word_list[i]
+        if re.match(r"hrh", word):
+            results += f"lol{get_line_ending(word)}"
+            continue
+        elif word == "a":
+            results += "that"
+            continue
+        elif re.match(si_pattern, word):
+            results += f"do / make{get_line_ending(word)}"
+            continue
+        elif word == "srake":
+            results += "(yes/no question)"
+            continue
+        elif re.match(r"srak", word):
+            results += f"(yes/no question){get_line_ending(word)}"
+            continue
+        res = requests.get(f"{api_url}/fwew/{word}")
+        text = res.text
+        results += format_translation(text, languageCode)
+        results += get_line_ending(word)
+    if len(results) > char_limit:
+        return f"translation exceeds character limit of {char_limit}"
+    return results
 
 # One-word names to be sent to Discord
 def get_single_name_discord(n: int, dialect: str, s: int):
