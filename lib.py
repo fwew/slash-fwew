@@ -660,12 +660,15 @@ def get_translation(text: str, languageCode: str) -> str:
         elif re.match(r"srak", word):
             results += f"(yes/no question){get_line_ending(word)}"
             continue
-        res = requests.get(f"{api_url}/fwew/{word}")
+        res = requests.get(f"{api_url}/fwew-1d/{word}")
         text = res.text
-        results += format_translation(text, languageCode)
-        results += get_line_ending(word)
+        if len(text) > 0:
+            results += format_translation(text, languageCode)
+            results += get_line_ending(word)
     if len(results) > char_limit:
         return f"translation exceeds character limit of {char_limit}"
+    elif len(results) == 0:
+        return "No results"
     return results
 
 # One-word names to be sent to Discord
