@@ -3,6 +3,7 @@ import os
 import re
 from pathlib import Path
 import disnake
+from disnake import Colour
 
 import requests
 from dotenv import load_dotenv
