@@ -345,6 +345,22 @@ def format_number(response_text: str) -> str:
     decimal = number["decimal"]
     return f"`  na'vi`: {name}\n`  octal`: {octal}\n`decimal`: {decimal}"
 
+def get_word_bundles(words: str) -> list[str]:
+    result = []
+    for pattern in patterns:
+        if words[0] == '"' and words[-1] == '"':
+            break
+        else:
+            words = re.sub(pattern, r'"\1"', words)
+    yy = [c for c in re.split(r'("\w+ \w+\s?\w*")', words) if len(c) > 0]
+    for w in yy:
+        if w.startswith('"') and w.endswith('"'):
+            result.append(w[1:-1])
+        else:
+            result.extend(w.split())
+    result = [r for r in result if r != '"']
+    return result
+
 
 def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True):
     embeds = []
@@ -353,7 +369,7 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
         hrh = "https://youtu.be/-AgnLH7Dw3w?t=274\n"
         hrh += "> What would LOL be?\n"
         hrh += "> It would have to do with the word herangham... maybe HRH"
-        embeds.append(disnake.Embed(title="HRH",description=hrh))
+        embeds.append(disnake.Embed(color = Colour.blue, title="HRH",description=hrh))
         return embeds
 
     if fixesCheck:
@@ -378,11 +394,11 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
                 lastResult += 1
                 if not b.endswith("not found"):
                     hasWords = True
-        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+        embeds.append(disnake.Embed(color = Colour.blue, title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
         firstResult += lastResult
     
     if not hasWords:
-        embeds = [disnake.Embed(title="No words found",description="No Na'vi words found for:\n" + words)]
+        embeds = [disnake.Embed(color = Colour.orange, title="No words found",description="No Na'vi words found for:\n" + words)]
 
     return embeds
 
@@ -394,7 +410,7 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False):
         hrh = "https://youtu.be/-AgnLH7Dw3w?t=274\n"
         hrh += "> What would LOL be?\n"
         hrh += "> It would have to do with the word herangham... maybe HRH"
-        embeds.append(disnake.Embed(title="HRH",description=hrh))
+        embeds.append(disnake.Embed(color = Colour.blue, title="HRH",description=hrh))
         return embeds
     
     res = requests.get(f"{api_url}/fwew/r/{languageCode.lower()}/{words}")
@@ -418,11 +434,11 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False):
                 lastResult += 1
                 if not b.endswith("not found"):
                     hasWords = True
-        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+        embeds.append(disnake.Embed(color = Colour.blue, title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
         firstResult += lastResult
     
     if not hasWords:
-        embeds = [disnake.Embed(title="No words found",description="No natural language words found for:\n" + words)]
+        embeds = [disnake.Embed(color = Colour.orange, title="No words found",description="No natural language words found for:\n" + words)]
 
     return embeds
 
@@ -434,7 +450,7 @@ def get_search(languageCode: str, words: str, showIPA: bool = False):
         hrh = "https://youtu.be/-AgnLH7Dw3w?t=274\n"
         hrh += "> What would LOL be?\n"
         hrh += "> It would have to do with the word herangham... maybe HRH"
-        embeds.append(disnake.Embed(title="HRH",description=hrh))
+        embeds.append(disnake.Embed(color = Colour.blue, title="HRH",description=hrh))
         return embeds
     
     res = requests.get(f"{api_url}/search/{languageCode.lower()}/{words}")
@@ -458,11 +474,11 @@ def get_search(languageCode: str, words: str, showIPA: bool = False):
                 lastResult += 1
                 if not b.endswith("not found"):
                     hasWords = True
-        embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+        embeds.append(disnake.Embed(color = Colour.blue, title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
         firstResult += lastResult
     
     if not hasWords:
-        embeds = [disnake.Embed(title="No words found",description="No Na'vi or natural language words found for:\n" + words)]
+        embeds = [disnake.Embed(color = Colour.orange, title="No words found",description="No Na'vi or natural language words found for:\n" + words)]
 
     return embeds
 
@@ -529,7 +545,7 @@ def get_list(languageCode: str, args: str, showIPA: bool) -> str:
     firstResult = 0
 
     if type(results) == str:
-        embeds.append(disnake.Embed(title="No words found",description="No words matching your parameters:\n" + args))
+        embeds.append(disnake.Embed(color = Colour.orange, title="No words found",description="No words matching your parameters:\n" + args))
     else:
         for a in results:
             i += 1
@@ -538,7 +554,7 @@ def get_list(languageCode: str, args: str, showIPA: bool) -> str:
                 if len(b) > 0 and b[0] == "[":
                     lastResult += 1
 
-            embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+            embeds.append(disnake.Embed(color = Colour.blue, title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
             firstResult += lastResult
 
     return embeds
@@ -557,7 +573,7 @@ def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     firstResult = 0
 
     if type(results) == str:
-        embeds.append(disnake.Embed(title="Random failed",description="You should not be seeing this on Discord"))
+        embeds.append(disnake.Embed(color = Colour.orange, title="Random failed",description="You should not be seeing this on Discord"))
     else:
         for a in results:
             i += 1
@@ -565,7 +581,7 @@ def get_random(languageCode: str, n: int, showIPA: bool) -> str:
             for b in a.split("\n"):
                 if len(b) > 0 and b[0] == "[":
                     lastResult += 1
-            embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+            embeds.append(disnake.Embed(color = Colour.blue, title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
             firstResult += lastResult
 
     return embeds
@@ -584,7 +600,7 @@ def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool) -> st
     firstResult = 0
     
     if type(results) == str:
-        embeds.append(disnake.Embed(title="No words found",description="No words matching your parameters:\n" + args))
+        embeds.append(disnake.Embed(color = Colour.orange, title="No words found",description="No words matching your parameters:\n" + args))
     else:
         for a in results:
             i += 1
@@ -592,7 +608,7 @@ def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool) -> st
             for b in a.split("\n"):
                 if len(b) > 0 and b[0] == "[":
                     lastResult += 1
-            embeds.append(disnake.Embed(title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+            embeds.append(disnake.Embed(color = Colour.blue, title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
             firstResult += lastResult
 
     return embeds
