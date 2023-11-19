@@ -639,6 +639,7 @@ def get_line_ending(word: str) -> str:
         results += "\n\n"
     return results
 
+# Discord right-click menu translator
 def get_translation(text: str, languageCode: str) -> str:
     results = ""
     word_list = get_word_bundles(text)
@@ -646,6 +647,28 @@ def get_translation(text: str, languageCode: str) -> str:
         if i != 0 and not results.endswith("\n"):
             results += " **|** "
         word = word_list[i]
+        #
+        # Don't translate these words
+        #
+        if word.startswith("htt"):
+            # Don't translate URLs
+            results += word
+            continue
+        elif word.startswith("<:"):
+            # Don't translate custom emojis
+            results += word
+            continue
+        elif word.startswith("<@"):
+            # Don't translate user pings
+            results += "[Ping]"
+            continue
+        elif len(word[0].encode("utf-8")) > 2:
+            # Don't translate normal emojis
+            results += word
+            continue
+        #
+        # Include these words
+        #
         if re.match(r"hrh", word):
             results += f"lol{get_line_ending(word)}"
             continue
