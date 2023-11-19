@@ -282,50 +282,6 @@ def get_naive_plural_en(word_en: str) -> str:
     return f"{word_en}s"
 
 
-def format_translation(response_text: str, languageCode: str) -> str:
-    words = json.loads(response_text)
-    if isinstance(words, dict) and "message" in words:
-        return "(?)"
-    results = ""
-    root_index = -1
-    for i, word in enumerate(words):
-        prefixes = word['Affixes']['Prefix']
-        infixes = word['Affixes']['Infix']
-        suffixes = word['Affixes']['Suffix']
-        lenition = word['Affixes']['Lenition']
-        if prefixes is None and infixes is None and suffixes is None and lenition is None:
-            root_index = i
-            break
-    if root_index != -1:
-        word = words[root_index]
-        definition = f"{word[languageCode.upper()]}"
-        definition_clean = re.sub(paren_pattern, "", definition)
-        results += f"{definition_clean}"
-    else:
-        for i in range(len(words)):
-            word = words[i]
-            if i != 0:
-                results += " / "
-            definition = f"{word[languageCode.upper()]}"
-            definition_clean = re.sub(paren_pattern, "", definition)
-            prefixes = word['Affixes']['Prefix']
-            if prefixes is not None:
-                if "fì" in prefixes:
-                    definition_clean = f"this {definition_clean}"
-                elif "tsa" in prefixes:
-                    definition_clean = f"that {definition_clean}"
-                elif "fay" in prefixes:
-                    definition_clean = f"these {get_naive_plural_en(definition_clean)}"
-                elif "tsay" in prefixes:
-                    definition_clean = f"those {get_naive_plural_en(definition_clean)}"
-                elif "fra" in prefixes:
-                    definition_clean = f"every {definition_clean}"
-                elif "fray" in prefixes:
-                    definition_clean = f"all {get_naive_plural_en(definition_clean)}"
-            results += f"{definition_clean}"
-    return results
-
-
 def format_version(response_text: str) -> str:
     version_info = json.loads(response_text)
     version_text = "```\n"
@@ -345,22 +301,6 @@ def format_number(response_text: str) -> str:
     octal = number["octal"]
     decimal = number["decimal"]
     return f"`  na'vi`: {name}\n`  octal`: {octal}\n`decimal`: {decimal}"
-
-def get_word_bundles(words: str) -> list[str]:
-    result = []
-    for pattern in patterns:
-        if words[0] == '"' and words[-1] == '"':
-            break
-        else:
-            words = re.sub(pattern, r'"\1"', words)
-    yy = [c for c in re.split(r'("\w+ \w+\s?\w*")', words) if len(c) > 0]
-    for w in yy:
-        if w.startswith('"') and w.endswith('"'):
-            result.append(w[1:-1])
-        else:
-            result.extend(w.split())
-    result = [r for r in result if r != '"']
-    return result
 
 
 def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True):
@@ -639,61 +579,130 @@ def get_line_ending(word: str) -> str:
         results += "\n\n"
     return results
 
+def format_translation(words, languageCode: str) -> str:
+    if isinstance(words, dict) and "message" in words:
+        return "(?)"
+    results = ""
+    root_index = -1
+    for i, word in enumerate(words):
+        prefixes = word['Affixes']['Prefix']
+        infixes = word['Affixes']['Infix']
+        suffixes = word['Affixes']['Suffix']
+        lenition = word['Affixes']['Lenition']
+        if prefixes is None and infixes is None and suffixes is None and lenition is None:
+            root_index = i
+            break
+    if root_index != -1:
+        word = words[root_index]
+        definition = f"{word[languageCode.upper()]}"
+        definition_clean = re.sub(paren_pattern, "", definition)
+        results += f"{definition_clean}" + " **|** "
+    else:
+        for i in range(len(words)):
+            word = words[i]
+            if i != 0:
+                results += " / "
+            definition = f"{word[languageCode.upper()]}"
+            definition_clean = re.sub(paren_pattern, "", definition)
+            prefixes = word['Affixes']['Prefix']
+            if prefixes is not None:
+                if "fì" in prefixes:
+                    definition_clean = f"this {definition_clean}"
+                elif "tsa" in prefixes:
+                    definition_clean = f"that {definition_clean}"
+                elif "fay" in prefixes:
+                    definition_clean = f"these {get_naive_plural_en(definition_clean)}"
+                elif "tsay" in prefixes:
+                    definition_clean = f"those {get_naive_plural_en(definition_clean)}"
+                elif "fra" in prefixes:
+                    definition_clean = f"every {definition_clean}"
+                elif "fray" in prefixes:
+                    definition_clean = f"all {get_naive_plural_en(definition_clean)}"
+            results += f"{definition_clean}" + " **|** "
+    return results
+
 # Discord right-click menu translator
 def get_translation(text: str, languageCode: str) -> str:
     results = ""
-    word_list = get_word_bundles(text)
-    for i, word in enumerate(word_list):
-        if i != 0 and not results.endswith("\n"):
-            results += " **|** "
-        word = word_list[i]
+
+    all_words = text.split()
+    navi_block = ""
+    temp_result = ""
+
+    # Enumarate the block of text
+    for n, word in enumerate(all_words):
+        word = all_words[n]
         #
         # Don't translate these words
         #
         if word.startswith("htt"):
             # Don't translate URLs
-            results += word
-            continue
+            temp_result += word + " **|** "
+            found_separator = True
         elif word.startswith("<:"):
             # Don't translate custom emojis
-            results += word
-            continue
+            temp_result += word + " **|** "
+            found_separator = True
         elif word.startswith("<@"):
             # Don't translate user pings
-            results += "[Ping]"
-            continue
+            temp_result += "[Ping]" + " **|** "
+            found_separator = True
         elif len(word[0].encode("utf-8")) > 2:
             # Don't translate normal emojis
-            results += word
-            continue
+            temp_result += word + " **|** "
+            found_separator = True
         #
         # Include these words
         #
-        if re.match(r"hrh", word):
-            results += f"lol{get_line_ending(word)}"
-            continue
+        elif re.match(r"hrh", word):
+            temp_result += f"lol{get_line_ending(word)}" + " **|** "
+            found_separator = True
         elif word == "a":
-            results += "that"
-            continue
-        elif re.match(si_pattern, word):
-            results += f"do / make{get_line_ending(word)}"
-            continue
+            temp_result += "that" + " **|** "
+            found_separator = True
         elif word == "srake":
-            results += "(yes/no question)"
-            continue
+            temp_result += "(yes/no question)" + " **|** "
+            found_separator = True
         elif re.match(r"srak", word):
-            results += f"(yes/no question){get_line_ending(word)}"
-            continue
-        res = requests.get(f"{api_url}/fwew-1d/{word}")
-        text = res.text
-        if len(text) > 0:
-            results += format_translation(text, languageCode)
-            results += get_line_ending(word)
+            temp_result += f"(yes/no question){get_line_ending(word)}" + " **|** "
+            found_separator = True
+        else:
+            navi_block += word + " "
+            found_separator = False
+
+        #
+        # Found a block of Na'vi text.  Translate it
+        #
+        if found_separator:
+            res = requests.get(f"{api_url}/fwew/{navi_block}")
+            res_text = res.text
+            if len(res_text) > 20:
+                text = json.loads(res_text)
+                for a in text:
+                    if len(a) > 0:
+                        results += format_translation(a, languageCode)
+                        results += get_line_ending(word)
+            navi_block = ""
+            results += temp_result
+            temp_result = ""
+
+    # Make sure we don't skip a final Na'vi block
+    res = requests.get(f"{api_url}/fwew/{navi_block}")
+    res_text = res.text
+    if len(res_text) > 20:
+        text = json.loads(res_text)
+        for a in text:
+            if len(a) > 0:
+                results += format_translation(a, languageCode)
+                results += get_line_ending(word)
+
+    # Add any text that may have came after the Na'vi block
+    results += temp_result
     if len(results) > char_limit:
         return f"translation exceeds character limit of {char_limit}"
     elif len(results) == 0:
         return "No results"
-    return results
+    return results.removesuffix(" **|** ")
 
 # One-word names to be sent to Discord
 def get_single_name_discord(n: int, dialect: str, s: int):
