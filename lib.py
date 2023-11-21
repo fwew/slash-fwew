@@ -596,7 +596,7 @@ def format_translation(words, languageCode: str) -> str:
         word = words[root_index]
         definition = f"{word[languageCode.upper()]}"
         definition_clean = re.sub(paren_pattern, "", definition)
-        results += f"{definition_clean}" + " **|** "
+        results += f"{definition_clean}"
     else:
         for i in range(len(words)):
             word = words[i]
@@ -618,14 +618,19 @@ def format_translation(words, languageCode: str) -> str:
                     definition_clean = f"every {definition_clean}"
                 elif "fray" in prefixes:
                     definition_clean = f"all {get_naive_plural_en(definition_clean)}"
-            results += f"{definition_clean}" + " **|** "
-    return results
+            results += f"{definition_clean}"
+    return results + " **|** "
 
 # Discord right-click menu translator
 def get_translation(text: str, languageCode: str) -> str:
     results = ""
 
-    all_words = text.split()
+    texts = text.replace("*", " ") # *Italics* and **bold** and ***both***
+    texts = texts.replace("~", " ") # ~~Strikethrough~~
+    texts = texts.replace("|", " ") # ||Spoiler||
+    texts = texts.replace("`", " ") # `monospace` and ```code block```
+    texts = texts.replace(">", " ") # > line quote and >>> block quote
+    all_words = texts.split()
     navi_block = ""
     temp_result = ""
 
