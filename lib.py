@@ -619,9 +619,9 @@ def format_translation(words, languageCode: str) -> str:
                 elif "fray" in prefixes:
                     definition_clean = f"all {get_naive_plural_en(definition_clean)}"
                 elif "fne" in prefixes:
-                    definition_clean = f"kind of {get_naive_plural_en(definition_clean)}"
+                    definition_clean = f"kind of {definition_clean}"
                 elif "fkeyk" in suffixes:
-                    definition_clean = f"state of {get_naive_plural_en(definition_clean)}"
+                    definition_clean = f"state of {definition_clean}"
             results += f"{definition_clean}"
     return results + " **|** "
 
