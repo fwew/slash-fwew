@@ -24,6 +24,52 @@ char_limit = 2000
 
 global_onset = ["",""]
 
+prefix_map_singular = {
+    "fì": "this",
+    "tsa": "that",
+    "fra": "every",
+    "fne": "kind of",
+}
+
+prefix_map_plural = {
+    "fay": "these",
+    "tsay": "those",
+    "fray": "all",
+}
+
+suffix_map = {
+    "fkeyk": "state of",
+    "yu": "person who",
+    "ur": "to",
+    "ru": "to",
+    "r": "to",
+    "ri": "regarding",
+    "ìri": "regarding",
+    "yä": "of",
+    "ä": "of",
+}
+
+infix_map = {
+    "ol": "finished",
+    "er": "in the middle of",
+    "ay": "will",
+    "asy": "will intentionally",
+    "ìy": "will soon",
+    "ìsy": "will soon intentionally",
+    "am": "in the past",
+    "ìm": "just now",
+    "iv": "may/to",
+    "eyk": "cause to",
+    "äp": "to self",
+    "ei": "I like it",
+    "eiy": "I like it",
+    "äng": "I don't like",
+    "eng": "I don't like",
+    "ats": "supposedly",
+    "us": "that does the action of",
+    "awn": "that received the action of",
+}
+
 def get_language(inter):
     channel_languages = {
         1104882512607576114: "fr", # LN/fr/#commandes-bot
@@ -605,23 +651,26 @@ def format_translation(words, languageCode: str) -> str:
             definition = f"{word[languageCode.upper()]}"
             definition_clean = re.sub(paren_pattern, "", definition)
             prefixes = word['Affixes']['Prefix']
+            suffixes = word['Affixes']['Suffix']
+            infixes = word['Affixes']['Infix']
+            # Find the fixes and stuff in the maps
             if prefixes is not None:
-                if "fì" in prefixes:
-                    definition_clean = f"this {definition_clean}"
-                elif "tsa" in prefixes:
-                    definition_clean = f"that {definition_clean}"
-                elif "fay" in prefixes:
-                    definition_clean = f"these {get_naive_plural_en(definition_clean)}"
-                elif "tsay" in prefixes:
-                    definition_clean = f"those {get_naive_plural_en(definition_clean)}"
-                elif "fra" in prefixes:
-                    definition_clean = f"every {definition_clean}"
-                elif "fray" in prefixes:
-                    definition_clean = f"all {get_naive_plural_en(definition_clean)}"
-                elif "fne" in prefixes:
-                    definition_clean = f"kind of {definition_clean}"
-                elif "fkeyk" in suffixes:
-                    definition_clean = f"state of {definition_clean}"
+                for a in prefixes:
+                    if a in prefix_map_singular:
+                        definition_clean = prefix_map_singular[a] + " " + definition_clean
+                        break
+                    if a in prefix_map_plural:
+                        definition_clean = prefix_map_plural[a] + " " + get_naive_plural_en(definition_clean)
+                        break
+            if suffixes is not None:
+                for a in suffixes:
+                    if a in suffix_map:
+                        definition_clean = suffix_map[a] + " " + definition_clean
+                        break
+            if infixes is not None:
+                for a in infixes:
+                    if a in infix_map:
+                        definition_clean = "(" + infix_map[a] + ") " + definition_clean
             results += f"{definition_clean}"
     return results + " **|** "
 
@@ -634,6 +683,10 @@ def get_translation(text: str, languageCode: str) -> str:
     texts = texts.replace("|", " ") # ||Spoiler||
     texts = texts.replace("`", " ") # `monospace` and ```code block```
     texts = texts.replace(">", " ") # > line quote and >>> block quote
+    texts = texts.replace(",", " ")
+    texts = texts.replace(".", " ")
+    texts = texts.replace("?", " ")
+    texts = texts.replace("!", " ")
     all_words = texts.split()
     navi_block = ""
     temp_result = ""
@@ -641,6 +694,7 @@ def get_translation(text: str, languageCode: str) -> str:
     # Enumarate the block of text
     for n, word in enumerate(all_words):
         word = all_words[n]
+
         #
         # Don't translate these words
         #
@@ -650,7 +704,7 @@ def get_translation(text: str, languageCode: str) -> str:
             found_separator = True
         elif word.startswith("<:"):
             # Don't translate custom emojis
-            temp_result += word + " **|** "
+            temp_result += word + "> **|** "
             found_separator = True
         elif word.startswith("<@"):
             # Don't translate user pings
@@ -660,6 +714,7 @@ def get_translation(text: str, languageCode: str) -> str:
             # Don't translate normal emojis
             temp_result += word + " **|** "
             found_separator = True
+
         #
         # Include these words
         #
@@ -667,13 +722,20 @@ def get_translation(text: str, languageCode: str) -> str:
             temp_result += f"lol{get_line_ending(word)}" + " **|** "
             found_separator = True
         elif word == "a":
-            temp_result += "that" + " **|** "
+            temp_result += "that **|** "
             found_separator = True
         elif word == "srake":
-            temp_result += "(yes/no question)" + " **|** "
+            temp_result += "(yes/no question) **|** "
             found_separator = True
         elif re.match(r"srak", word):
-            temp_result += f"(yes/no question){get_line_ending(word)}" + " **|** "
+            temp_result += f"(yes/no question){get_line_ending(word)} **|** "
+            found_separator = True
+        elif word == "ma":
+            temp_result += "(I'm talking to) **|** "
+            found_separator = True
+        elif len(requests.get(f"{api_url}/fwew/{word}").text) == 5: # == "[[]]"
+            # Add non-translatable words
+            temp_result += word + " **|** "
             found_separator = True
         else:
             navi_block += word + " "
@@ -694,6 +756,8 @@ def get_translation(text: str, languageCode: str) -> str:
             navi_block = ""
             results += temp_result
             temp_result = ""
+        
+        
 
     # Make sure we don't skip a final Na'vi block
     res = requests.get(f"{api_url}/fwew/{navi_block}")
