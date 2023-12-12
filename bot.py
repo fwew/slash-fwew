@@ -307,7 +307,7 @@ async def name(inter,
 @fwew_bot.slash_command(name="name", description="generate Na'vi full names")
 async def name(inter,
         ending=commands.Param(
-                description="'ite (daughter), 'itan (son) or 'itu (genderless, non-canon)", choices=["'ite", "'itan", "'itu"]),
+                description="'ite (daughter), 'itan (son) or 'itu (genderless, non-canon)", choices=["random", "'ite", "'itan", "'itu"], default="random"),
         n=Param(name = "name-count", description="number of names to generate", gt=1, le=50, default=1),
         dialect=Param(name="dialect", description="which dialect the names should fit",
                 choices=["interdialect", "forest", "reef"], default="interdialect"),
