@@ -235,17 +235,17 @@ def format_alphabet(letter: str, letters_dict: dict, names_dict: dict, i: int) -
         return f"[{i + 1}] **{letter}**: no results\n"
     return f"[{i + 1}] **{current_letter}** ({current_letter_name}) :speaker: [click here to listen](https://s.learnnavi.org/audio/alphabet/{letter_id}.mp3)\n"
 
-def format_pages(words: str, languageCode: str, showIPA: bool = False):
+def format_pages_dictionary(words: str, languageCode: str, showIPA: bool = False):
     if isinstance(words, dict) and "message" in words:
         return words["message"], 1
     results = ""
     total = 0
     if len(words) == 1:
-        results += format_pages_helper(words[0], languageCode, showIPA, 0)
+        results += format_pages_dictionary_helper(words[0], languageCode, showIPA, 0)
     else:
         for i in range(1, len(words) + 1):
             someWord = words[i - 1]
-            results += format_pages_helper(someWord, languageCode, showIPA, i)
+            results += format_pages_dictionary_helper(someWord, languageCode, showIPA, i)
 
     # Make 2000 character pages
     split_results = results.split("\n")
@@ -282,6 +282,39 @@ def format_pages_1d(words: str, languageCode: str, showIPA: bool = False):
             total += 1
 
     return complete_pages, total
+
+def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool = False, row: int = 0) -> str:
+    results = ""
+    if len(words) == 1:
+        if row == 0:
+            row = 1
+        results += "**" + words[0]['Navi'] + ":** word not found\n"
+    else:
+        j = 1
+        results += "**" + words[0]['Navi'] + ":**\n"
+        while j < len(words):
+            word = words[j]
+            results += "["
+            results += f"{row}"
+            results += "] "
+               
+            results += f"**{word['Navi']}** "
+
+            ipa = word['IPA']
+            breakdown = format_breakdown(word)
+            if showIPA:
+                results += f"[{ipa}] "
+            results += f"({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+
+            results += format_prefixes(word)
+            results += format_infixes(word)
+            results += format_suffixes(word)
+            results += format_lenition(word)
+            results += format_comment(word)
+            j += 1
+    results += "\n"
+        
+    return results
 
 def format_pages_helper(words: str, languageCode: str, showIPA: bool = False, row: int = 0) -> str:
     results = ""
@@ -365,7 +398,7 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
         res = requests.get(f"{api_url}/fwew-simple/{words}")
     text = res.text
     words2 = json.loads(text)
-    results, total = format_pages(words2, languageCode, showIPA)
+    results, total = format_pages_dictionary(words2, languageCode, showIPA)
 
     # Create a list of embeds to paginate.
     i = 0
@@ -403,7 +436,7 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False):
     res = requests.get(f"{api_url}/fwew/r/{languageCode.lower()}/{words}")
     text = res.text
     words2 = json.loads(text)
-    results, total = format_pages(words2, languageCode, showIPA)
+    results, total = format_pages_dictionary(words2, languageCode, showIPA)
     
     embeds = []
 
@@ -443,7 +476,7 @@ def get_search(languageCode: str, words: str, showIPA: bool = False):
     res = requests.get(f"{api_url}/search/{languageCode.lower()}/{words}")
     text = res.text
     words2 = json.loads(text)
-    results, total = format_pages(words2, languageCode, showIPA)
+    results, total = format_pages_dictionary(words2, languageCode, showIPA)
 
     embeds = []
 
