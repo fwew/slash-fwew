@@ -663,7 +663,12 @@ def format_translation(words, languageCode: str) -> str:
         return "(?)"
     results = ""
     root_index = -1
+    first = True
     for i, word in enumerate(words):
+        # Skip the first thing.  That's just the header
+        if first:
+            first = False
+            continue
         prefixes = word['Affixes']['Prefix']
         infixes = word['Affixes']['Infix']
         suffixes = word['Affixes']['Suffix']
@@ -766,7 +771,7 @@ def get_translation(text: str, languageCode: str) -> str:
         elif word == "ma":
             temp_result += "(I'm talking to) **|** "
             found_separator = True
-        elif len(requests.get(f"{api_url}/fwew/{word}").text) == 5: # == "[[]]"
+        elif len(json.loads(requests.get(f"{api_url}/fwew/{word}").text)[0]) == 1: # has only one result
             # Add non-translatable words
             temp_result += word + " **|** "
             found_separator = True
