@@ -194,7 +194,7 @@ async def list(inter, where=Param(description="characteristics of the word, such
                 lang=Param(description="Language for results",
                         default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"]),
                 check_digraphs=Param(description="Should it track digraphs?",
-                        default=True, choices=[True, False])):
+                        default=True, choices=["true", "false"])):
     """
     list all words with certain characteristics
 
@@ -216,7 +216,7 @@ async def random(inter, n=Param(description="the number of random words to get")
                 lang=Param(description="Language for results",
                         default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"]),
                 check_digraphs=Param(description="Should it track digraphs?",
-                        default=True, choices=[True, False]) ):
+                        default=True, choices=["true", "false"]) ):
     """
     get given number of random entries with certain characteristics
 
