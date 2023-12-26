@@ -307,7 +307,7 @@ async def name(inter,
 @fwew_bot.slash_command(name="name", description="generate Na'vi full names")
 async def name(inter,
         ending=commands.Param(
-                description="'ite (daughter) or 'itan (son)", choices=["'ite", "'itan"]),
+                description="'ite (daughter), 'itan (son) or 'itu (genderless, non-canon)", choices=["random", "'ite", "'itan", "'itu"], default="random"),
         n=Param(name = "name-count", description="number of names to generate", gt=1, le=50, default=1),
         dialect=Param(name="dialect", description="which dialect the names should fit",
                 choices=["interdialect", "forest", "reef"], default="interdialect"),
@@ -323,7 +323,7 @@ async def name(inter,
     family_name_num_syllables: family name number of syllables
     parent_name_num_syllables: parent's name number of syllables
     dialect: dialect the names would fit into (interdialect, forest, reef)
-    ending: 'ite (daughter) or ' itan (son)
+    ending: 'ite (daughter), 'itan (son) or 'itu (genderless, non-canon)
     n: number of names to generate
     """
     await inter.response.send_message(get_name(ending, n, dialect, s1, s2, s3))
@@ -402,6 +402,15 @@ async def leave(inter, server_id=Param(description="the server id")):
     else:
         await inter.response.defer(ephemeral=True)
         await inter.edit_original_message(content="you are not authorized to use this command")
+
+
+@fwew_bot.message_command(name="fwew translate") # default_permission=True)
+async def translate_message(inter, message):
+    """
+    translate this message using Fwew
+    """
+    await inter.response.defer(ephemeral=True)
+    await inter.edit_original_message(content=get_translation(message.content, "en"))
 
 
 if __name__ == "__main__":
