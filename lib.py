@@ -610,7 +610,7 @@ def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     return embeds
 
 
-def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool, check_digraphs: bool) -> str:
+def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool, check_digraphs: str) -> str:
     res = requests.get(f"{api_url}/random2/{n}/{check_digraphs}/{args}")
     text = res.text
     words2 = json.loads(text)
