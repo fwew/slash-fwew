@@ -192,7 +192,9 @@ async def list(inter, where=Param(description="characteristics of the word, such
                 ipa=Param(description="set to true to show IPA",
                         default=False, choices=["true", "false"]),
                 lang=Param(description="Language for results",
-                        default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"])):
+                        default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"]),
+                check_digraphs=Param(description="Should it track digraphs?",
+                        default=True, choices=[True, False])):
     """
     list all words with certain characteristics
 
@@ -200,10 +202,11 @@ async def list(inter, where=Param(description="characteristics of the word, such
     ----------
     where: characteristics of the word, such as part of speech, number of syllables, etc.
     lang: the two-letter language-code for results (default: en)
+    check_digraphs: Should it pay attention to just the letters or what digraphs they represent, too?
     """
     if lang is None:
         lang = get_language(inter)
-    await Paginator.Simple().start(inter,pages=get_list(lang, where, ipa))
+    await Paginator.Simple().start(inter,pages=get_list(lang, where, ipa, check_digraphs))
 
 
 @fwew_bot.slash_command(name="random", description="get given number of random entries with certain characteristics")
@@ -211,7 +214,9 @@ async def random(inter, n=Param(description="the number of random words to get")
                 ipa=Param(description="set to true to show IPA",
                         default=False, choices=["true", "false"]),
                 lang=Param(description="Language for results",
-                        default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"]) ):
+                        default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"]),
+                check_digraphs=Param(description="Should it track digraphs?",
+                        default=True, choices=[True, False]) ):
     """
     get given number of random entries with certain characteristics
 
@@ -220,13 +225,14 @@ async def random(inter, n=Param(description="the number of random words to get")
     n: the number of random words to get
     where: characteristics of the word, such as part of speech, number of syllables, etc.
     lang: the two-letter language-code for results (default: en)
+    check_digraphs: Should it pay attention to just the letters or what digraphs they represent, too?
     """
     if lang is None:
         lang = get_language(inter)
     if where is None:
         await Paginator.Simple().start(inter,pages=get_random(lang, n, ipa))
     else:
-        await Paginator.Simple().start(inter,pages=get_random_filter(lang, n, where, ipa))
+        await Paginator.Simple().start(inter,pages=get_random_filter(lang, n, where, ipa, check_digraphs))
 
 
 @fwew_bot.slash_command(name="number", description="convert or translate numbers between decimal and octal/na'vi")

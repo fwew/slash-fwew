@@ -555,8 +555,8 @@ def get_alphabet(letters: str) -> str:
     return results
 
 
-def get_list(languageCode: str, args: str, showIPA: bool) -> str:
-    res = requests.get(f"{api_url}/list/{args}")
+def get_list(languageCode: str, args: str, showIPA: bool, check_digraphs: bool) -> str:
+    res = requests.get(f"{api_url}/list2/{check_digraphs}/{args}")
     text = res.text
     words2 = json.loads(text)
     results, total = format_pages_1d(words2, languageCode, showIPA)
@@ -584,7 +584,7 @@ def get_list(languageCode: str, args: str, showIPA: bool) -> str:
 
 
 def get_random(languageCode: str, n: int, showIPA: bool) -> str:
-    res = requests.get(f"{api_url}/random/{n}")
+    res = requests.get(f"{api_url}/random2/{n}/True")
     text = res.text
     words2 = json.loads(text)
     results, total = format_pages_1d(words2, languageCode, showIPA)
@@ -610,8 +610,8 @@ def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     return embeds
 
 
-def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool) -> str:
-    res = requests.get(f"{api_url}/random/{n}/{args}")
+def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool, check_digraphs: bool) -> str:
+    res = requests.get(f"{api_url}/random2/{n}/{check_digraphs}/{args}")
     text = res.text
     words2 = json.loads(text)
     results, total = format_pages_1d(words2, languageCode, showIPA)
