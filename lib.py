@@ -241,7 +241,7 @@ def format_pages_dictionary(words: str, languageCode: str, showIPA: bool = False
     results = ""
     total = 0
     if len(words) == 1:
-        results += format_pages_dictionary_helper(words[0], languageCode, showIPA, 0)
+        results += format_pages_dictionary_helper(words[0], languageCode, showIPA, 1)
     else:
         for i in range(1, len(words) + 1):
             someWord = words[i - 1]
@@ -296,6 +296,9 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
             word = words[j]
             results += "["
             results += f"{row}"
+            if len(words) > 2 :
+                results += f"-{j}"
+
             results += "] "
                
             results += f"**{word['Navi']}** "
