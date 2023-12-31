@@ -227,6 +227,11 @@ async def random(inter, n=Param(description="the number of random words to get")
     lang: the two-letter language-code for results (default: en)
     check_digraphs: Should it pay attention to just the letters or what digraphs they represent, too?
     """
+
+    if not n.isdigit():
+        await inter.response.send_message("Invalid string in number field")
+        return
+
     if lang is None:
         lang = get_language(inter)
     if where is None:
