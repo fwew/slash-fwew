@@ -151,6 +151,20 @@ async def profanity(inter,
     await Paginator.Simple().start(inter,pages=get_profanity(lang, showIPA))
 
 
+@fwew_bot.slash_command(name="homonyms", description="list all words with certain characteristics")
+async def homonyms(inter,
+                   ipa=Param(description="set to true to show IPA",
+                              default=False, choices=["true", "false"]),
+                    lang=Param(description="Language for results",
+                        default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"])):
+    """
+    list words with multiple definitions
+    """
+    if lang is None:
+        lang = get_language(inter)
+    await Paginator.Simple().start(inter,pages=get_homonyms(ipa, lang))
+
+
 @fwew_bot.slash_command(name="source", description="look up the source of na'vi word(s)")
 async def source(inter, words=Param(description="the na'vi word(s) for which to find source")):
     """
