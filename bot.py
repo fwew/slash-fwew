@@ -151,7 +151,7 @@ async def profanity(inter,
     await Paginator.Simple().start(inter,pages=get_profanity(lang, showIPA))
 
 
-@fwew_bot.slash_command(name="homonyms", description="list all words with certain characteristics")
+@fwew_bot.slash_command(name="homonyms", description="list all words with more than one meaning")
 async def homonyms(inter,
                    ipa=Param(description="set to true to show IPA",
                               default=False, choices=["true", "false"]),
