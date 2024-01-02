@@ -158,11 +158,19 @@ async def homonyms(inter,
                     lang=Param(description="Language for results",
                         default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"])):
     """
-    list words with multiple definitions
+    list all words with more than one meaning
     """
     if lang is None:
         lang = get_language(inter)
     await Paginator.Simple().start(inter,pages=get_homonyms(ipa, lang))
+
+
+@fwew_bot.slash_command(name="dict-len", description="list the number of words in the dictionary")
+async def dict_len(inter):
+    """
+    list the number of words in the dictionary
+    """
+    await inter.response.send_message(get_dict_len())
 
 
 @fwew_bot.slash_command(name="source", description="look up the source of na'vi word(s)")

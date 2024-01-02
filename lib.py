@@ -537,9 +537,14 @@ def get_homonyms(showIPA: bool, languageCode: str):
         firstResult += lastResult
     
     if not hasWords:
-        embeds = [disnake.Embed(color = Colour.orange(), title="No words found",description="No Na'vi words found for:\n" + words)]
+        embeds = [disnake.Embed(color = Colour.orange(), title="No words found",description="No homonyms found:\n")]
 
     return embeds
+
+def get_dict_len():
+    res = requests.get(f"{api_url}/total-words")
+    text = res.text
+    return json.loads(text)
 
 
 def get_source(words: str) -> str:
