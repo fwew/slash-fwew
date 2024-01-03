@@ -235,17 +235,17 @@ def format_alphabet(letter: str, letters_dict: dict, names_dict: dict, i: int) -
         return f"[{i + 1}] **{letter}**: no results\n"
     return f"[{i + 1}] **{current_letter}** ({current_letter_name}) :speaker: [click here to listen](https://s.learnnavi.org/audio/alphabet/{letter_id}.mp3)\n"
 
-def format_pages_dictionary(words: str, languageCode: str, showIPA: bool = False):
+def format_pages_dictionary(words: str, languageCode: str, showIPA: bool = False, reef: bool = False):
     if isinstance(words, dict) and "message" in words:
         return words["message"], 1
     results = ""
     total = 0
     if len(words) == 1:
-        results += format_pages_dictionary_helper(words[0], languageCode, showIPA, 1)
+        results += format_pages_dictionary_helper(words[0], languageCode, showIPA, 1, reef)
     else:
         for i in range(1, len(words) + 1):
             someWord = words[i - 1]
-            results += format_pages_dictionary_helper(someWord, languageCode, showIPA, i)
+            results += format_pages_dictionary_helper(someWord, languageCode, showIPA, i, reef)
 
     # Make 2000 character pages
     split_results = results.split("\n")
@@ -283,7 +283,7 @@ def format_pages_1d(words: str, languageCode: str, showIPA: bool = False):
 
     return complete_pages, total
 
-def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool = False, row: int = 0) -> str:
+def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool = False, row: int = 0, reef: bool = False) -> str:
     results = ""
     if len(words) == 1:
         if row == 0:
@@ -306,8 +306,18 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
             ipa = word['IPA']
             breakdown = format_breakdown(word)
             if showIPA:
-                results += f"[{ipa}] "
+                ipa2 = ipa.replace("ʊ","u")
+                results += f"[{ipa2}] "
             results += f"({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+
+            if reef:
+                res = requests.get(f"{api_url}/reef/{ipa}")
+                text = res.text
+                words2 = json.loads(text)
+                results += " (Reef Na'vi " + words2[0]
+                if showIPA:
+                    results += " [" + words2[1] + "]"
+                results += ")\n"
 
             results += format_prefixes(word)
             results += format_infixes(word)
@@ -385,7 +395,7 @@ def format_number(response_text: str) -> str:
     return f"`  na'vi`: {name}\n`  octal`: {octal}\n`decimal`: {decimal}"
 
 
-def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True):
+def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True, reef = False):
     embeds = []
 
     if words.lower() == "hrh":
@@ -401,7 +411,7 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
         res = requests.get(f"{api_url}/fwew-simple/{words}")
     text = res.text
     words2 = json.loads(text)
-    results, total = format_pages_dictionary(words2, languageCode, showIPA)
+    results, total = format_pages_dictionary(words2, languageCode, showIPA, reef)
 
     # Create a list of embeds to paginate.
     i = 0
