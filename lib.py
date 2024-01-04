@@ -411,6 +411,12 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
         res = requests.get(f"{api_url}/fwew-simple/{words}")
     text = res.text
     words2 = json.loads(text)
+
+    if reef == "true":
+        reef = True
+    else:
+        reef = False
+
     results, total = format_pages_dictionary(words2, languageCode, showIPA, reef)
 
     # Create a list of embeds to paginate.
