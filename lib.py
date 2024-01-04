@@ -737,7 +737,7 @@ def format_translation(words, languageCode: str) -> str:
     else:
         for i in range(len(words)):
             word = words[i]
-            if i != 0:
+            if i != 0 & len(results) > 1:
                 results += " / "
             definition = f"{word[languageCode.upper()]}"
             definition_clean = re.sub(paren_pattern, "", definition)
