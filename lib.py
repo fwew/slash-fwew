@@ -562,8 +562,10 @@ def get_source(words: str) -> str:
 
     res = requests.get(f"{api_url}/fwew/{words}")
     text = res.text
-    words = json.loads(text)
-    results += format_source(words)
+    words2 = json.loads(text)
+    results += format_source(words2)
+    if len(results) < 5:
+        return "Words not found: " + words
     return results
 
 
@@ -572,8 +574,10 @@ def get_audio(words: str) -> str:
 
     res = requests.get(f"{api_url}/fwew/{words}")
     text = res.text
-    words = json.loads(text)
-    results += format_audio(words)
+    words2 = json.loads(text)
+    results += format_audio(words2)
+    if len(results) < 5:
+        return "Words not found: " + words
     return results
 
 
