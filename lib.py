@@ -353,7 +353,8 @@ def format_pages_helper(words: str, languageCode: str, showIPA: bool = False, ro
             ipa = word['IPA']
             breakdown = format_breakdown(word)
             if showIPA:
-                results += f"[{ipa}] "
+                ipa2 = ipa.replace("ʊ","u")
+                results += f"[{ipa2}] "
             results += f"({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
 
             results += format_prefixes(word)
