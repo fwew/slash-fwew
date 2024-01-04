@@ -194,8 +194,8 @@ def format_source(words: str) -> str:
     for word in words:
         if isinstance(word, dict) and "message" in word:
             return word["message"]
-        for i in range(1, len(word) + 1):
-            w = word[i - 1]
+        for i in range(1, len(word)):
+            w = word[i]
             if w['Source'] is None:
                 results += f"[{i}] **{w['Navi']}**: no source results\n"
             else:
@@ -210,8 +210,8 @@ def format_audio(words: str) -> str:
     for word in words:
         if isinstance(word, dict) and "message" in word:
             return word["message"]
-        for i in range(1, len(word) + 1):
-            w = word[i - 1]
+        for i in range(1, len(word)):
+            w = word[i]
             syllables = do_underline(w['Stressed'], w['Syllables'])
             results += f"[{i}] **{w['Navi']}** ({syllables}) :speaker: [click here to listen](https://s.learnnavi.org/audio/vocab/{w['ID']}.mp3)\n"
         results += "\n"
@@ -235,17 +235,17 @@ def format_alphabet(letter: str, letters_dict: dict, names_dict: dict, i: int) -
         return f"[{i + 1}] **{letter}**: no results\n"
     return f"[{i + 1}] **{current_letter}** ({current_letter_name}) :speaker: [click here to listen](https://s.learnnavi.org/audio/alphabet/{letter_id}.mp3)\n"
 
-def format_pages_dictionary(words: str, languageCode: str, showIPA: bool = False):
+def format_pages_dictionary(words: str, languageCode: str, showIPA: bool = False, reef: bool = False):
     if isinstance(words, dict) and "message" in words:
         return words["message"], 1
     results = ""
     total = 0
     if len(words) == 1:
-        results += format_pages_dictionary_helper(words[0], languageCode, showIPA, 1)
+        results += format_pages_dictionary_helper(words[0], languageCode, showIPA, 1, reef)
     else:
         for i in range(1, len(words) + 1):
             someWord = words[i - 1]
-            results += format_pages_dictionary_helper(someWord, languageCode, showIPA, i)
+            results += format_pages_dictionary_helper(someWord, languageCode, showIPA, i, reef)
 
     # Make 2000 character pages
     split_results = results.split("\n")
@@ -283,7 +283,7 @@ def format_pages_1d(words: str, languageCode: str, showIPA: bool = False):
 
     return complete_pages, total
 
-def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool = False, row: int = 0) -> str:
+def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool = False, row: int = 0, reef: bool = False) -> str:
     results = ""
     if len(words) == 1:
         if row == 0:
@@ -306,8 +306,18 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
             ipa = word['IPA']
             breakdown = format_breakdown(word)
             if showIPA:
-                results += f"[{ipa}] "
+                ipa2 = ipa.replace("ʊ","u")
+                results += f"[{ipa2}] "
             results += f"({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
+
+            if reef:
+                res = requests.get(f"{api_url}/reef/{ipa}")
+                text = res.text
+                words2 = json.loads(text)
+                results += " (Reef Na'vi " + words2[0]
+                if showIPA:
+                    results += " [" + words2[1] + "]"
+                results += ")\n"
 
             results += format_prefixes(word)
             results += format_infixes(word)
@@ -385,7 +395,7 @@ def format_number(response_text: str) -> str:
     return f"`  na'vi`: {name}\n`  octal`: {octal}\n`decimal`: {decimal}"
 
 
-def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True):
+def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = True, reef = False):
     embeds = []
 
     if words.lower() == "hrh":
@@ -401,7 +411,13 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck = 
         res = requests.get(f"{api_url}/fwew-simple/{words}")
     text = res.text
     words2 = json.loads(text)
-    results, total = format_pages_dictionary(words2, languageCode, showIPA)
+
+    if reef == "true":
+        reef = True
+    else:
+        reef = False
+
+    results, total = format_pages_dictionary(words2, languageCode, showIPA, reef)
 
     # Create a list of embeds to paginate.
     i = 0
@@ -511,13 +527,51 @@ def get_profanity(lang: str, showIPA: bool) -> str:
     return get_fwew(lang, words, showIPA, fixesCheck=False)
 
 
+def get_homonyms(showIPA: bool, languageCode: str):
+    embeds = []
+
+    res = requests.get(f"{api_url}/homonyms")
+    text = res.text
+    words2 = json.loads(text)
+    results, total = format_pages_dictionary(words2, languageCode, showIPA)
+
+    # Create a list of embeds to paginate.
+    i = 0
+    firstResult = 0
+
+    hasWords = False
+
+    for a in results:
+        i += 1
+        lastResult = 0
+        for b in a.split("\n"):
+            if len(b) > 0 and b[0] == "[":
+                lastResult += 1
+                if not b.endswith("not found"):
+                    hasWords = True
+        embeds.append(disnake.Embed(color = Colour.blue(), title="Results " + str(firstResult + 1) + "-" + str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")",description=a))
+        firstResult += lastResult
+    
+    if not hasWords:
+        embeds = [disnake.Embed(color = Colour.orange(), title="No words found",description="No homonyms found:\n")]
+
+    return embeds
+
+def get_dict_len():
+    res = requests.get(f"{api_url}/total-words")
+    text = res.text
+    return json.loads(text)
+
+
 def get_source(words: str) -> str:
     results = ""
 
     res = requests.get(f"{api_url}/fwew/{words}")
     text = res.text
-    words = json.loads(text)
-    results += format_source(words)
+    words2 = json.loads(text)
+    results += format_source(words2)
+    if len(results) < 5:
+        return "Words not found: " + words
     return results
 
 
@@ -526,8 +580,10 @@ def get_audio(words: str) -> str:
 
     res = requests.get(f"{api_url}/fwew/{words}")
     text = res.text
-    words = json.loads(text)
-    results += format_audio(words)
+    words2 = json.loads(text)
+    results += format_audio(words2)
+    if len(results) < 5:
+        return "Words not found: " + words
     return results
 
 
@@ -555,8 +611,8 @@ def get_alphabet(letters: str) -> str:
     return results
 
 
-def get_list(languageCode: str, args: str, showIPA: bool) -> str:
-    res = requests.get(f"{api_url}/list/{args}")
+def get_list(languageCode: str, args: str, showIPA: bool, check_digraphs: bool) -> str:
+    res = requests.get(f"{api_url}/list2/{check_digraphs}/{args}")
     text = res.text
     words2 = json.loads(text)
     results, total = format_pages_1d(words2, languageCode, showIPA)
@@ -584,7 +640,7 @@ def get_list(languageCode: str, args: str, showIPA: bool) -> str:
 
 
 def get_random(languageCode: str, n: int, showIPA: bool) -> str:
-    res = requests.get(f"{api_url}/random/{n}")
+    res = requests.get(f"{api_url}/random2/{n}/True")
     text = res.text
     words2 = json.loads(text)
     results, total = format_pages_1d(words2, languageCode, showIPA)
@@ -610,8 +666,8 @@ def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     return embeds
 
 
-def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool) -> str:
-    res = requests.get(f"{api_url}/random/{n}/{args}")
+def get_random_filter(languageCode: str, n: int, args: str, showIPA: bool, check_digraphs: str) -> str:
+    res = requests.get(f"{api_url}/random2/{n}/{check_digraphs}/{args}")
     text = res.text
     words2 = json.loads(text)
     results, total = format_pages_1d(words2, languageCode, showIPA)
@@ -687,7 +743,7 @@ def format_translation(words, languageCode: str) -> str:
     else:
         for i in range(len(words)):
             word = words[i]
-            if i != 0:
+            if i != 0 & len(results) > 1:
                 results += " / "
             definition = f"{word[languageCode.upper()]}"
             definition_clean = re.sub(paren_pattern, "", definition)

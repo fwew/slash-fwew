@@ -71,7 +71,9 @@ async def fwew(inter,
                 lang=Param(description="Language for results",
                         default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"]),
                 check_fixes=Param(name="check_fixes", description="Search faster by not checking for prefixes, suffixes and infixes",
-                        default="true", choices=["true", "false"])):
+                        default="true", choices=["true", "false"]),
+                reef=Param(description="Show reef dialect stuff",
+                        default=False, choices=["true", "false"])):
     """
     search word(s) na'vi -> english
 
@@ -85,7 +87,7 @@ async def fwew(inter,
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
     checkFixesString = True if check_fixes == "true" else False
-    await Paginator.Simple().start(inter,pages=get_fwew(lang, words, showIPA, checkFixesString))
+    await Paginator.Simple().start(inter,pages=get_fwew(lang, words, showIPA, checkFixesString, reef))
 
 
 @fwew_bot.slash_command(name="search-classic", description="search word(s) english -> na'vi")
@@ -151,6 +153,28 @@ async def profanity(inter,
     await Paginator.Simple().start(inter,pages=get_profanity(lang, showIPA))
 
 
+@fwew_bot.slash_command(name="homonyms", description="list all words with more than one meaning")
+async def homonyms(inter,
+                   ipa=Param(description="set to true to show IPA",
+                              default=False, choices=["true", "false"]),
+                    lang=Param(description="Language for results",
+                        default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"])):
+    """
+    list all words with more than one meaning
+    """
+    if lang is None:
+        lang = get_language(inter)
+    await Paginator.Simple().start(inter,pages=get_homonyms(ipa, lang))
+
+
+@fwew_bot.slash_command(name="dict-len", description="list the number of words in the dictionary")
+async def dict_len(inter):
+    """
+    list the number of words in the dictionary
+    """
+    await inter.response.send_message(get_dict_len())
+
+
 @fwew_bot.slash_command(name="source", description="look up the source of na'vi word(s)")
 async def source(inter, words=Param(description="the na'vi word(s) for which to find source")):
     """
@@ -192,7 +216,9 @@ async def list(inter, where=Param(description="characteristics of the word, such
                 ipa=Param(description="set to true to show IPA",
                         default=False, choices=["true", "false"]),
                 lang=Param(description="Language for results",
-                        default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"])):
+                        default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"]),
+                check_digraphs=Param(description="Are the things that look like digraphs in the query actually digraphs?",
+                        default="true", choices=["true", "maybe", "false"]) ):
     """
     list all words with certain characteristics
 
@@ -200,10 +226,11 @@ async def list(inter, where=Param(description="characteristics of the word, such
     ----------
     where: characteristics of the word, such as part of speech, number of syllables, etc.
     lang: the two-letter language-code for results (default: en)
+    check_digraphs: Should it pay attention to just the letters or what digraphs they represent, too?
     """
     if lang is None:
         lang = get_language(inter)
-    await Paginator.Simple().start(inter,pages=get_list(lang, where, ipa))
+    await Paginator.Simple().start(inter,pages=get_list(lang, where, ipa, check_digraphs))
 
 
 @fwew_bot.slash_command(name="random", description="get given number of random entries with certain characteristics")
@@ -211,7 +238,9 @@ async def random(inter, n=Param(description="the number of random words to get")
                 ipa=Param(description="set to true to show IPA",
                         default=False, choices=["true", "false"]),
                 lang=Param(description="Language for results",
-                        default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"]) ):
+                        default="en", choices=["en", "de", "et", "fr", "hu", "nl", "pl", "ru", "sv", "tr"]),
+                check_digraphs=Param(description="Are the things that look like digraphs in the query actually digraphs?",
+                        default="true", choices=["true", "maybe", "false"]) ):
     """
     get given number of random entries with certain characteristics
 
@@ -220,13 +249,19 @@ async def random(inter, n=Param(description="the number of random words to get")
     n: the number of random words to get
     where: characteristics of the word, such as part of speech, number of syllables, etc.
     lang: the two-letter language-code for results (default: en)
+    check_digraphs: Should it pay attention to just the letters or what digraphs they represent, too?
     """
+
+    if not n.isdigit():
+        await inter.response.send_message("Invalid string in number field")
+        return
+
     if lang is None:
         lang = get_language(inter)
     if where is None:
         await Paginator.Simple().start(inter,pages=get_random(lang, n, ipa))
     else:
-        await Paginator.Simple().start(inter,pages=get_random_filter(lang, n, where, ipa))
+        await Paginator.Simple().start(inter,pages=get_random_filter(lang, n, where, ipa, check_digraphs))
 
 
 @fwew_bot.slash_command(name="number", description="convert or translate numbers between decimal and octal/na'vi")
