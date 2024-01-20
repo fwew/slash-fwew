@@ -571,7 +571,7 @@ def get_source(words: str) -> str:
     text = res.text
     words2 = json.loads(text)
     results += format_source(words2)
-    if len(results) < 5:
+    if len(results.split()) < 1:
         return "Words not found: " + words
     return results
 
