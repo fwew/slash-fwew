@@ -216,8 +216,7 @@ def format_audio(words: str) -> str:
         for i in range(1, len(word)):
             w = word[i]
             syllables = do_underline(w['Stressed'], w['Syllables'])
-            results += f"[{i}] **{w['Navi']}** ({
-                syllables}) :speaker: [click here to listen](https://s.learnnavi.org/audio/vocab/{w['ID']}.mp3)\n"
+            results += f"[{i}] **{w['Navi']}** ({syllables}) :speaker: [click here to listen](https://s.learnnavi.org/audio/vocab/{w['ID']}.mp3)\n"
         results += "\n"
     return results
 
@@ -317,8 +316,7 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
             if showIPA:
                 ipa2 = ipa.replace("ʊ", "u")
                 results += f"[{ipa2}] "
-            results += f"({breakdown}) *{word['PartOfSpeech']
-                                         }* {word[languageCode.upper()]}\n"
+            results += f"({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
 
             if reef:
                 res = requests.get(f"{api_url}/reef/{ipa}")
@@ -366,8 +364,7 @@ def format_pages_helper(words: str, languageCode: str, showIPA: bool = False, ro
             if showIPA:
                 ipa2 = ipa.replace("ʊ", "u")
                 results += f"[{ipa2}] "
-            results += f"({breakdown}) *{word['PartOfSpeech']
-                                         }* {word[languageCode.upper()]}\n"
+            results += f"({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
 
             results += format_prefixes(word)
             results += format_infixes(word)
