@@ -24,20 +24,21 @@ servers = [
     395558141162422275,  # fbts
     154318499722952704,  # lnc
     860933619296108564,  # gfs
-    1058520916612624536, # fr
-    1061696962304426025, # fr
-    1103339942538645605, # fr
-    1065673594354548757, # ru
-    1063774395748847648, # ru
-    1078367154912628867, # sds
-    1060288947596570624, # 4023
-    1067521820401619004, # 0422
-    1061325007998943392, # 1537
-    1075866581265043548, # 2565
-    1062822191961489408, # nm01
+    1058520916612624536,  # fr
+    1061696962304426025,  # fr
+    1103339942538645605,  # fr
+    1065673594354548757,  # ru
+    1063774395748847648,  # ru
+    1078367154912628867,  # sds
+    1060288947596570624,  # 4023
+    1067521820401619004,  # 0422
+    1061325007998943392,  # 1537
+    1075866581265043548,  # 2565
+    1062822191961489408,  # nm01
 ]
 
-languages = ["en", "de", "et", "fr", "hu", "nl", "pl", "pt", "ru", "sv", "tr"]
+languages = ["en", "de", "et", "es", "fr",
+             "hu", "nl", "pl", "pt", "ru", "sv", "tr"]
 
 intents = disnake.Intents.default()
 intents.message_content = True
@@ -91,7 +92,7 @@ async def fwew(inter,
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
     checkFixesString = True if check_fixes == "true" else False
-    await Paginator.Simple().start(inter,pages=get_fwew(lang, words, showIPA, checkFixesString, reef))
+    await Paginator.Simple().start(inter, pages=get_fwew(lang, words, showIPA, checkFixesString, reef))
 
 
 @fwew_bot.slash_command(name="search-classic", description="search word(s) english -> na'vi")
@@ -112,7 +113,7 @@ async def search(inter,
     if lang is None:
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
-    await Paginator.Simple().start(inter,pages=get_fwew_reverse(lang, words, showIPA))
+    await Paginator.Simple().start(inter, pages=get_fwew_reverse(lang, words, showIPA))
 
 
 @fwew_bot.slash_command(name="search", description="search word(s) any direction")
@@ -133,8 +134,8 @@ async def search(inter,
     if lang is None:
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
-    await Paginator.Simple().start(inter,pages=get_search(lang, words, showIPA))
-    #await inter.response.send_message(get_search(lang, words, showIPA))
+    await Paginator.Simple().start(inter, pages=get_search(lang, words, showIPA))
+    # await inter.response.send_message(get_search(lang, words, showIPA))
 
 
 @fwew_bot.slash_command(name="profanity", description="get the list of Na'vi vulgar curse words / profanity")
@@ -154,7 +155,7 @@ async def profanity(inter,
     if lang is None:
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
-    await Paginator.Simple().start(inter,pages=get_profanity(lang, showIPA))
+    await Paginator.Simple().start(inter, pages=get_profanity(lang, showIPA))
 
 
 @fwew_bot.slash_command(name="homonyms", description="list all words with more than one meaning")
@@ -168,7 +169,7 @@ async def homonyms(inter,
     """
     if lang is None:
         lang = get_language(inter)
-    await Paginator.Simple().start(inter,pages=get_homonyms(ipa, lang))
+    await Paginator.Simple().start(inter, pages=get_homonyms(ipa, lang))
 
 
 @fwew_bot.slash_command(name="dict-len", description="list the number of words in the dictionary")
@@ -234,7 +235,7 @@ async def list(inter, where=Param(description="characteristics of the word, such
     """
     if lang is None:
         lang = get_language(inter)
-    await Paginator.Simple().start(inter,pages=get_list(lang, where, ipa, check_digraphs))
+    await Paginator.Simple().start(inter, pages=get_list(lang, where, ipa, check_digraphs))
 
 
 @fwew_bot.slash_command(name="random", description="get given number of random entries with certain characteristics")
@@ -263,9 +264,9 @@ async def random(inter, n=Param(description="the number of random words to get")
     if lang is None:
         lang = get_language(inter)
     if where is None:
-        await Paginator.Simple().start(inter,pages=get_random(lang, n, ipa))
+        await Paginator.Simple().start(inter, pages=get_random(lang, n, ipa))
     else:
-        await Paginator.Simple().start(inter,pages=get_random_filter(lang, n, where, ipa, check_digraphs))
+        await Paginator.Simple().start(inter, pages=get_random_filter(lang, n, where, ipa, check_digraphs))
 
 
 @fwew_bot.slash_command(name="number", description="convert or translate numbers between decimal and octal/na'vi")
@@ -298,12 +299,14 @@ async def lenition(inter):
     """
     await inter.response.send_message(get_lenition())
 
+
 @fwew_bot.slash_command(name="len", description="get the compact lenition table")
 async def len(inter):
     """
     get the compact lenition table
     """
     await inter.response.send_message(get_len())
+
 
 @fwew_bot.slash_command(name="that", description="show all possible \"that\"s in Na'vi")
 async def that(inter):
@@ -312,12 +315,14 @@ async def that(inter):
     """
     await inter.response.send_message(get_all_thats())
 
+
 @fwew_bot.slash_command(name="cameron-words", description="Words that James Cameron made")
 async def that(inter):
     """
     get the Na'vi words James Cameron made
     """
     await inter.response.send_message(get_cameron_words())
+
 
 @fwew_bot.slash_command(name="version", description="get version information")
 async def version(inter):
@@ -326,12 +331,14 @@ async def version(inter):
     """
     await inter.response.send_message(get_version())
 
+
 @fwew_bot.slash_command(name="name-single", description="Generate a valid Na'vi word to use as a name")
 async def name(inter,
-        n=Param(name = "name-count", description="number of names to generate", gt=1, le=50, default=1),
-        dialect=Param(name="dialect", description="which dialect the names should fit",
-                choices=["interdialect", "forest", "reef"], default="interdialect"),
-        s=Param(name="syllables", description="name syllable count", gt=0, le=4, default=0)):
+               n=Param(name="name-count", description="number of names to generate",
+                       gt=1, le=50, default=1),
+               dialect=Param(name="dialect", description="which dialect the names should fit",
+                             choices=["interdialect", "forest", "reef"], default="interdialect"),
+               s=Param(name="syllables", description="name syllable count", gt=0, le=4, default=0)):
     """
     generate full Na'vi name(s) out of preexisting Na'vi words
 
@@ -343,16 +350,20 @@ async def name(inter,
     """
     await inter.response.send_message(get_single_name_discord(n, dialect, s))
 
+
 @fwew_bot.slash_command(name="name", description="generate Na'vi full names")
 async def name(inter,
-        ending=commands.Param(
-                description="'ite (daughter), 'itan (son) or 'itu (genderless, non-canon)", choices=["random", "'ite", "'itan", "'itu"], default="random"),
-        n=Param(name = "name-count", description="number of names to generate", gt=1, le=50, default=1),
-        dialect=Param(name="dialect", description="which dialect the names should fit",
-                choices=["interdialect", "forest", "reef"], default="interdialect"),
-        s1=Param(name="syllables-1", description="first name syllable count", gt=0, le=4, default=0),
-        s2=Param(name="syllables-2", description="family name syllable count", gt=0, le=4, default=0),
-        s3=Param(name="syllables-3", description="parent's name syllable count", gt=0, le=4, default=0)):
+               ending=commands.Param(
+                   description="'ite (daughter), 'itan (son) or 'itu (genderless, non-canon)", choices=["random", "'ite", "'itan", "'itu"], default="random"),
+               n=Param(name="name-count", description="number of names to generate",
+                       gt=1, le=50, default=1),
+               dialect=Param(name="dialect", description="which dialect the names should fit",
+                             choices=["interdialect", "forest", "reef"], default="interdialect"),
+               s1=Param(
+                   name="syllables-1", description="first name syllable count", gt=0, le=4, default=0),
+               s2=Param(
+                   name="syllables-2", description="family name syllable count", gt=0, le=4, default=0),
+               s3=Param(name="syllables-3", description="parent's name syllable count", gt=0, le=4, default=0)):
     """
     generate full Na'vi name(s)
 
@@ -370,16 +381,20 @@ async def name(inter,
 
 @fwew_bot.slash_command(name="name-alu", description="Use existing Na'vi words to generate Na'vi names")
 async def name(inter,
-        n=Param(name = "name-count", description="number of names to generate", gt=1, le=50, default=1),
-        dialect=Param(name="dialect", description="which dialect the names should fit",
-                choices=["interdialect", "forest", "reef"], default="interdialect"),
-        s=Param(name="syllables", description="name syllable count", gt=0, le=4, default=0),
-        noun_mode=commands.Param(name="noun-mode", description="type of noun",
-                choices=["something", "normal noun", "verb-er"],
-                default="something"),
-        adj_mode=commands.Param(name="adjective-mode", description="type of adjective for the noun",
-                choices=["any", "something", "none", "normal adjective", "genitive noun", "origin noun", "participle verb", "active participle verb", "passive participle verb"],
-                default="something")):
+               n=Param(name="name-count", description="number of names to generate",
+                       gt=1, le=50, default=1),
+               dialect=Param(name="dialect", description="which dialect the names should fit",
+                             choices=["interdialect", "forest", "reef"], default="interdialect"),
+               s=Param(name="syllables", description="name syllable count",
+                       gt=0, le=4, default=0),
+               noun_mode=commands.Param(name="noun-mode", description="type of noun",
+                                        choices=["something",
+                                                 "normal noun", "verb-er"],
+                                        default="something"),
+               adj_mode=commands.Param(name="adjective-mode", description="type of adjective for the noun",
+                                       choices=["any", "something", "none", "normal adjective", "genitive noun", "origin noun",
+                                                "participle verb", "active participle verb", "passive participle verb"],
+                                       default="something")):
     """
     generate full Na'vi name(s) out of preexisting Na'vi words
 
@@ -443,7 +458,7 @@ async def leave(inter, server_id=Param(description="the server id")):
         await inter.edit_original_message(content="you are not authorized to use this command")
 
 
-@fwew_bot.message_command(name="fwew translate") # default_permission=True)
+@fwew_bot.message_command(name="fwew translate")  # default_permission=True)
 async def translate_message(inter, message):
     """
     translate this message using Fwew
