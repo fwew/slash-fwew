@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from name_gen import *
 from space_containing import *
 
-version = "3.0.1"
+version = "3.1.0"
 
 load_dotenv(os.path.join(Path.cwd(), ".env"))
 api_url = os.environ.get("API_URL")
@@ -78,7 +78,12 @@ def get_language(inter):
         365987412163297284: "fr",  # LN/other/#français
         466721683496239105: "nl",  # LN/other/#nederlands
         649363324143665192: "pl",  # LN/other/#polski
+        998643323260653728: "pt",  # LN/other/#português
+        1074870940271378472: "pt",  # LN/Português/geral-pt
+        1074872259283529778: "pt",  # LN/Português/estudos
         507306946190114846: "ru",  # LN/other/#русский
+        1197573962406830121: "ru",  # LN/Русское сообщество На'ви/общение
+        1199402001428140224: "ru",  # LN/Русское сообщество На'ви/учебный-класс
         998643038878453870: "tr"   # LN/other/#türkçe
     }
     if inter.channel is None:
