@@ -71,7 +71,7 @@ async def fwew(inter,
                 ipa=Param(description="set to true to show IPA",
                         default=False, choices=["true", "false"]),
                 lang=Param(description="Language for results",
-                        default="en", choices=languages),
+                        default=None, choices=languages),
                 check_fixes=Param(name="check_fixes", description="Search faster by not checking for prefixes, suffixes and infixes",
                         default="true", choices=["true", "false"]),
                 reef=Param(description="Show reef dialect stuff",
@@ -97,7 +97,7 @@ async def search(inter,
                 words=Param(description="the english word(s) to look up"),
                 ipa=Param(description="set to true to show IPA",
                         default=False, choices=["true", "false"]),
-                lang=Param(description="Language for results", default="en",
+                lang=Param(description="Language for results", default=None,
                         choices=languages)):
     """
     search words english -> na'vi
@@ -118,7 +118,7 @@ async def search(inter,
                 words=Param(description="the word(s) to look up"),
                 ipa=Param(description="set to true to show IPA",
                         default=False, choices=["true", "false"]),
-                lang=Param(description="Language for results", default="en",
+                lang=Param(description="Language for results", default=None,
                         choices=languages)):
     """
     search words (direction idependent)
@@ -140,7 +140,7 @@ async def profanity(inter,
                     ipa=Param(description="set to true to show IPA",
                               default=False, choices=["true", "false"]),
                     lang=Param(description="Language for results",
-                        default="en", choices=languages)):
+                        default=None, choices=languages)):
     """
     get the list of Na'vi vulgar curse words / profanity
 
@@ -160,7 +160,7 @@ async def homonyms(inter,
                    ipa=Param(description="set to true to show IPA",
                               default=False, choices=["true", "false"]),
                     lang=Param(description="Language for results",
-                        default="en", choices=languages)):
+                        default=None, choices=languages)):
     """
     list all words with more than one meaning
     """
@@ -218,7 +218,7 @@ async def list(inter, where=Param(description="characteristics of the word, such
                 ipa=Param(description="set to true to show IPA",
                         default=False, choices=["true", "false"]),
                 lang=Param(description="Language for results",
-                        default="en", choices=languages),
+                        default=None, choices=languages),
                 check_digraphs=Param(description="Are the things that look like digraphs in the query actually digraphs?",
                         default="true", choices=["true", "maybe", "false"]) ):
     """
@@ -240,7 +240,7 @@ async def random(inter, n=Param(description="the number of random words to get")
                 ipa=Param(description="set to true to show IPA",
                         default=False, choices=["true", "false"]),
                 lang=Param(description="Language for results",
-                        default="en", choices=languages),
+                        default=None, choices=languages),
                 check_digraphs=Param(description="Are the things that look like digraphs in the query actually digraphs?",
                         default="true", choices=["true", "maybe", "false"]) ):
     """
