@@ -67,15 +67,15 @@ async def on_guild_join(guild):
 
 @fwew_bot.slash_command(name="fwew", description="search word(s) na'vi -> english")
 async def fwew(inter,
-                words=Param(description="the na'vi word(s) to look up"),
-                ipa=Param(description="set to true to show IPA",
-                        default=False, choices=["true", "false"]),
-                lang=Param(description="Language for results",
-                        default="en", choices=languages),
-                check_fixes=Param(name="check_fixes", description="Search faster by not checking for prefixes, suffixes and infixes",
-                        default="true", choices=["true", "false"]),
-                reef=Param(description="Show reef dialect stuff",
-                        default=False, choices=["true", "false"])):
+               words=Param(description="the na'vi word(s) to look up"),
+               ipa=Param(description="set to true to show IPA",
+                         default=False, choices=["true", "false"]),
+               lang=Param(description="Language for results",
+                          default=None, choices=languages),
+               check_fixes=Param(name="check_fixes", description="Search faster by not checking for prefixes, suffixes and infixes",
+                                 default="true", choices=["true", "false"]),
+               reef=Param(description="Show reef dialect stuff",
+                          default=False, choices=["true", "false"])):
     """
     search word(s) na'vi -> english
 
@@ -94,11 +94,11 @@ async def fwew(inter,
 
 @fwew_bot.slash_command(name="search-classic", description="search word(s) english -> na'vi")
 async def search(inter,
-                words=Param(description="the english word(s) to look up"),
-                ipa=Param(description="set to true to show IPA",
-                        default=False, choices=["true", "false"]),
-                lang=Param(description="Language for results", default="en",
-                        choices=languages)):
+                 words=Param(description="the english word(s) to look up"),
+                 ipa=Param(description="set to true to show IPA",
+                           default=False, choices=["true", "false"]),
+                 lang=Param(description="Language for results", default=None,
+                            choices=languages)):
     """
     search words english -> na'vi
 
@@ -115,11 +115,11 @@ async def search(inter,
 
 @fwew_bot.slash_command(name="search", description="search word(s) any direction")
 async def search(inter,
-                words=Param(description="the word(s) to look up"),
-                ipa=Param(description="set to true to show IPA",
-                        default=False, choices=["true", "false"]),
-                lang=Param(description="Language for results", default="en",
-                        choices=languages)):
+                 words=Param(description="the word(s) to look up"),
+                 ipa=Param(description="set to true to show IPA",
+                           default=False, choices=["true", "false"]),
+                 lang=Param(description="Language for results", default=None,
+                            choices=languages)):
     """
     search words (direction idependent)
 
@@ -140,7 +140,7 @@ async def profanity(inter,
                     ipa=Param(description="set to true to show IPA",
                               default=False, choices=["true", "false"]),
                     lang=Param(description="Language for results",
-                        default="en", choices=languages)):
+                               default=None, choices=languages)):
     """
     get the list of Na'vi vulgar curse words / profanity
 
@@ -158,9 +158,9 @@ async def profanity(inter,
 @fwew_bot.slash_command(name="homonyms", description="list all words with more than one meaning")
 async def homonyms(inter,
                    ipa=Param(description="set to true to show IPA",
-                              default=False, choices=["true", "false"]),
-                    lang=Param(description="Language for results",
-                        default="en", choices=languages)):
+                             default=False, choices=["true", "false"]),
+                   lang=Param(description="Language for results",
+                              default=None, choices=languages)):
     """
     list all words with more than one meaning
     """
@@ -215,12 +215,12 @@ async def alphabet(inter, letters=Param(description="the na'vi letter(s) for whi
 
 @fwew_bot.slash_command(name="list", description="list all words with certain characteristics")
 async def list(inter, where=Param(description="characteristics of the word, such as part of speech, number of syllables, etc."),
-                ipa=Param(description="set to true to show IPA",
-                        default=False, choices=["true", "false"]),
-                lang=Param(description="Language for results",
-                        default="en", choices=languages),
-                check_digraphs=Param(description="Are the things that look like digraphs in the query actually digraphs?",
-                        default="true", choices=["true", "maybe", "false"]) ):
+               ipa=Param(description="set to true to show IPA",
+                         default=False, choices=["true", "false"]),
+               lang=Param(description="Language for results",
+                          default=None, choices=languages),
+               check_digraphs=Param(description="Are the things that look like digraphs in the query actually digraphs?",
+                                    default="true", choices=["true", "maybe", "false"])):
     """
     list all words with certain characteristics
 
@@ -237,12 +237,12 @@ async def list(inter, where=Param(description="characteristics of the word, such
 
 @fwew_bot.slash_command(name="random", description="get given number of random entries with certain characteristics")
 async def random(inter, n=Param(description="the number of random words to get"), where=None,
-                ipa=Param(description="set to true to show IPA",
-                        default=False, choices=["true", "false"]),
-                lang=Param(description="Language for results",
-                        default="en", choices=languages ),
-                check_digraphs=Param(description="Are the things that look like digraphs in the query actually digraphs?",
-                        default="true", choices=["true", "maybe", "false"]) ):
+                 ipa=Param(description="set to true to show IPA",
+                           default=False, choices=["true", "false"]),
+                 lang=Param(description="Language for results",
+                            default=None, choices=languages),
+                 check_digraphs=Param(description="Are the things that look like digraphs in the query actually digraphs?",
+                                      default="true", choices=["true", "maybe", "false"])):
     """
     get given number of random entries with certain characteristics
 
