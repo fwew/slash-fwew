@@ -12,4 +12,4 @@ python-dotenv==1.0.0
 requests==2.29.0
 urllib3==1.26.15
 yarl==1.9.2
-paginator==0.5.1
+#paginator=0.5.1
