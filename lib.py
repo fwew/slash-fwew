@@ -145,7 +145,7 @@ def do_underline(ipa: str, syllables: str) -> str:
 
 
 def format_breakdown(word: dict) -> str:
-    breakdown = do_underline(word['Stressed'], word['Syllables'])
+    breakdown = do_underline(word['IPA'], word['Syllables'])
     if word['InfixDots'] != "NULL":
         breakdown += f", {word['InfixDots']}"
     return breakdown
