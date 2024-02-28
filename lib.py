@@ -354,7 +354,7 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
 
                 # Find stressed syllables
                 ipa_syllables = []
-                ipa_words = ipa.split(" ")
+                ipa_words = words2[1].split(" ")
                 new_ipa = ""
                 for word2 in ipa_words:
                     new_ipa += " "
