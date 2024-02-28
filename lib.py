@@ -355,20 +355,13 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                 # Find stressed syllables
                 ipa_syllables = []
                 ipa_words = words2[1].split(" ")
-                new_ipa = ""
                 for word2 in ipa_words:
-                    new_ipa += " "
                     b = word2.split(".")
-                    temp_ipa = ""
                     for syllable in b:
-                        temp_ipa += "."
                         if "ˈ" in syllable:
-                            temp_ipa += syllable
                             ipa_syllables.append(True)
                         else:
-                            temp_ipa += syllable.replace("æ", "ɛ")
                             ipa_syllables.append(False)
-                    new_ipa += temp_ipa[1:] # no extra . in front
 
                 words2[0] = words2[0].replace(" ", "-")
                 s1 = words2[0].split("-")
@@ -386,7 +379,7 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
 
                 results += " (Reef Na'vi: " + words2[0]
                 if showIPA:
-                    results += " [" + new_ipa[1:] + "]" # no extra space in front
+                    results += " [" + words2[1] + "]"
                 results += ")\n"
 
             results += format_prefixes(word)
