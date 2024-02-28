@@ -37,9 +37,6 @@ servers = [
     1062822191961489408,  # nm01
 ]
 
-languages = ["en", "de", "et", "es", "fr",
-             "hu", "nl", "pl", "pt", "ru", "sv", "tr"]
-
 intents = disnake.Intents.default()
 intents.message_content = True
 flags = disnake.ext.commands.CommandSyncFlags.default()
