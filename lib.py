@@ -117,7 +117,7 @@ def do_underline(ipa: str, syllables: str) -> str:
 
     # We don't want words with multiple IPAs
     if len(ipa_words) > 1 and ipa_words[1] == "or":
-        ipa_words = [ipa_words[0]]
+        return syllables
     ipa_syllables = []
 
     # Find stressed syllables
@@ -364,18 +364,20 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                             ipa_syllables.append(False)
 
                 words2[0] = words2[0].replace(" ", "-")
+                # If it's not equal, there's an "or", indicating any syllable stress is correct
                 s1 = words2[0].split("-")
-                i = 0
-                words2[0] = ""
-                for stressed in ipa_syllables:
-                    if i != 0:
-                        words2[0] += "-"
-                    if stressed:
-                        words2[0] += "__" + s1[i] + "__"
-                    else:
-                        s1[i] = s1[i].replace("ä", "e")
-                        words2[0] += s1[i]
-                    i += 1
+                if len(ipa_syllables) == len(s1):
+                    i = 0
+                    words2[0] = ""
+                    for stressed in ipa_syllables:
+                        if i != 0:
+                            words2[0] += "-"
+                        if stressed:
+                            words2[0] += "__" + s1[i] + "__"
+                        else:
+                            s1[i] = s1[i].replace("ä", "e")
+                            words2[0] += s1[i]
+                        i += 1
 
                 results += " (Reef Na'vi: " + words2[0]
                 if showIPA:
