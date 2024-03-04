@@ -37,16 +37,14 @@ servers = [
     1062822191961489408,  # nm01
 ]
 
-languages = ["en", "de", "et", "es", "fr",
-             "hu", "nl", "pl", "pt", "ru", "sv", "tr"]
-
 intents = disnake.Intents.default()
 intents.message_content = True
 flags = disnake.ext.commands.CommandSyncFlags.default()
 flags.sync_commands_debug = True
-fwew_bot = commands.Bot(command_prefix="?", help_command=None, intents=intents,
-                        command_sync_flags=flags)  # , sync_permissions=True #, test_guilds=servers)
+fwew_bot = commands.Bot(command_prefix="?", help_command=None, intents=intents, 
+    command_sync_flags=flags) #, sync_permissions=True #, test_guilds=servers)
 
+languages = ["en", "de", "es", "et", "fr", "hu", "nl", "pl", "pt", "ru", "sv", "tr"]
 
 @fwew_bot.event
 async def on_ready():

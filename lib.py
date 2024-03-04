@@ -109,20 +109,43 @@ def get_language(inter):
     return server_languages[inter.guild_id]
 
 
-def do_underline(stressed: str, syllables: str) -> str:
+def do_underline(ipa: str, syllables: str) -> str:
     syllables = syllables.replace(" ", "-")
     if "-" not in syllables:
         return syllables
-    s0 = int(stressed) - 1
+    ipa_words = ipa.split(" ")
+
+    # We don't want words with multiple IPAs
+    if len(ipa_words) > 1 and ipa_words[1] == "or":
+        return syllables
+    ipa_syllables = []
+
+    # Find stressed syllables
+    for word in ipa_words:
+        b = word.split(".")
+        for syllable in b:
+            if "ˈ" in syllable:
+                ipa_syllables.append(True)
+            else:
+                ipa_syllables.append(False)
+
     s1 = syllables.split("-")
-    if s0 >= 0 and s0 < len(s1):
-        s1[s0] = f"__{s1[s0]}__"
-        return '-'.join(s1)
+    i = 0
+    syllables = ""
+    for stressed in ipa_syllables:
+        if i != 0:
+            syllables += "-"
+        if stressed:
+            syllables += "__" + s1[i] + "__"
+        else:
+            syllables += s1[i]
+        i += 1
+    
     return syllables
 
 
 def format_breakdown(word: dict) -> str:
-    breakdown = do_underline(word['Stressed'], word['Syllables'])
+    breakdown = do_underline(word['IPA'], word['Syllables'])
     if word['InfixDots'] != "NULL":
         breakdown += f", {word['InfixDots']}"
     return breakdown
@@ -328,7 +351,35 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                 res = requests.get(f"{api_url}/reef/{ipa}")
                 text = res.text
                 words2 = json.loads(text)
-                results += " (Reef Na'vi " + words2[0]
+
+                # Find stressed syllables
+                ipa_syllables = []
+                ipa_words = words2[1].split(" ")
+                for word2 in ipa_words:
+                    b = word2.split(".")
+                    for syllable in b:
+                        if "ˈ" in syllable:
+                            ipa_syllables.append(True)
+                        else:
+                            ipa_syllables.append(False)
+
+                words2[0] = words2[0].replace(" ", "-")
+                # If it's not equal, there's an "or", indicating any syllable stress is correct
+                s1 = words2[0].split("-")
+                if len(ipa_syllables) == len(s1):
+                    i = 0
+                    words2[0] = ""
+                    for stressed in ipa_syllables:
+                        if i != 0:
+                            words2[0] += "-"
+                        if stressed:
+                            words2[0] += "__" + s1[i] + "__"
+                        else:
+                            s1[i] = s1[i].replace("ä", "e")
+                            words2[0] += s1[i]
+                        i += 1
+
+                results += " (Reef Na'vi: " + words2[0]
                 if showIPA:
                     results += " [" + words2[1] + "]"
                 results += ")\n"
