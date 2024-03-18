@@ -244,7 +244,7 @@ def format_audio(words: str) -> str:
             return word["message"]
         for i in range(1, len(word)):
             w = word[i]
-            syllables = do_underline(w['Stressed'], w['Syllables'])
+            syllables = do_underline(w['IPA'], w['Syllables'])
             results += f"[{i}] **{w['Navi']}** ({syllables}) :speaker: [click here to listen](https://s.learnnavi.org/audio/vocab/{w['ID']}.mp3)\n"
         results += "\n"
     return results
