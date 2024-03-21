@@ -861,7 +861,7 @@ def format_translation(words, languageCode: str) -> str:
                         definition_clean = "(" + \
                             infix_map[a] + ") " + definition_clean
             results += f"{definition_clean}"
-    return results 
+    return results + " **|** "
 
 # Discord right-click menu translator
 
@@ -941,10 +941,12 @@ def get_translation(text: str, languageCode: str) -> str:
             res_text = res.text
             if len(res_text) > 20:
                 text = json.loads(res_text)
+                n = 0
                 for a in text:
-                    if len(a) > 0:
+                    if len(a) > 0 and n < len(text) - 1: # don't do the last empty one
                         results += format_translation(a, languageCode)
                         results += get_line_ending(word)
+                    n += 1
             navi_block = ""
             results += temp_result
             temp_result = ""
