@@ -861,7 +861,7 @@ def format_translation(words, languageCode: str) -> str:
                         definition_clean = "(" + \
                             infix_map[a] + ") " + definition_clean
             results += f"{definition_clean}"
-    return results + " **|** "
+    return results 
 
 # Discord right-click menu translator
 
