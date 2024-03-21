@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from name_gen import *
 from space_containing import *
 
-version = "3.2.0"
+version = "3.2.2"
 
 load_dotenv(os.path.join(Path.cwd(), ".env"))
 api_url = os.environ.get("API_URL")
@@ -100,7 +100,8 @@ def get_language(inter):
         1061696962304426025: "fr",
         1103339942538645605: "fr",
         1065673594354548757: "ru",
-        1063774395748847648: "ru"
+        1063774395748847648: "ru",
+        1215999922470653982: "ru",
     }
     if inter.guild is None:
         return "en"
