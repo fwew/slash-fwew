@@ -110,6 +110,15 @@ def get_language(inter):
 
 
 def do_underline(ipa: str, syllables: str) -> str:
+    # Make sure there's no multiple IPAs with only stress difference
+    multipleIPA = ipa.split("] or [")
+    if len(multipleIPA) > 1:
+        twoIPAs = [multipleIPA[0].replace("ˈ", ""), multipleIPA[1].replace("ˈ", "")]
+        if twoIPAs[0] == twoIPAs[1]: # If it's really a stress difference
+            ipa = twoIPAs[0] # Just use one with no stress markers
+        else: # If it's a pronunciation difference, too
+            ipa = multipleIPA[0] # Use the first one
+
     syllables = syllables.replace(" ", "-")
     if "-" not in syllables:
         return syllables
