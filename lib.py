@@ -883,9 +883,9 @@ def get_translation(text: str, languageCode: str) -> str:
     texts = texts.replace("`", " ")  # `monospace` and ```code block```
     texts = texts.replace(">", " ")  # > line quote and >>> block quote
     texts = texts.replace(",", " ")
-    texts = texts.replace(".", " ")
     texts = texts.replace("?", " ")
     texts = texts.replace("!", " ")
+    texts = texts.replace("<", " <") # Help it detect custom emojis
     texts = texts.replace("‘", "'") # “Smart” asterisks
     texts = texts.replace("’", "'") # They can trip up the emoji detector
     all_words = texts.split()
