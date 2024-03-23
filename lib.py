@@ -874,8 +874,6 @@ def format_translation(words, languageCode: str) -> str:
     return results + " **|** "
 
 # Discord right-click menu translator
-
-
 def get_translation(text: str, languageCode: str) -> str:
     results = ""
 
@@ -885,9 +883,11 @@ def get_translation(text: str, languageCode: str) -> str:
     texts = texts.replace("`", " ")  # `monospace` and ```code block```
     texts = texts.replace(">", " ")  # > line quote and >>> block quote
     texts = texts.replace(",", " ")
-    texts = texts.replace(".", " ")
     texts = texts.replace("?", " ")
     texts = texts.replace("!", " ")
+    texts = texts.replace("<", " <") # Help it detect custom emojis
+    texts = texts.replace("‘", "'") # “Smart” asterisks
+    texts = texts.replace("’", "'") # They can trip up the emoji detector
     all_words = texts.split()
     navi_block = ""
     temp_result = ""
@@ -909,7 +909,7 @@ def get_translation(text: str, languageCode: str) -> str:
             found_separator = True
         elif word.startswith("<@"):
             # Don't translate user pings
-            temp_result += "[Ping]" + " **|** "
+            temp_result += "[Ping] **|** "
             found_separator = True
         elif len(word[0].encode("utf-8")) > 2:
             # Don't translate normal emojis
@@ -920,7 +920,7 @@ def get_translation(text: str, languageCode: str) -> str:
         # Include these words
         #
         elif re.match(r"hrh", word):
-            temp_result += f"lol{get_line_ending(word)}" + " **|** "
+            temp_result += f"lol{get_line_ending(word)} **|** "
             found_separator = True
         elif word == "a":
             temp_result += "that **|** "
