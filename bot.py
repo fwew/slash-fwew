@@ -174,8 +174,6 @@ async def homonyms(inter,
 
 @fwew_bot.slash_command(name="multi-ipa", description="list all words with more than one meaning")
 async def multi_ipa(inter,
-                   ipa=Param(description="set to true to show IPA",
-                             default=False, choices=["true", "false"]),
                    lang=Param(description="Language for results",
                               default=None, choices=languages),
                    reef=Param(description="Show reef dialect stuff",
