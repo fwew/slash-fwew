@@ -615,13 +615,13 @@ def get_profanity(lang: str, showIPA: bool) -> str:
     return get_fwew(lang, words, showIPA, fixesCheck=False)
 
 
-def get_homonyms(showIPA: bool, languageCode: str):
+def get_homonyms(showIPA: bool, languageCode: str, reef: bool):
     embeds = []
 
     res = requests.get(f"{api_url}/homonyms")
     text = res.text
     words2 = json.loads(text)
-    results, total = format_pages_dictionary(words2, languageCode, showIPA)
+    results, total = format_pages_dictionary(words2, languageCode, showIPA, reef)
 
     # Create a list of embeds to paginate.
     i = 0
@@ -644,6 +644,39 @@ def get_homonyms(showIPA: bool, languageCode: str):
     if not hasWords:
         embeds = [disnake.Embed(color=Colour.orange(
         ), title="No words found", description="No homonyms found:\n")]
+
+    return embeds
+
+
+def get_multi_ipa(languageCode: str, reef: bool):
+    embeds = []
+
+    res = requests.get(f"{api_url}/multi-ipa")
+    text = res.text
+    words2 = json.loads(text)
+    results, total = format_pages_dictionary(words2, languageCode, True, reef)
+
+    # Create a list of embeds to paginate.
+    i = 0
+    firstResult = 0
+
+    hasWords = False
+
+    for a in results:
+        i += 1
+        lastResult = 0
+        for b in a.split("\n"):
+            if len(b) > 0 and b[0] == "[":
+                lastResult += 1
+                if not b.endswith("not found"):
+                    hasWords = True
+        embeds.append(disnake.Embed(color=Colour.blue(), title="Results " + str(firstResult + 1) + "-" +
+                      str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")", description=a))
+        firstResult += lastResult
+
+    if not hasWords:
+        embeds = [disnake.Embed(color=Colour.orange(
+        ), title="No words found", description="No multiple IPA words found:\n")]
 
     return embeds
 
