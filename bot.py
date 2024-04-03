@@ -161,13 +161,29 @@ async def homonyms(inter,
                    ipa=Param(description="set to true to show IPA",
                              default=False, choices=["true", "false"]),
                    lang=Param(description="Language for results",
-                              default=None, choices=languages)):
+                              default=None, choices=languages),
+                   reef=Param(description="Show reef dialect stuff",
+                          default=False, choices=["true", "false"])):
     """
     list all words with more than one meaning
     """
     if lang is None:
         lang = get_language(inter)
-    await Paginator.Simple().start(inter, pages=get_homonyms(ipa, lang))
+    await Paginator.Simple().start(inter, pages=get_homonyms(ipa, lang, reef))
+
+
+@fwew_bot.slash_command(name="multi-ipa", description="list all words with more than one meaning")
+async def multi_ipa(inter,
+                   lang=Param(description="Language for results",
+                              default=None, choices=languages),
+                   reef=Param(description="Show reef dialect stuff",
+                          default=False, choices=["true", "false"])):
+    """
+    list all words with more than one meaning
+    """
+    if lang is None:
+        lang = get_language(inter)
+    await Paginator.Simple().start(inter, pages=get_multi_ipa(lang, reef))
 
 
 @fwew_bot.slash_command(name="dict-len", description="list the number of words in the dictionary")
