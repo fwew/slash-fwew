@@ -505,6 +505,7 @@ async def servers(inter):
         count = 0
         embed = Embed(
             title="Servers",
+            description="",
             color=0x7494BA,
             timestamp=datetime.now(),
         )
