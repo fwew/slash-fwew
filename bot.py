@@ -42,7 +42,7 @@ intents.message_content = True
 flags = commands.CommandSyncFlags.default()
 flags.sync_commands_debug = True
 fwew_bot = commands.Bot(command_prefix="?", help_command=None, intents=intents,
-                        command_sync_flags=flags)  # , sync_permissions=True #, test_guilds=servers)
+                        command_sync_flags=flags)  # , sync_permissions=True #, test_guilds=authorized_servers)
 
 languages = ["en", "de", "es", "et", "fr", "hu",
              "nl", "pl", "pt", "ru", "sv", "tr", "uk"]
@@ -502,17 +502,19 @@ async def servers(inter):
     list all servers the bot is in
     """
     if inter.user.id == developer:
-        count = 1
+        count = 0
         embed = Embed(
             title="Servers",
-            description=f"currently in {len(fwew_bot.guilds)} servers:\n\n",
             color=0x7494BA,
             timestamp=datetime.now(),
         )
 
         for guild in fwew_bot.guilds:
-            embed.description += f"[{count}] {guild.name} ({guild.id}) by ({guild.owner_id}) - {guild.member_count} members\n"
             count += 1
+            embed.description += f"[{count}] {guild.name} ({guild.id}) by ({guild.owner_id}) - {guild.member_count} members\n"
+
+        embed.description = f"currently in {count} servers:\n\n{embed.description}"
+
         await inter.response.send_message(embed=embed)
     else:
         await inter.response.defer(ephemeral=True)
