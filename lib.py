@@ -1180,6 +1180,14 @@ def get_cameron_words() -> str:
 - **Other:** eyk, irayo, makto, taron, te"""
 
 
+def get_validity(word: str) -> str:
+    res = requests.get(f"{api_url}/valid/{word}")
+    text = res.text
+    words2 = json.loads(text)
+
+    return words2
+
+
 def get_version() -> str:
     res = requests.get(f"{api_url}/version")
     return format_version(res.text)
