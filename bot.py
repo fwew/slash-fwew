@@ -482,15 +482,9 @@ async def translate_message(inter, message):
 
 
 @fwew_bot.slash_command(name="valid", description="see if a possible Na'vi word is valid")
-async def list(inter, word=Param(description="Word to check for validity in Na'vi")):
+async def list(inter, word=Param(description="Word to check for phonotactic validity in Na'vi")):
     """
-    list all words with certain characteristics
-
-    Parameters
-    ----------
-    where: characteristics of the word, such as part of speech, number of syllables, etc.
-    lang: the two-letter language-code for results (default: en)
-    check_digraphs: Should it pay attention to just the letters or what digraphs they represent, too?
+    Take a word and determine whether or not it's phonotactically valid in Na'vi
     """
     await inter.response.send_message(get_validity(word))
 
