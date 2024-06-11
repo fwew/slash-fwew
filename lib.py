@@ -1188,6 +1188,39 @@ def get_validity(word: str) -> str:
     return words2
 
 
+def get_oddballs(showIPA: bool, languageCode: str, reef: bool) -> str:
+    embeds = []
+
+    res = requests.get(f"{api_url}/oddballs")
+    text = res.text
+    words2 = json.loads(text)
+    results, total = format_pages_dictionary(words2, languageCode, showIPA, reef)
+
+    # Create a list of embeds to paginate.
+    i = 0
+    firstResult = 0
+
+    hasWords = False
+
+    for a in results:
+        i += 1
+        lastResult = 0
+        for b in a.split("\n"):
+            if len(b) > 0 and b[0] == "[":
+                lastResult += 1
+                if not b.endswith("not found"):
+                    hasWords = True
+        embeds.append(disnake.Embed(color=Colour.blue(), title="Results " + str(firstResult + 1) + "-" +
+                      str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")", description=a))
+        firstResult += lastResult
+
+    if not hasWords:
+        embeds = [disnake.Embed(color=Colour.orange(
+        ), title="No words found", description="No oddballs found:\n")]
+
+    return embeds
+
+
 def get_version() -> str:
     res = requests.get(f"{api_url}/version")
     return format_version(res.text)
