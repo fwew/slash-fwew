@@ -550,5 +550,29 @@ async def fwew_translate(inter, message):
     await inter.edit_original_message(content=get_translation(message.content, "en"))
 
 
+@fwew_bot.slash_command(name="valid", description="see if a possible Na'vi word is valid")
+async def list(inter, word=Param(description="Word to check for phonotactic validity in Na'vi")):
+    """
+    Take a word and determine whether or not it's phonotactically valid in Na'vi
+    """
+    await inter.response.send_message(get_validity(word))
+
+
+@fwew_bot.slash_command(name="oddballs", description="see which words bend or break Na'vi phonotactics")
+async def list(inter,
+                   ipa=Param(description="set to true to show IPA",
+                             default=False, choices=["true", "false"]),
+                   lang=Param(description="Language for results",
+                              default=None, choices=languages),
+                   reef=Param(description="Show reef dialect stuff",
+                          default=False, choices=["true", "false"])):
+    """
+    Take a word and determine whether or not it's phonotactically valid in Na'vi
+    """
+    if lang is None:
+        lang = get_language(inter)
+    await Paginator.Simple().start(inter, pages=get_oddballs(ipa, lang, reef))
+
+
 if __name__ == "__main__":
     fwew_bot.run(token)
