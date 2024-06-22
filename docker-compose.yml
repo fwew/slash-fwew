@@ -1,0 +1,14 @@
+version: "3"
+services:
+  bot:
+    build: .
+    networks:
+      - fwew
+  api:
+    image: tirea/fwew-api
+    networks:
+      - fwew
+networks:
+  fwew:
+    name: fwew
+    driver: bridge
