@@ -35,6 +35,7 @@ authorized_servers = [
     1061325007998943392,  # 1537
     1075866581265043548,  # 2565
     1062822191961489408,  # nm01
+    1130543222788194396,  # 5426
 ]
 
 intents = Intents.default()
@@ -560,11 +561,11 @@ async def list(inter, word=Param(description="Word to check for phonotactic vali
 
 @fwew_bot.slash_command(name="oddballs", description="see which words bend or break Na'vi phonotactics")
 async def list(inter,
-                   ipa=Param(description="set to true to show IPA",
-                             default=False, choices=["true", "false"]),
-                   lang=Param(description="Language for results",
-                              default=None, choices=languages),
-                   reef=Param(description="Show reef dialect stuff",
+               ipa=Param(description="set to true to show IPA",
+                         default=False, choices=["true", "false"]),
+               lang=Param(description="Language for results",
+                          default=None, choices=languages),
+               reef=Param(description="Show reef dialect stuff",
                           default=False, choices=["true", "false"])):
     """
     Take a word and determine whether or not it's phonotactically valid in Na'vi
