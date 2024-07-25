@@ -206,11 +206,25 @@ async def multi_ipa(inter,
 
 
 @fwew_bot.slash_command(name="dict-len", description="list the number of words in the dictionary")
-async def dict_len(inter):
+async def dict_len(inter,
+                    lang=Param(description="Language for results",
+                               default=None,
+                               choices=languages)):
     """
     list the number of words in the dictionary
     """
-    await inter.response.send_message(get_dict_len())
+    if lang == "en": # English
+        await inter.response.send_message("There are " + str(get_dict_len()) + " entries in the dictionary.")
+    elif lang == "de": # German (Deutsch)
+        await inter.response.send_message(get_dict_len())
+    elif lang == "es": # Spanish (Español)
+        await inter.response.send_message(get_dict_len())
+    elif lang == "et": # Estonian (Eesti)
+        await inter.response.send_message(get_dict_len())
+    elif lang == "fr": # French (Français)
+        await inter.response.send_message(get_dict_len())
+    else:
+        await inter.response.send_message(get_dict_len())
 
 
 @fwew_bot.slash_command(name="source", description="look up the source of na'vi word(s)")
