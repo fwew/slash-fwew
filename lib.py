@@ -681,8 +681,8 @@ def get_multi_ipa(languageCode: str, reef: bool):
     return embeds
 
 
-def get_dict_len():
-    res = requests.get(f"{api_url}/total-words")
+def get_dict_len(lang):
+    res = requests.get(f"{api_url}/total-words/{lang}")
     text = res.text
     return json.loads(text)
 

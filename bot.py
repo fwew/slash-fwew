@@ -213,7 +213,7 @@ async def dict_len(inter,
     """
     list the number of words in the dictionary
     """
-    await inter.response.send_message(get_dict_len())
+    await inter.response.send_message(get_dict_len(lang))
 
 
 @fwew_bot.slash_command(name="source", description="look up the source of na'vi word(s)")
