@@ -213,36 +213,7 @@ async def dict_len(inter,
     """
     list the number of words in the dictionary
     """
-    if lang == "en": # English
-        await inter.response.send_message("There are " + str(get_dict_len()) + " entries in the dictionary.")
-    elif lang == "de": # German (Deutsch)
-        await inter.response.send_message(get_dict_len())
-    elif lang == "es": # Spanish (Español)
-        await inter.response.send_message(get_dict_len())
-    elif lang == "et": # Estonian (Eesti)
-        await inter.response.send_message(get_dict_len())
-    elif lang == "fr": # French (Français)
-        await inter.response.send_message(get_dict_len())
-    elif lang == "hu": # Hungarian (Magyar)
-        await inter.response.send_message(get_dict_len())
-    elif lang == "ko": # Korean (한국어)
-        await inter.response.send_message(get_dict_len())
-    elif lang == "nl": # Dutch (Nederlands)
-        await inter.response.send_message(get_dict_len())
-    elif lang == "pl": # Polish (Polski)
-        await inter.response.send_message(get_dict_len())
-    elif lang == "pt": # Portuguese (Português)
-        await inter.response.send_message(get_dict_len())
-    elif lang == "ru": # Russian (Русский)
-        await inter.response.send_message(get_dict_len())
-    elif lang == "sv": # Swedish (Svenska)
-        await inter.response.send_message(get_dict_len())
-    elif lang == "tr": # Turkish (Türkçe)
-        await inter.response.send_message(get_dict_len())
-    elif lang == "uk": # Ukrainian (Українська)
-        await inter.response.send_message(get_dict_len())
-    else:
-        await inter.response.send_message(get_dict_len())
+    await inter.response.send_message(get_dict_len())
 
 
 @fwew_bot.slash_command(name="source", description="look up the source of na'vi word(s)")
