@@ -1043,9 +1043,9 @@ def chart_entry(x: str, y: int, width: int):
     return stringtsyìp + "|"
 
 
-def get_phonemes() -> str:
+def get_phonemes(lang: str) -> str:
     all_frequencies = json.loads(
-        requests.get(f"{api_url}/phonemedistros").text)
+        requests.get(f"{api_url}/phonemedistros/{lang}").text)
     
     entries = "## Phoneme distributions:\n```\n"
     

@@ -493,11 +493,14 @@ async def name_alu(inter,
 
 
 @fwew_bot.slash_command(name="phoneme-frequency", description="show how often a phoneme appears")
-async def phoneme_frequency(inter):
+async def phoneme_frequency(inter,
+                            lang=Param(description="Language for results",
+                              default=None,
+                              choices=languages),):
     """
     Show how likely each phoneme or consonent cluster is to start, end, or center a syllable
     """
-    await inter.response.send_message(get_phonemes())
+    await inter.response.send_message(get_phonemes(lang))
 
 
 @fwew_bot.slash_command(name="servers", description="list all servers the bot is in")
