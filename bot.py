@@ -45,7 +45,7 @@ flags.sync_commands_debug = True
 fwew_bot = commands.Bot(command_prefix="?", help_command=None, intents=intents,
                         command_sync_flags=flags)  # , sync_permissions=True #, test_guilds=authorized_servers)
 
-languages = ["en", "de", "es", "et", "fr", "hu",
+languages = ["en", "de", "es", "et", "fr", "hu", "ko",
              "nl", "pl", "pt", "ru", "sv", "tr", "uk"]
 
 
