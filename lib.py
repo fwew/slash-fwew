@@ -1063,7 +1063,8 @@ def get_phonemes(lang: str) -> str:
         entries += new_entry + "\n"
         i += 1
     
-    entries += "\n"
+    entries += "\n" + all_frequencies[1][0][0] + ":\n"
+    all_frequencies[1][0][0] = ""
 
     i = 0
     for a in all_frequencies[1]:
