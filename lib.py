@@ -681,8 +681,8 @@ def get_multi_ipa(languageCode: str, reef: bool):
     return embeds
 
 
-def get_dict_len():
-    res = requests.get(f"{api_url}/total-words")
+def get_dict_len(lang):
+    res = requests.get(f"{api_url}/total-words/{lang}")
     text = res.text
     return json.loads(text)
 
@@ -1043,9 +1043,9 @@ def chart_entry(x: str, y: int, width: int):
     return stringtsyìp + "|"
 
 
-def get_phonemes() -> str:
+def get_phonemes(lang: str) -> str:
     all_frequencies = json.loads(
-        requests.get(f"{api_url}/phonemedistros").text)
+        requests.get(f"{api_url}/phonemedistros/{lang}").text)
     
     entries = "## Phoneme distributions:\n```\n"
     
@@ -1063,7 +1063,8 @@ def get_phonemes() -> str:
         entries += new_entry + "\n"
         i += 1
     
-    entries += "\n"
+    entries += "\n" + all_frequencies[1][0][0] + ":\n"
+    all_frequencies[1][0][0] = ""
 
     i = 0
     for a in all_frequencies[1]:
@@ -1136,15 +1137,15 @@ a         part. clause level attributive marker
 
 def get_cameron_words() -> str:
     return """## Cameron words:
-- **A1 Names:** Akwey, Ateyo, Eytukan, Eywa, Mo'at, Na'vi, Newey, Neytiri, Ninat, Omatikaya, Otranyu, Rongloa, Silwanin, Tskaha, Tsu'tey, Tsumongwi
+- **A1 Names:** Akwey, Ateyo, Eytukan, Eywa, Mo'at, Na'vi, Newey, Neytiri, Ninat, Omatikaya, Otranyu, Rongloa, Silwanin, Tskaha, Tsu'tey
 - **A2 Names:** Aonung, Kiri, Lo'ak, Neteyam, Ronal, Rotxo, Tonowari, Tuktirey, Tsireya
 - **Nouns:** 'itan, 'ite, atan, au *(drum)*, eyktan, i'en, Iknimaya, mikyun, ontu, seyri, tsaheylu, tsahìk, unil
 - **Life:** Atokirina', Ikran, Palulukan, Riti, talioang, teylu, Toruk
 - **Other:** eyk, irayo, makto, taron, te"""
 
 
-def get_validity(word: str) -> str:
-    res = requests.get(f"{api_url}/valid/{word}")
+def get_validity(word: str, lang: str) -> str:
+    res = requests.get(f"{api_url}/valid/{lang}/{word}")
     text = res.text
     words2 = json.loads(text)
 

@@ -206,11 +206,16 @@ async def multi_ipa(inter,
 
 
 @fwew_bot.slash_command(name="dict-len", description="list the number of words in the dictionary")
-async def dict_len(inter):
+async def dict_len(inter,
+                    lang=Param(description="Language for results",
+                               default=None,
+                               choices=languages)):
     """
     list the number of words in the dictionary
     """
-    await inter.response.send_message(get_dict_len())
+    if lang is None:
+        lang = get_language(inter)
+    await inter.response.send_message(get_dict_len(lang))
 
 
 @fwew_bot.slash_command(name="source", description="look up the source of na'vi word(s)")
@@ -490,11 +495,16 @@ async def name_alu(inter,
 
 
 @fwew_bot.slash_command(name="phoneme-frequency", description="show how often a phoneme appears")
-async def phoneme_frequency(inter):
+async def phoneme_frequency(inter,
+                            lang=Param(description="Language for results",
+                              default=None,
+                              choices=languages),):
     """
     Show how likely each phoneme or consonent cluster is to start, end, or center a syllable
     """
-    await inter.response.send_message(get_phonemes())
+    if lang is None:
+        lang = get_language(inter)
+    await inter.response.send_message(get_phonemes(lang))
 
 
 @fwew_bot.slash_command(name="servers", description="list all servers the bot is in")
@@ -552,11 +562,17 @@ async def fwew_translate(inter, message):
 
 
 @fwew_bot.slash_command(name="valid", description="see if a possible Na'vi word is valid")
-async def list(inter, word=Param(description="Word to check for phonotactic validity in Na'vi")):
+async def list(inter,
+               word=Param(description="Word to check for phonotactic validity in Na'vi"),
+               lang=Param(description="Language for results",
+                              default=None,
+                              choices=languages)):
     """
     Take a word and determine whether or not it's phonotactically valid in Na'vi
     """
-    await inter.response.send_message(get_validity(word))
+    if lang is None:
+        lang = get_language(inter)
+    await inter.response.send_message(get_validity(word, lang))
 
 
 @fwew_bot.slash_command(name="oddballs", description="see which words bend or break Na'vi phonotactics")
