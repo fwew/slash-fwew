@@ -213,6 +213,8 @@ async def dict_len(inter,
     """
     list the number of words in the dictionary
     """
+    if lang is None:
+        lang = get_language(inter)
     await inter.response.send_message(get_dict_len(lang))
 
 
@@ -500,6 +502,8 @@ async def phoneme_frequency(inter,
     """
     Show how likely each phoneme or consonent cluster is to start, end, or center a syllable
     """
+    if lang is None:
+        lang = get_language(inter)
     await inter.response.send_message(get_phonemes(lang))
 
 
@@ -558,11 +562,17 @@ async def fwew_translate(inter, message):
 
 
 @fwew_bot.slash_command(name="valid", description="see if a possible Na'vi word is valid")
-async def list(inter, word=Param(description="Word to check for phonotactic validity in Na'vi")):
+async def list(inter,
+               word=Param(description="Word to check for phonotactic validity in Na'vi"),
+               lang=Param(description="Language for results",
+                              default=None,
+                              choices=languages)):
     """
     Take a word and determine whether or not it's phonotactically valid in Na'vi
     """
-    await inter.response.send_message(get_validity(word))
+    if lang is None:
+        lang = get_language(inter)
+    await inter.response.send_message(get_validity(word, lang))
 
 
 @fwew_bot.slash_command(name="oddballs", description="see which words bend or break Na'vi phonotactics")
