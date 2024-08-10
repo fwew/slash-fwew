@@ -1048,22 +1048,22 @@ def get_phonemes(lang: str) -> str:
         requests.get(f"{api_url}/phonemedistros/{lang}").text)
     
     phoneme_frequences_lang = {
-        "en": "Phoneme Frequencies", # English
+        "en": "Phoneme Frequencies",    # English
         "de": "Phoneme Frequencies 🇩🇪", # TODO: German (Deutsch)
-        "eo": "Phoneme Frequencies (Esperanto)", # TODO: Esperanto
         "es": "Phoneme Frequencies 🇪🇦", # TODO: Spanish (Español)
         "et": "Phoneme Frequencies 🇪🇪", # TODO: Estonian (Eesti)
         "fr": "Phoneme Frequencies 🇫🇷", # TODO: French (Français)
         "hu": "Phoneme Frequencies 🇭🇺", # TODO: Hungarian (Magyar)
-        "ko": "음절 구성표", # Korean (한국어)
+        "ko": "음절 구성표",             # Korean (한국어)
         "nl": "Phoneme Frequencies 🇳🇱", # TODO: Dutch (Nederlands)
-        "nx": "Ayfamrelvi", # Na'vi
+        "nx": "Ayfamrelvi",             # Na'vi
         "pl": "Phoneme Frequencies 🇵🇱", # TODO: Polish (Polski)
         "pt": "Phoneme Frequencies 🇵🇹", # TODO: Portuguese (Português)
         "ru": "Phoneme Frequencies 🇷🇺", # TODO: Russian (Русский)
         "sv": "Phoneme Frequencies 🇸🇪", # TODO: Swedish (Svenska)
         "tr": "Phoneme Frequencies 🇹🇷", # TODO: Turkish (Türkçe)
         "uk": "Phoneme Frequencies 🇺🇦", # TODO: Ukrainian (Українська)
+        #"eo": "Phoneme Frequencies (Esperanto)", # Esperanto
     }
     
     entries = "## " + phoneme_frequences_lang[lang] + ":\n```\n"
