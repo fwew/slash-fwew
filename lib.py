@@ -1020,7 +1020,8 @@ def get_single_name_discord(n: int, dialect: str, s: int):
 
 
 def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> str:
-    return json.loads(requests.get(f"{api_url}/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}").text)
+    # The "d" in the URL means "Discord".  It will stop before the 2000 character limit
+    return json.loads(requests.get(f"{api_url}/name/full/d/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}").text)
 
 # [name] the [adjective] [noun] format names to be sent to Discord
 
@@ -1164,7 +1165,8 @@ def get_cameron_words() -> str:
 
 
 def get_validity(word: str, lang: str) -> str:
-    res = requests.get(f"{api_url}/valid/{lang}/{word}")
+    # The "d" in the URL means "Discord".  It will stop before the 2000 character limit
+    res = requests.get(f"{api_url}/valid/d/{lang}/{word}")
     text = res.text
     words2 = json.loads(text)
 
