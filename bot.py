@@ -283,7 +283,7 @@ async def list(inter,
 
 @fwew_bot.slash_command(name="random", description="get given number of random entries with certain characteristics")
 async def random(inter,
-                 n=Param(description="the number of random words to get"),
+                 n=Param(name="number",description="the number of random words to get"),
                  where=Param(
                      description="characteristics of the word, such as part of speech, number of syllables, etc.",
                      default=None),
@@ -320,7 +320,7 @@ async def random(inter,
 
 
 @fwew_bot.slash_command(name="number", description="convert or translate numbers between decimal and octal/na'vi")
-async def number(inter, n=Param(description="the number to convert or translate")):
+async def number(inter, n=Param(name="number",description="the number to convert or translate")):
     """
     convert or translate numbers between decimal and octal/na'vi
 
@@ -399,13 +399,13 @@ async def name_single(inter,
                               le=4,
                               default=0)):
     """
-    generate full Na'vi name(s) out of preexisting Na'vi words
+    generate one-word Na'vi name(s)
 
     Parameters
     ----------
-    name_num_syllables: name number of syllables
+    syllables: name number of syllables
     dialect: dialect the names would fit into (interdialect, forest, reef)
-    n: number of names to generate
+    name-count: number of names to generate
     """
     await inter.response.send_message(get_single_name_discord(n, dialect, s))
 
@@ -445,12 +445,12 @@ async def name(inter,
 
     Parameters
     ----------
-    first_name_num_syllables: first name number of syllables
-    family_name_num_syllables: family name number of syllables
-    parent_name_num_syllables: parent's name number of syllables
+    syllables-1: first name number of syllables
+    syllables-2: family name number of syllables
+    syllables-3: parent's name number of syllables
     dialect: dialect the names would fit into (interdialect, forest, reef)
     ending: 'ite (daughter), 'itan (son) or 'itu (genderless, non-canon)
-    n: number of names to generate
+    name-count: number of names to generate
     """
     await inter.response.send_message(get_name(ending, n, dialect, s1, s2, s3))
 
@@ -486,10 +486,12 @@ async def name_alu(inter,
 
     Parameters
     ----------
-    mode: What to put next to the name (0 = doesn't matter, 1 = none, 2 = adjective, 3 = genitive noun, 4 = origin noun,)
-    name_num_syllables: name number of syllables
+    adj-mode: What to put next to the noun
+    noun-mode: What kind of noun should go next toafter "alu"
+    dialect: The Na'vi dialect the names should fit
+    syllables: name number of syllables
     dialect: dialect the names would fit into (interdialect, forest, reef)
-    n: number of names to generate
+    name-count: number of names to generate
     """
     await inter.response.send_message(get_name_alu(n, dialect, s, noun_mode, adj_mode))
 
