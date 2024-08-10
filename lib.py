@@ -1043,6 +1043,15 @@ def chart_entry(x: str, y: int, width: int):
 
     return stringtsyìp + "|"
 
+def equals_separator(length) -> str:
+    output = ""
+    for a in length:
+        i = 0
+        output += "|"
+        while i < a:
+            output += "="
+            i += 1
+    return output + "|"
 
 def get_phonemes(lang: str) -> str:
     all_frequencies = json.loads(
@@ -1068,18 +1077,29 @@ def get_phonemes(lang: str) -> str:
     }
     
     entries = "## " + phoneme_frequences_lang[lang] + ":\n```\n"
+
+    col_widths = [7,7,7]
+    i = 0
+
+    # Make sure that we account for longer names in different languages
+    for a in all_frequencies[0][0]:
+        if len(a) > col_widths[i]:
+            col_widths[i] = len(a)
+        i += 1
     
     i = 0
     for a in all_frequencies[0]:
         if i == 1:
-            entries += "|=======|=======|=======|\n"
+            entries += equals_separator(col_widths) + "\n"
         new_entry = "|"
+        j = 0
         for b in a:
             things = b.split()
             if len(things) == 2:
-                new_entry += chart_entry(things[0], things[1], 7)
+                new_entry += chart_entry(things[0], things[1], col_widths[j])
             else:
-                new_entry += chart_entry("", b, 8)
+                new_entry += chart_entry("", b, col_widths[j]+1)
+            j += 1
         entries += new_entry + "\n"
         i += 1
     
