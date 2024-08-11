@@ -1020,7 +1020,8 @@ def get_single_name_discord(n: int, dialect: str, s: int):
 
 
 def get_name(ending: str, n: int, dialect: str, s1: int, s2: int, s3: int) -> str:
-    return json.loads(requests.get(f"{api_url}/name/full/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}").text)
+    # The "d" in the URL means "Discord".  It will stop before the 2000 character limit
+    return json.loads(requests.get(f"{api_url}/name/full/d/{ending}/{n}/{s1}/{s2}/{s3}/{dialect}").text)
 
 # [name] the [adjective] [noun] format names to be sent to Discord
 
@@ -1042,6 +1043,15 @@ def chart_entry(x: str, y: int, width: int):
 
     return stringtsyìp + "|"
 
+def equals_separator(length) -> str:
+    output = ""
+    for a in length:
+        i = 0
+        output += "|"
+        while i < a:
+            output += "="
+            i += 1
+    return output + "|"
 
 def get_phonemes(lang: str) -> str:
     all_frequencies = json.loads(
@@ -1067,18 +1077,29 @@ def get_phonemes(lang: str) -> str:
     }
     
     entries = "## " + phoneme_frequences_lang[lang] + ":\n```\n"
+
+    col_widths = [7,7,7]
+    i = 0
+
+    # Make sure that we account for longer names in different languages
+    for a in all_frequencies[0][0]:
+        if len(a) > col_widths[i]:
+            col_widths[i] = len(a)
+        i += 1
     
     i = 0
     for a in all_frequencies[0]:
         if i == 1:
-            entries += "|=======|=======|=======|\n"
+            entries += equals_separator(col_widths) + "\n"
         new_entry = "|"
+        j = 0
         for b in a:
             things = b.split()
             if len(things) == 2:
-                new_entry += chart_entry(things[0], things[1], 7)
+                new_entry += chart_entry(things[0], things[1], col_widths[j])
             else:
-                new_entry += chart_entry("", b, 8)
+                new_entry += chart_entry("", b, col_widths[j]+1)
+            j += 1
         entries += new_entry + "\n"
         i += 1
     
@@ -1164,7 +1185,8 @@ def get_cameron_words() -> str:
 
 
 def get_validity(word: str, lang: str) -> str:
-    res = requests.get(f"{api_url}/valid/{lang}/{word}")
+    # The "d" in the URL means "Discord".  It will stop before the 2000 character limit
+    res = requests.get(f"{api_url}/valid/d/{lang}/{word}")
     text = res.text
     words2 = json.loads(text)
 
