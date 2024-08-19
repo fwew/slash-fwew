@@ -385,7 +385,6 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                         if stressed:
                             words2[0] += "__" + s1[i] + "__"
                         else:
-                            s1[i] = s1[i].replace("ä", "e")
                             words2[0] += s1[i]
                         i += 1
 
