@@ -380,7 +380,7 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                 words2 = json.loads(text)
 
                 # Find stressed syllables
-                breakdown = do_underline(words2[1], words2[0])
+                breakdown = do_underline(words2[1], words2[0])[:-1] # no final space
 
                 results += " (Reef Na'vi: " + breakdown
                 if showIPA:
