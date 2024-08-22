@@ -379,8 +379,25 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                 text = res.text
                 words2 = json.loads(text)
 
-                # Find stressed syllables
-                breakdown = do_underline(words2[1], words2[0])
+                or_string = " or "
+
+                split0 = words2[0].split(or_string)
+                split1 = words2[1].split("]" + or_string + "[")
+
+                breakdown = ""
+
+                i = 0
+                or_string = " or "
+                for a in split1:
+                    if i >= len(split0):
+                        res = requests.get(f"{api_url}/reef/{a}")
+                        text = res.text
+                        words3 = json.loads(text)
+                        breakdown += do_underline(words3[1], words3[0]) + or_string
+                    else:
+                        breakdown += do_underline(a, split0[i]) + or_string
+                    i += 1
+                breakdown = breakdown[:-len(or_string)]
 
                 results += " (Reef Na'vi: " + breakdown
                 if showIPA:
