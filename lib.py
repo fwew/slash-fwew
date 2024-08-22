@@ -140,7 +140,7 @@ def do_underline(ipa: str, syllables: str) -> str:
     for a in s1:
         if a == "or":
             i = 0
-            syllables += " or "
+            syllables += "or "
             continue
         s2 = a.split("-")
         j = 0
