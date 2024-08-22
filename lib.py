@@ -158,14 +158,20 @@ def do_underline(ipa: str, syllables: str) -> str:
     syllables = syllables.removesuffix(" or ")
 
     if "-" not in syllables:
+        while "  " in syllables:
+            syllables = syllables.replace("  ", " ")
         return syllables.strip()
     ipa_words = ipa.split(" ")
 
     # We don't want words with multiple IPAs
     if len(ipa_words) > 1 and ipa_words[1] == "or":
+        while "  " in syllables:
+            syllables = syllables.replace("  ", " ")
         return syllables.strip()
     ipa_syllables = []
 
+    while "  " in syllables:
+        syllables = syllables.replace("  ", " ")
     return syllables.strip()
 
 
