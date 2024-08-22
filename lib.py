@@ -393,11 +393,12 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                         res = requests.get(f"{api_url}/reef/{a}")
                         text = res.text
                         words3 = json.loads(text)
-                        breakdown += do_underline(words3[1], words3[0]) + or_string
+                        breakdown += do_underline(words3[1], words3[0])
                     else:
-                        breakdown += do_underline(a, split0[i]) + or_string
+                        breakdown += do_underline(a, split0[i])
                     i += 1
-                breakdown = breakdown[:-len(or_string)]
+                    if i < len(split1):
+                        breakdown += or_string
 
                 results += " (Reef Na'vi: " + breakdown
                 if showIPA:
