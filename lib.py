@@ -355,6 +355,8 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
             if showIPA:
                 ipa2 = ipa.replace("ʊ", "u")
                 results += f"[{ipa2}] "
+                if "ʊ" in ipa:
+                    results += f" or [{ipa}] "
             results += f"({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
 
             if reef:
