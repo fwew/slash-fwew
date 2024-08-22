@@ -119,8 +119,44 @@ def do_underline(ipa: str, syllables: str) -> str:
             ipa = twoIPAs[0] # Just use one with no stress markers
         else: # If it's a pronunciation difference, too
             ipa = multipleIPA[0] # Use the first one
+    
+    # Find stressed syllables
+    ipa_syllables = []
+    ipa_words = ipa.split(" ")
+    for word2 in ipa_words:
+        if word2 == "or":
+            break
+        b = word2.split(".")
+        for syllable in b:
+            if "ˈ" in syllable:
+                ipa_syllables.append(True)
+            else:
+                ipa_syllables.append(False)
+    
+    # If it's not equal, there's an "or", indicating any syllable stress is correct
+    s1 = syllables.split(" ")
+    syllables = ""
+    i = 0
+    for a in s1:
+        if a == "or":
+            i = 0
+            syllables += " or "
+            continue
+        s2 = a.split("-")
+        j = 0
+        while i < len(ipa_syllables) and j < len(s2):
+            stressed = ipa_syllables[i]
+            if j != 0:
+                syllables += "-"
+            if stressed:
+                syllables += "__" + s2[j] + "__"
+            else:
+                syllables += s2[j]
+            i += 1
+            j += 1
+        syllables += " " 
+    syllables = syllables.removesuffix(" or ")
 
-    syllables = syllables.replace(" ", "-")
     if "-" not in syllables:
         return syllables
     ipa_words = ipa.split(" ")
@@ -130,27 +166,6 @@ def do_underline(ipa: str, syllables: str) -> str:
         return syllables
     ipa_syllables = []
 
-    # Find stressed syllables
-    for word in ipa_words:
-        b = word.split(".")
-        for syllable in b:
-            if "ˈ" in syllable:
-                ipa_syllables.append(True)
-            else:
-                ipa_syllables.append(False)
-
-    s1 = syllables.split("-")
-    i = 0
-    syllables = ""
-    for stressed in ipa_syllables:
-        if i != 0:
-            syllables += "-"
-        if stressed:
-            syllables += "__" + s1[i] + "__"
-        else:
-            syllables += s1[i]
-        i += 1
-    
     return syllables
 
 
