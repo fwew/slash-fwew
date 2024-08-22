@@ -380,45 +380,9 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                 words2 = json.loads(text)
 
                 # Find stressed syllables
-                ipa_syllables = []
-                ipa_words = words2[1].split(" ")
-                for word2 in ipa_words:
-                    if word2 == "or":
-                        break
-                    b = word2.split(".")
-                    for syllable in b:
-                        if "ˈ" in syllable:
-                            ipa_syllables.append(True)
-                        else:
-                            ipa_syllables.append(False)
+                breakdown = do_underline(words2[1], words2[0])
 
-                #words2[0] = words2[0].replace(" ", "-")
-                # If it's not equal, there's an "or", indicating any syllable stress is correct
-                s1 = words2[0].split(" ")
-                words2[0] = ""
-                i = 0
-                for a in s1:
-                    if a == "or":
-                        i = 0
-                        words2[0] += " or "
-                        continue
-                    s2 = a.split("-")
-                    j = 0
-                    while i < len(ipa_syllables) and j < len(s2):
-                        stressed = ipa_syllables[i]
-                        if j != 0:
-                            words2[0] += "-"
-                        if stressed:
-                            words2[0] += "__" + s2[j] + "__"
-                        else:
-                            words2[0] += s2[j]
-                        i += 1
-                        j += 1
-                    words2[0] += " "
-                
-                words2[0] = words2[0].removesuffix(" or ")
-
-                results += " (Reef Na'vi: " + words2[0]
+                results += " (Reef Na'vi: " + breakdown
                 if showIPA:
                     results += " [" + words2[1] + "]"
                 results += ")\n"
