@@ -158,21 +158,15 @@ def do_underline(ipa: str, syllables: str) -> str:
     syllables = syllables.removesuffix(" or ")
 
     if "-" not in syllables:
-        while "  " in syllables:
-            syllables = syllables.replace("  ", " ")
-        return syllables.strip()
+        return syllables
     ipa_words = ipa.split(" ")
 
     # We don't want words with multiple IPAs
     if len(ipa_words) > 1 and ipa_words[1] == "or":
-        while "  " in syllables:
-            syllables = syllables.replace("  ", " ")
-        return syllables.strip()
+        return syllables
     ipa_syllables = []
 
-    while "  " in syllables:
-        syllables = syllables.replace("  ", " ")
-    return syllables.strip()
+    return syllables
 
 
 def format_breakdown(word: dict) -> str:
@@ -377,7 +371,7 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                 ipa2 = ipa.replace("ʊ", "u")
                 results += f"[{ipa2}] "
                 if "ʊ" in ipa:
-                    results += f" or [{ipa}] "
+                    results += f"or [{ipa}] "
             results += f"({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
 
             if reef:
