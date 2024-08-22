@@ -366,6 +366,8 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                 ipa_syllables = []
                 ipa_words = words2[1].split(" ")
                 for word2 in ipa_words:
+                    if word2 == "or":
+                        break
                     b = word2.split(".")
                     for syllable in b:
                         if "ˈ" in syllable:
@@ -373,20 +375,27 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                         else:
                             ipa_syllables.append(False)
 
-                words2[0] = words2[0].replace(" ", "-")
+                #words2[0] = words2[0].replace(" ", "-")
                 # If it's not equal, there's an "or", indicating any syllable stress is correct
-                s1 = words2[0].split("-")
-                if len(ipa_syllables) == len(s1):
-                    i = 0
-                    words2[0] = ""
-                    for stressed in ipa_syllables:
-                        if i != 0:
-                            words2[0] += "-"
-                        if stressed:
-                            words2[0] += "__" + s1[i] + "__"
-                        else:
-                            words2[0] += s1[i]
-                        i += 1
+                s1 = words2[0].split(" ")
+                words2[0] = ""
+                for a in s1:
+                    if a == "or":
+                        continue
+                    s2 = a.split("-")
+                    if len(ipa_syllables) == len(s2):
+                        i = 0
+                        for stressed in ipa_syllables:
+                            if i != 0:
+                                words2[0] += "-"
+                            if stressed:
+                                words2[0] += "__" + s2[i] + "__"
+                            else:
+                                words2[0] += s2[i]
+                            i += 1
+                    words2[0] += " or "
+                
+                words2[0] = words2[0].removesuffix(" or ")
 
                 results += " (Reef Na'vi: " + words2[0]
                 if showIPA:
