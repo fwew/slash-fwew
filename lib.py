@@ -387,7 +387,6 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                 breakdown = ""
 
                 i = 0
-                or_string = " or "
                 for a in split1:
                     if i >= len(split0):
                         res = requests.get(f"{api_url}/reef/{a}")
@@ -398,7 +397,7 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                         breakdown += do_underline(a, split0[i])
                     i += 1
                     if i < len(split1):
-                        breakdown += or_string
+                        breakdown += or_string[1:]
 
                 results += " (Reef Na'vi: " + breakdown
                 if showIPA:
