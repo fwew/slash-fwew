@@ -366,7 +366,7 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
             results += f"**{word['Navi']}** "
 
             ipa = word['IPA']
-            breakdown = format_breakdown(word)
+            breakdown = format_breakdown(word).strip()
             if showIPA:
                 ipa2 = ipa.replace("ʊ", "u")
                 results += f"[{ipa2}] "
