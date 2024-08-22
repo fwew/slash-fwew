@@ -158,15 +158,15 @@ def do_underline(ipa: str, syllables: str) -> str:
     syllables = syllables.removesuffix(" or ")
 
     if "-" not in syllables:
-        return syllables
+        return syllables.strip()
     ipa_words = ipa.split(" ")
 
     # We don't want words with multiple IPAs
     if len(ipa_words) > 1 and ipa_words[1] == "or":
-        return syllables
+        return syllables.strip()
     ipa_syllables = []
 
-    return syllables
+    return syllables.strip()
 
 
 def format_breakdown(word: dict) -> str:
@@ -380,7 +380,7 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                 words2 = json.loads(text)
 
                 # Find stressed syllables
-                breakdown = do_underline(words2[1], words2[0])[:-1] # no final space
+                breakdown = do_underline(words2[1], words2[0])
 
                 results += " (Reef Na'vi: " + breakdown
                 if showIPA:
