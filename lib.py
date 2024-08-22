@@ -381,21 +381,25 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                 # If it's not equal, there's an "or", indicating any syllable stress is correct
                 s1 = words2[0].split(" ")
                 words2[0] = ""
+                i = 0
                 for a in s1:
                     if a == "or":
+                        i = 0
+                        words2[0] += " or "
                         continue
                     s2 = a.split("-")
-                    if len(ipa_syllables) == len(s2):
-                        i = 0
-                        for stressed in ipa_syllables:
-                            if i != 0:
-                                words2[0] += "-"
-                            if stressed:
-                                words2[0] += "__" + s2[i] + "__"
-                            else:
-                                words2[0] += s2[i]
-                            i += 1
-                    words2[0] += " or "
+                    j = 0
+                    while i < len(ipa_syllables) and j < len(s2):
+                        stressed = ipa_syllables[i]
+                        if j != 0:
+                            words2[0] += "-"
+                        if stressed:
+                            words2[0] += "__" + s2[j] + "__"
+                        else:
+                            words2[0] += s2[j]
+                        i += 1
+                        j += 1
+                    words2[0] += " "
                 
                 words2[0] = words2[0].removesuffix(" or ")
 
