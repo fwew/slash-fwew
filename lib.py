@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from name_gen import *
 from space_containing import *
 
-version = "3.7.0"
+version = "3.7.1"
 
 load_dotenv(os.path.join(Path.cwd(), ".env"))
 api_url = os.environ.get("API_URL")
