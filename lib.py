@@ -119,8 +119,44 @@ def do_underline(ipa: str, syllables: str) -> str:
             ipa = twoIPAs[0] # Just use one with no stress markers
         else: # If it's a pronunciation difference, too
             ipa = multipleIPA[0] # Use the first one
+    
+    # Find stressed syllables
+    ipa_syllables = []
+    ipa_words = ipa.split(" ")
+    for word2 in ipa_words:
+        if word2 == "or":
+            break
+        b = word2.split(".")
+        for syllable in b:
+            if "ˈ" in syllable:
+                ipa_syllables.append(True)
+            else:
+                ipa_syllables.append(False)
+    
+    # If it's not equal, there's an "or", indicating any syllable stress is correct
+    s1 = syllables.split(" ")
+    syllables = ""
+    i = 0
+    for a in s1:
+        if a == "or":
+            i = 0
+            syllables += "or "
+            continue
+        s2 = a.split("-")
+        j = 0
+        while i < len(ipa_syllables) and j < len(s2):
+            stressed = ipa_syllables[i]
+            if j != 0:
+                syllables += "-"
+            if stressed:
+                syllables += "__" + s2[j] + "__"
+            else:
+                syllables += s2[j]
+            i += 1
+            j += 1
+        syllables += " " 
+    syllables = syllables.removesuffix(" or ")
 
-    syllables = syllables.replace(" ", "-")
     if "-" not in syllables:
         return syllables
     ipa_words = ipa.split(" ")
@@ -130,27 +166,6 @@ def do_underline(ipa: str, syllables: str) -> str:
         return syllables
     ipa_syllables = []
 
-    # Find stressed syllables
-    for word in ipa_words:
-        b = word.split(".")
-        for syllable in b:
-            if "ˈ" in syllable:
-                ipa_syllables.append(True)
-            else:
-                ipa_syllables.append(False)
-
-    s1 = syllables.split("-")
-    i = 0
-    syllables = ""
-    for stressed in ipa_syllables:
-        if i != 0:
-            syllables += "-"
-        if stressed:
-            syllables += "__" + s1[i] + "__"
-        else:
-            syllables += s1[i]
-        i += 1
-    
     return syllables
 
 
@@ -351,10 +366,12 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
             results += f"**{word['Navi']}** "
 
             ipa = word['IPA']
-            breakdown = format_breakdown(word)
+            breakdown = format_breakdown(word).strip()
             if showIPA:
                 ipa2 = ipa.replace("ʊ", "u")
                 results += f"[{ipa2}] "
+                if "ʊ" in ipa:
+                    results += f"or [{ipa}] "
             results += f"({breakdown}) *{word['PartOfSpeech']}* {word[languageCode.upper()]}\n"
 
             if reef:
@@ -362,33 +379,27 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
                 text = res.text
                 words2 = json.loads(text)
 
-                # Find stressed syllables
-                ipa_syllables = []
-                ipa_words = words2[1].split(" ")
-                for word2 in ipa_words:
-                    b = word2.split(".")
-                    for syllable in b:
-                        if "ˈ" in syllable:
-                            ipa_syllables.append(True)
-                        else:
-                            ipa_syllables.append(False)
+                or_string = " or "
 
-                words2[0] = words2[0].replace(" ", "-")
-                # If it's not equal, there's an "or", indicating any syllable stress is correct
-                s1 = words2[0].split("-")
-                if len(ipa_syllables) == len(s1):
-                    i = 0
-                    words2[0] = ""
-                    for stressed in ipa_syllables:
-                        if i != 0:
-                            words2[0] += "-"
-                        if stressed:
-                            words2[0] += "__" + s1[i] + "__"
-                        else:
-                            words2[0] += s1[i]
-                        i += 1
+                split0 = words2[0].split(or_string)
+                split1 = words2[1].split("]" + or_string + "[")
 
-                results += " (Reef Na'vi: " + words2[0]
+                breakdown = ""
+
+                i = 0
+                for a in split1:
+                    if i >= len(split0):
+                        res = requests.get(f"{api_url}/reef/{a}")
+                        text = res.text
+                        words3 = json.loads(text)
+                        breakdown += do_underline(words3[1], words3[0])
+                    else:
+                        breakdown += do_underline(a, split0[i])
+                    i += 1
+                    if i < len(split1):
+                        breakdown += or_string[1:]
+
+                results += " (Reef Na'vi: " + breakdown
                 if showIPA:
                     results += " [" + words2[1] + "]"
                 results += ")\n"
