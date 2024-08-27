@@ -178,7 +178,7 @@ def format_breakdown(word: dict) -> str:
 
 def format_prefixes(word: dict) -> str:
     results = ""
-    len_pre_list = ["me", "pxe", "ay", "fay",
+    len_pre_list = ["me", "pxe", "ay", "fay", "pepe"
                     "tsay", "fray", "pe", "pem", "pep", "pay"]
     prefixes = word['Affixes']['Prefix']
     if prefixes is not None and len(prefixes) > 0:
