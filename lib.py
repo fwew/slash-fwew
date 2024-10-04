@@ -173,7 +173,7 @@ def format_breakdown(word: dict) -> str:
     breakdown = do_underline(word['IPA'], word['Syllables'])
     if word['InfixDots'] != "NULL":
         breakdown += f", {word['InfixDots']}"
-    return breakdown
+    return breakdown.strip()
 
 
 def format_prefixes(word: dict) -> str:
@@ -366,7 +366,7 @@ def format_pages_dictionary_helper(words: str, languageCode: str, showIPA: bool 
             results += f"**{word['Navi']}** "
 
             ipa = word['IPA']
-            breakdown = format_breakdown(word).strip()
+            breakdown = format_breakdown(word)
             if showIPA:
                 ipa2 = ipa.replace("ʊ", "u")
                 results += f"[{ipa2}] "
