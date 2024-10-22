@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from name_gen import *
 from space_containing import *
 
-version = "3.7.1"
+version = "3.7.2"
 
 load_dotenv(os.path.join(Path.cwd(), ".env"))
 api_url = os.environ.get("API_URL")
@@ -95,6 +95,7 @@ def get_language(inter):
         395558141162422275: "en",
         154318499722952704: "en",
         860933619296108564: "en",
+        1289130826902147124: "en",
         1060288947596570624: "es",
         1058520916612624536: "fr",
         1061696962304426025: "fr",
