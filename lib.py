@@ -621,7 +621,7 @@ def get_search(languageCode: str, words: str, showIPA: bool = False):
 
 
 def get_profanity(lang: str, showIPA: bool) -> str:
-    words = "skxawng kalweyaveng kurkung pela'ang pxasìk teylupil tsahey txanfwìngtu vonvä' wiya yayl"
+    words = "skxawng kalweyaveng kurkung pela'ang pxasìk teylupil tsahey txanfwìngtu vitronvä' vonvä' wiya yayl"
     return get_fwew(lang, words, showIPA, fixesCheck=False)
 
 
