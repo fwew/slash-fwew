@@ -29,7 +29,7 @@ authorized_servers = [
     1065673594354548757,  # ru
     1063774395748847648,  # ru
     1215999922470653982,  # ru
-    1078367154912628867,  # sds
+    1336266921070428192,  # sds
     1060288947596570624,  # 4023
     1067521820401619004,  # 0422
     1061325007998943392,  # 1537
@@ -208,9 +208,9 @@ async def multi_ipa(inter,
 
 @fwew_bot.slash_command(name="dict-len", description="list the number of words in the dictionary")
 async def dict_len(inter,
-                    lang=Param(description="Language for results",
-                               default=None,
-                               choices=languages)):
+                   lang=Param(description="Language for results",
+                              default=None,
+                              choices=languages)):
     """
     list the number of words in the dictionary
     """
@@ -284,7 +284,8 @@ async def list(inter,
 
 @fwew_bot.slash_command(name="random", description="get given number of random entries with certain characteristics")
 async def random(inter,
-                 n=Param(name="number",description="the number of random words to get"),
+                 n=Param(name="number",
+                         description="the number of random words to get"),
                  where=Param(
                      description="characteristics of the word, such as part of speech, number of syllables, etc.",
                      default=None),
@@ -321,7 +322,7 @@ async def random(inter,
 
 
 @fwew_bot.slash_command(name="number", description="convert or translate numbers between decimal and octal/na'vi")
-async def number(inter, n=Param(name="number",description="the number to convert or translate")):
+async def number(inter, n=Param(name="number", description="the number to convert or translate")):
     """
     convert or translate numbers between decimal and octal/na'vi
 
@@ -500,8 +501,8 @@ async def name_alu(inter,
 @fwew_bot.slash_command(name="phoneme-frequency", description="show how often a phoneme appears")
 async def phoneme_frequency(inter,
                             lang=Param(description="Language for results",
-                              default=None,
-                              choices=languages),):
+                                       default=None,
+                                       choices=languages),):
     """
     Show how likely each phoneme or consonent cluster is to start, end, or center a syllable
     """
@@ -566,10 +567,11 @@ async def fwew_translate(inter, message):
 
 @fwew_bot.slash_command(name="valid", description="see if a possible Na'vi word is valid")
 async def list(inter,
-               word=Param(description="Word to check for phonotactic validity in Na'vi"),
+               word=Param(
+                   description="Word to check for phonotactic validity in Na'vi"),
                lang=Param(description="Language for results",
-                              default=None,
-                              choices=languages)):
+                          default=None,
+                          choices=languages)):
     """
     Take a word and determine whether or not it's phonotactically valid in Na'vi
     """
