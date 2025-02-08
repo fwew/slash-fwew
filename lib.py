@@ -483,7 +483,7 @@ def format_number(response_text: str) -> str:
     return f"`  na'vi`: {name}\n`  octal`: {octal}\n`decimal`: {decimal}"
 
 
-def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck=True, reef=False):
+def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck=True, reef=False, strict=False):
     embeds = []
 
     if words.lower() == "hrh":
@@ -494,60 +494,16 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck=Tr
                       title="HRH", description=hrh))
         return embeds
 
-    if fixesCheck:
-        res = requests.get(f"{api_url}/fwew/{words}")
+    if strict:
+        if fixesCheck:
+            res = requests.get(f"{api_url}/fwew-strict/{words}")
+        else:
+            res = requests.get(f"{api_url}/fwew-simple-strict/{words}")
     else:
-        res = requests.get(f"{api_url}/fwew-simple/{words}")
-    text = res.text
-    words2 = json.loads(text)
-
-    if reef == "true":
-        reef = True
-    else:
-        reef = False
-
-    results, total = format_pages_dictionary(
-        words2, languageCode, showIPA, reef)
-
-    # Create a list of embeds to paginate.
-    i = 0
-    firstResult = 0
-
-    hasWords = False
-
-    for a in results:
-        i += 1
-        lastResult = 0
-        for b in a.split("\n"):
-            if len(b) > 0 and b[0] == "[":
-                lastResult += 1
-                if not b.endswith("not found"):
-                    hasWords = True
-        embeds.append(disnake.Embed(color=Colour.blue(), title="Results " + str(firstResult + 1) + "-" +
-                      str(firstResult + lastResult) + " of " + str(total) + " (page " + str(i) + ")", description=a))
-        firstResult += lastResult
-
-    if not hasWords:
-        embeds = [disnake.Embed(color=Colour.orange(
-        ), title="No words found", description="No Na'vi words found for:\n" + words)]
-
-    return embeds
-
-def get_fwew_strict(languageCode: str, words: str, showIPA: bool = False, fixesCheck=True, reef=False):
-    embeds = []
-
-    if words.lower() == "hrh":
-        hrh = "https://youtu.be/-AgnLH7Dw3w?t=274\n"
-        hrh += "> What would LOL be?\n"
-        hrh += "> It would have to do with the word herangham... maybe HRH"
-        embeds.append(disnake.Embed(color=Colour.blue(),
-                      title="HRH", description=hrh))
-        return embeds
-
-    if fixesCheck:
-        res = requests.get(f"{api_url}/fwew-strict/{words}")
-    else:
-        res = requests.get(f"{api_url}/fwew-simple-strict/{words}")
+        if fixesCheck:
+            res = requests.get(f"{api_url}/fwew/{words}")
+        else:
+            res = requests.get(f"{api_url}/fwew-simple/{words}")
     text = res.text
     words2 = json.loads(text)
 
