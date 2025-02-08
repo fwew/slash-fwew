@@ -100,6 +100,7 @@ async def fwew(inter,
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
     checkFixesString = True if check_fixes == "true" else False
+    strict = True if strict == "true" else False
     await Paginator.Simple().start(inter, pages=get_fwew(lang, words, showIPA, checkFixesString, reef, strict))
 
 
