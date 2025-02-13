@@ -84,6 +84,9 @@ async def fwew(inter,
                                  choices=["true", "false"]),
                reef=Param(description="Show reef dialect stuff",
                           default=False,
+                          choices=["true", "false"]),
+               strict=Param(description="Search forest words only",
+                          default=False,
                           choices=["true", "false"])):
     """
     search word(s) na'vi -> english
@@ -98,7 +101,8 @@ async def fwew(inter,
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
     checkFixesString = True if check_fixes == "true" else False
-    await Paginator.Simple().start(inter, pages=get_fwew(lang, words, showIPA, checkFixesString, reef))
+    strict = True if strict == "true" else False
+    await Paginator.Simple().start(inter, pages=get_fwew(lang, words, showIPA, checkFixesString, reef, strict))
 
 
 @fwew_bot.slash_command(name="search-classic", description="search word(s) english -> na'vi")

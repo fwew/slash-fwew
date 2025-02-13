@@ -484,7 +484,7 @@ def format_number(response_text: str) -> str:
     return f"`  na'vi`: {name}\n`  octal`: {octal}\n`decimal`: {decimal}"
 
 
-def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck=True, reef=False):
+def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck=True, reef=False, strict=False):
     embeds = []
 
     if words.lower() == "hrh":
@@ -495,10 +495,16 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck=Tr
                       title="HRH", description=hrh))
         return embeds
 
-    if fixesCheck:
-        res = requests.get(f"{api_url}/fwew/{words}")
+    if strict:
+        if fixesCheck:
+            res = requests.get(f"{api_url}/fwew-strict/{words}")
+        else:
+            res = requests.get(f"{api_url}/fwew-simple-strict/{words}")
     else:
-        res = requests.get(f"{api_url}/fwew-simple/{words}")
+        if fixesCheck:
+            res = requests.get(f"{api_url}/fwew/{words}")
+        else:
+            res = requests.get(f"{api_url}/fwew-simple/{words}")
     text = res.text
     words2 = json.loads(text)
 
