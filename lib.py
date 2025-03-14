@@ -499,6 +499,8 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck=Tr
             res = requests.get(f"{api_url}/fwew-strict/{words}")
         else:
             res = requests.get(f"{api_url}/fwew-simple-strict/{words}")
+    elif reef:
+        res = requests.get(f"{api_url}/fwew-reef/{words}")
     else:
         if fixesCheck:
             res = requests.get(f"{api_url}/fwew/{words}")
@@ -583,7 +585,7 @@ def get_fwew_reverse(languageCode: str, words: str, showIPA: bool = False):
     return embeds
 
 
-def get_search(languageCode: str, words: str, showIPA: bool = False):
+def get_search(languageCode: str, words: str, showIPA: bool = False, reef: bool=False):
     embeds = []
 
     if words.lower() == "hrh":
@@ -594,7 +596,10 @@ def get_search(languageCode: str, words: str, showIPA: bool = False):
                       title="HRH", description=hrh))
         return embeds
 
-    res = requests.get(f"{api_url}/search/{languageCode.lower()}/{words}")
+    if reef:
+        res = requests.get(f"{api_url}/search-reef/{languageCode.lower()}/{words}")
+    else:
+        res = requests.get(f"{api_url}/search/{languageCode.lower()}/{words}")
     text = res.text
     words2 = json.loads(text)
     results, total = format_pages_dictionary(words2, languageCode, showIPA)
