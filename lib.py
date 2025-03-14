@@ -602,7 +602,7 @@ def get_search(languageCode: str, words: str, showIPA: bool = False, reef: bool=
         res = requests.get(f"{api_url}/search/{languageCode.lower()}/{words}")
     text = res.text
     words2 = json.loads(text)
-    results, total = format_pages_dictionary(words2, languageCode, showIPA)
+    results, total = format_pages_dictionary(words2, languageCode, showIPA, reef)
 
     embeds = []
 
