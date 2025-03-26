@@ -495,17 +495,19 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck=Tr
         return embeds
 
     if strict:
-        if fixesCheck:
+        if reef:
+            res = requests.get(f"{api_url}/fwew-reef/true/{words}")
+        elif fixesCheck:
             res = requests.get(f"{api_url}/fwew-strict/{words}")
         else:
-            res = requests.get(f"{api_url}/fwew-simple-strict/{words}")
-    elif reef:
-        res = requests.get(f"{api_url}/fwew-reef/{words}")
+            res = requests.get(f"{api_url}/fwew-simple/true/{words}")
     else:
-        if fixesCheck:
+        if reef:
+            res = requests.get(f"{api_url}/fwew-reef/false/{words}")
+        elif fixesCheck:
             res = requests.get(f"{api_url}/fwew/{words}")
         else:
-            res = requests.get(f"{api_url}/fwew-simple/{words}")
+            res = requests.get(f"{api_url}/fwew-simple/false/{words}")
     text = res.text
     words2 = json.loads(text)
 
