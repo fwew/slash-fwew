@@ -137,7 +137,10 @@ async def search(inter,
                            choices=["true", "false"]),
                  lang=Param(description="Language for results",
                             default=None,
-                            choices=languages)):
+                            choices=languages),
+                 reef=Param(description="Allow reef dialect searches",
+                            default=False,
+                            choices=["true", "false"])):
     """
     search words (direction idependent)
 
@@ -149,7 +152,7 @@ async def search(inter,
     if lang is None:
         lang = get_language(inter)
     showIPA = True if ipa == "true" else False
-    await Paginator.Simple().start(inter, pages=get_search(lang, words, showIPA))
+    await Paginator.Simple().start(inter, pages=get_search(lang, words, showIPA, reef))
     # await inter.response.send_message(get_search(lang, words, showIPA))
 
 
