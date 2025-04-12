@@ -493,6 +493,11 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck=Tr
         embeds.append(disnake.Embed(color=Colour.blue(),
                       title="HRH", description=hrh))
         return embeds
+    
+    if reef == "true":
+        reef = True
+    else:
+        reef = False
 
     if strict:
         if reef:
@@ -510,11 +515,6 @@ def get_fwew(languageCode: str, words: str, showIPA: bool = False, fixesCheck=Tr
             res = requests.get(f"{api_url}/fwew-simple/false/{words}")
     text = res.text
     words2 = json.loads(text)
-
-    if reef == "true":
-        reef = True
-    else:
-        reef = False
 
     results, total = format_pages_dictionary(
         words2, languageCode, showIPA, reef)
