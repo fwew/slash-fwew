@@ -338,18 +338,19 @@ async def number(inter, n=Param(name="number", description="the number to conver
     ----------
     n: the number to convert or translate
     """
+    n2 = n.replace(",", "")
     base = 10
-    if n.startswith("0x"):
+    if n2.startswith("0x"):
         base = 16
-    elif n.startswith("0b"):
+    elif n2.startswith("0b"):
         base = 2
-    elif n.startswith("0"):
+    elif n2.startswith("0"):
         base = 8
     try:
-        num = int(n, base)
+        num = int(n2, base)
         await inter.response.send_message(get_number_reverse(str(num)))
     except:
-        await inter.response.send_message(get_number(n))
+        await inter.response.send_message(get_number(n2))
 
 
 @fwew_bot.slash_command(name="lenition", description="get the lenition table")
