@@ -944,6 +944,12 @@ def get_translation(text: str, languageCode: str) -> str:
     texts = texts.replace("<", " <") # Help it detect custom emojis
     texts = texts.replace("‘", "'") # “Smart” asterisks
     texts = texts.replace("’", "'") # They can trip up the emoji detector
+    texts = texts.replace("\"", " ")
+    texts = texts.replace("“", " ")
+    texts = texts.replace("”", " ")
+    texts = texts.strip()
+    while "  " in texts:
+        texts = texts.replace("  ", " ")
     all_words = texts.split()
     navi_block = ""
     temp_result = ""
@@ -990,14 +996,20 @@ def get_translation(text: str, languageCode: str) -> str:
         elif word == "ma":
             temp_result += "(I'm talking to) **|** "
             found_separator = True
-        # has only one result
-        elif len(json.loads(requests.get(f"{api_url}/fwew/{word}").text)[0]) == 1:
-            # Add non-translatable words
-            temp_result += word + " **|** "
-            found_separator = True
         else:
-            navi_block += word + " "
-            found_separator = False
+            results2 = requests.get(f"{api_url}/fwew/{word}").text
+            if results2 == '{"message":"no results"}\n':
+                # Add non-translatable words
+                temp_result += word + " **|** "
+                found_separator = True
+            # has only one result
+            elif len(json.loads(results2)[0]) == 1:
+                # Add non-translatable words
+                temp_result += word + " **|** "
+                found_separator = True
+            else:
+                navi_block += word + " "
+                found_separator = False
 
         #
         # Found a block of Na'vi text.  Translate it
