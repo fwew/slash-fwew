@@ -35,6 +35,8 @@ prefix_map_plural = {
     "fay": "these",
     "tsay": "those",
     "fray": "all",
+    "me": "two",
+    "pxe": "three"
 }
 
 suffix_map = {
@@ -875,58 +877,44 @@ def format_translation(words, languageCode: str) -> str:
     if isinstance(words, dict) and "message" in words:
         return "(?)"
     results = ""
-    root_index = -1
     first = True
-    for i, word in enumerate(words):
-        # Skip the first thing.  That's just the header
-        if first:
-            first = False
+    
+    for i in range(len(words)):
+        word = words[i]
+        if i == 0:
             continue
-        prefixes = word['Affixes']['Prefix']
-        infixes = word['Affixes']['Infix']
-        suffixes = word['Affixes']['Suffix']
-        lenition = word['Affixes']['Lenition']
-        if prefixes is None and infixes is None and suffixes is None and lenition is None:
-            root_index = i
-            break
-    if root_index != -1:
-        word = words[root_index]
         definition = f"{word[languageCode.upper()]}"
         definition_clean = re.sub(paren_pattern, "", definition)
-        results += f"{definition_clean}"
-    else:
-        for i in range(len(words)):
-            word = words[i]
-            if i != 0 & len(results) > 1:
-                results += " / "
-            definition = f"{word[languageCode.upper()]}"
-            definition_clean = re.sub(paren_pattern, "", definition)
-            prefixes = word['Affixes']['Prefix']
-            suffixes = word['Affixes']['Suffix']
-            infixes = word['Affixes']['Infix']
-            # Find the fixes and stuff in the maps
-            if prefixes is not None:
-                for a in prefixes:
-                    if a in prefix_map_singular:
-                        definition_clean = prefix_map_singular[a] + \
-                            " " + definition_clean
-                        break
-                    if a in prefix_map_plural:
-                        definition_clean = prefix_map_plural[a] + \
-                            " " + get_naive_plural_en(definition_clean)
-                        break
-            if suffixes is not None:
-                for a in suffixes:
-                    if a in suffix_map:
-                        definition_clean = suffix_map[a] + \
-                            " " + definition_clean
-                        break
-            if infixes is not None:
-                for a in infixes:
-                    if a in infix_map:
-                        definition_clean = "(" + \
-                            infix_map[a] + ") " + definition_clean
+        prefixes = word['Affixes']['Prefix']
+        suffixes = word['Affixes']['Suffix']
+        infixes = word['Affixes']['Infix']
+        # Find the fixes and stuff in the maps
+        if prefixes is not None:
+            for a in prefixes:
+                if a in prefix_map_singular:
+                    definition_clean = prefix_map_singular[a] + \
+                        " " + definition_clean
+                    break
+                if a in prefix_map_plural:
+                    definition_clean = prefix_map_plural[a] + \
+                        " " + get_naive_plural_en(definition_clean)
+                    break
+        if suffixes is not None:
+            for a in suffixes:
+                if a in suffix_map:
+                    definition_clean = suffix_map[a] + \
+                        " " + definition_clean
+                    break
+        if infixes is not None:
+            for a in infixes:
+                if a in infix_map:
+                    definition_clean = "(" + \
+                        infix_map[a] + ") " + definition_clean
+        if first:
             results += f"{definition_clean}"
+            first = False
+        else:
+            results += f" / {definition_clean}"
     return results + " **|** "
 
 # Discord right-click menu translator
