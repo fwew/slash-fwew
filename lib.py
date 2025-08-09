@@ -895,26 +895,46 @@ def format_translation(words, languageCode: str) -> str:
         infixes = word['Affixes']['Infix']
         # Find the fixes and stuff in the maps
         if prefixes is not None:
+            found = False
+            prefix_string = "("
             for a in prefixes:
                 if a in prefix_map_singular:
-                    definition_clean = "(" + prefix_map_singular[a] + ") " + \
-                        definition_clean
-                    break
+                    if found:
+                        prefix_string += " "
+                    prefix_string = prefix_string + prefix_map_singular[a]
+                    found = True
                 if a in prefix_map_plural:
-                    definition_clean = "(" + prefix_map_plural[a] + ") " + \
-                        definition_clean #get_naive_plural_en(definition_clean)
-                    break
-        if suffixes is not None:
-            for a in suffixes:
-                if a in suffix_map:
-                    definition_clean = "(" + suffix_map[a] + ") " + \
-                        definition_clean
-                    break
+                    if found:
+                        prefix_string += " "
+                    prefix_string = prefix_string + prefix_map_plural[a]
+                    found = True
+            prefix_string += ")"
+            if found:
+                definition_clean = prefix_string + definition_clean
         if infixes is not None:
+            found = False
+            infix_string = "("
             for a in infixes:
                 if a in infix_map:
-                    definition_clean = "(" + \
-                        infix_map[a] + ") " + definition_clean
+                    if found:
+                        infix_string += " "
+                    infix_string += infix_map[a]
+                    found = True
+            infix_string += ")"
+            if found:
+                definition_clean = infix_string + definition_clean
+        if suffixes is not None:
+            found = False
+            suffix_string = "("
+            for a in suffixes:
+                if a in suffix_map:
+                    if found:
+                        suffix_string += " "
+                    suffix_string = suffix_string + suffix_map[a]
+                    found = True
+            suffix_string += ")"
+            if found:
+                definition_clean = definition_clean + suffix_string
         if first:
             results += f"{definition_clean}"
             first = False
