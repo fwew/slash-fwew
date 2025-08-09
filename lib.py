@@ -54,6 +54,7 @@ suffix_map = {
     "yä": "of",
     "ä": "of",
     "pe": "what/which",
+    "o": "some"
 }
 
 adpositions = {
