@@ -893,17 +893,17 @@ def format_translation(words, languageCode: str) -> str:
         if prefixes is not None:
             for a in prefixes:
                 if a in prefix_map_singular:
-                    definition_clean = prefix_map_singular[a] + \
+                    definition_clean = "(" + prefix_map_singular[a] + ") " + \
                         " " + definition_clean
                     break
                 if a in prefix_map_plural:
-                    definition_clean = prefix_map_plural[a] + \
+                    definition_clean = "(" + prefix_map_plural[a] + ") " + \
                         " " + definition_clean #get_naive_plural_en(definition_clean)
                     break
         if suffixes is not None:
             for a in suffixes:
                 if a in suffix_map:
-                    definition_clean = suffix_map[a] + \
+                    definition_clean = "(" + suffix_map[a] + ") " + \
                         " " + definition_clean
                     break
         if infixes is not None:
