@@ -53,6 +53,7 @@ suffix_map = {
     "ìri": "regarding",
     "yä": "of",
     "ä": "of",
+    "pe": "what/which",
 }
 
 infix_map = {
