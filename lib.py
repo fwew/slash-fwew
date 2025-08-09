@@ -36,7 +36,8 @@ prefix_map_plural = {
     "tsay": "those",
     "fray": "all",
     "me": "two",
-    "pxe": "three"
+    "pxe": "three",
+    "ay": "plural"
 }
 
 suffix_map = {
@@ -897,7 +898,7 @@ def format_translation(words, languageCode: str) -> str:
                     break
                 if a in prefix_map_plural:
                     definition_clean = prefix_map_plural[a] + \
-                        " " + get_naive_plural_en(definition_clean)
+                        " " + definition_clean #get_naive_plural_en(definition_clean)
                     break
         if suffixes is not None:
             for a in suffixes:
