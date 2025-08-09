@@ -25,6 +25,8 @@ char_limit = 2000
 global_onset = ["", ""]
 
 prefix_map_singular = {
+    "sna": "group of",
+    "munsna": "pair of",
     "fì": "this",
     "tsa": "that",
     "fra": "every",
@@ -40,6 +42,7 @@ prefix_map_plural = {
     "pxe": "three",
     "ay": "plural",
     "pay": "what/which plural",
+    "pepe": "what/which three",
 }
 
 suffix_map = {
@@ -54,7 +57,8 @@ suffix_map = {
     "yä": "of",
     "ä": "of",
     "pe": "what/which",
-    "o": "some"
+    "o": "some",
+    "tsyìp": "little"
 }
 
 adpositions = {
@@ -128,6 +132,19 @@ infix_map = {
     "ats": "supposedly",
     "us": "that does the action of",
     "awn": "that received the action of",
+    "uy": "ceremonial",
+    "ìyev": "would might soon have",
+    "ìly": "soon will complete",
+    "ìry": "soon will be",
+    "ìlm": "will soon have",
+    "ìrm": "will soon be",
+    "ilv": "might have",
+    "irv": "might be doing",
+    "imv": "might have (past)",
+    "aly": "will complete",
+    "ary": "will be",
+    "alm": "have completed",
+    "arm": "was doing",
 }
 
 
