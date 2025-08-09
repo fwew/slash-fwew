@@ -62,13 +62,13 @@ adpositions = {
     "fa": "with, by means of",
     "few": "across, aiming for the opposite side of",
     "fkip": "up among",
-    "fpi+": "for the sake of, for the benefit of",
+    "fpi": "for the sake of, for the benefit of",
     "ftu": "from (direction)",
     "ftumfa": "out of, from inside",
     "ftuopa": "from behind",
     "hu": "with (accompaniment)",
     "io": "over, above",
-    "ìlä+": "by, via, following, according to",
+    "ìlä": "by, via, following, according to",
     "ka": "across, covering thoroughly",
     "kam": "ago",
     "kay": "from now (in the future)",
@@ -76,27 +76,27 @@ adpositions = {
     "kip": "among",
     "krrka": "during",
     "kxamlä": "through (via the middle of)",
-    "lisre+": "by, before, up to but not after",
+    "lisre": "by, before, up to but not after",
     "lok": "close to",
     "luke": "without",
     "maw": "after (time)",
-    "mì+": "in, on",
+    "mì": "in, on",
     "mìkam": "between",
     "mungwrr": "except",
     "na": "like, as",
     "ne": "to, towards (direction)",
     "nemfa": "into, inside",
-    "nuä+": "beyond",
+    "nuä": "beyond",
     "pxaw": "around",
     "pxel": "like, as",
     "pximaw": "right after",
-    "pxisre+": "right before",
+    "pxisre": "right before",
     "raw": "down to",
-    "ro+": "at (locative)",
+    "ro": "at (locative)",
     "rofa": "beside, alongside",
     "sìn": "on, onto",
-    "sko+": "something as, in the capacity of, or in the role of, something else",
-    "sre+": "before (time)",
+    "sko": "something as, in the capacity of, or in the role of, something else",
+    "sre": "before (time)",
     "ta": "from (locative), from (temporal sense with other time words)",
     "tafkip": "from up among",
     "takip": "from among",
@@ -104,7 +104,7 @@ adpositions = {
     "teri": "about, concerning",
     "uo": "behind",
     "vay": "up to",
-    "wä+": "against (as in: fight against)",
+    "wä": "against (as in: fight against)",
     "yoa": "in exchange for"
 }
 
@@ -246,7 +246,7 @@ def format_prefixes(word: dict) -> str:
             if k != 0:
                 results += ", "
             if prefix in len_pre_list:
-                results += f"**{prefix}**+"
+                results += f"**{prefix}**"
             else:
                 results += f"**{prefix}**-"
         results += "\n"
