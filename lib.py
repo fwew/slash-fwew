@@ -890,6 +890,7 @@ def format_translation(words, languageCode: str) -> str:
             continue
         definition = f"{word[languageCode.upper()]}"
         definition_clean = re.sub(paren_pattern, "", definition)
+        definition_clean = definition_clean.strip()
         prefixes = word['Affixes']['Prefix']
         suffixes = word['Affixes']['Suffix']
         infixes = word['Affixes']['Infix']
