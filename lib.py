@@ -29,6 +29,7 @@ prefix_map_singular = {
     "tsa": "that",
     "fra": "every",
     "fne": "kind of",
+    "pe": "what/which",
 }
 
 prefix_map_plural = {
@@ -37,7 +38,8 @@ prefix_map_plural = {
     "fray": "all",
     "me": "two",
     "pxe": "three",
-    "ay": "plural"
+    "ay": "plural",
+    "pay": "what/which plural",
 }
 
 suffix_map = {
