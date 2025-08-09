@@ -56,6 +56,58 @@ suffix_map = {
     "pe": "what/which",
 }
 
+adpositions = {
+    "äo": "under, below",
+    "eo": "before, in front of (place)",
+    "fa": "with, by means of",
+    "few": "across, aiming for the opposite side of",
+    "fkip": "up among",
+    "fpi+": "for the sake of, for the benefit of",
+    "ftu": "from (direction)",
+    "ftumfa": "out of, from inside",
+    "ftuopa": "from behind",
+    "hu": "with (accompaniment)",
+    "io": "over, above",
+    "ìlä+": "by, via, following, according to",
+    "ka": "across, covering thoroughly",
+    "kam": "ago",
+    "kay": "from now (in the future)",
+    "ken": "despite, inspite of",
+    "kip": "among",
+    "krrka": "during",
+    "kxamlä": "through (via the middle of)",
+    "lisre+": "by, before, up to but not after",
+    "lok": "close to",
+    "luke": "without",
+    "maw": "after (time)",
+    "mì+": "in, on",
+    "mìkam": "between",
+    "mungwrr": "except",
+    "na": "like, as",
+    "ne": "to, towards (direction)",
+    "nemfa": "into, inside",
+    "nuä+": "beyond",
+    "pxaw": "around",
+    "pxel": "like, as",
+    "pximaw": "right after",
+    "pxisre+": "right before",
+    "raw": "down to",
+    "ro+": "at (locative)",
+    "rofa": "beside, alongside",
+    "sìn": "on, onto",
+    "sko+": "something as, in the capacity of, or in the role of, something else",
+    "sre+": "before (time)",
+    "ta": "from (locative), from (temporal sense with other time words)",
+    "tafkip": "from up among",
+    "takip": "from among",
+    "talun": "because of, due to",
+    "teri": "about, concerning",
+    "uo": "behind",
+    "vay": "up to",
+    "wä+": "against (as in: fight against)",
+    "yoa": "in exchange for"
+}
+
 infix_map = {
     "ol": "finished",
     "er": "in the middle of",
@@ -932,6 +984,11 @@ def format_translation(words, languageCode: str) -> str:
                     if found:
                         suffix_string += " "
                     suffix_string = suffix_string + suffix_map[a]
+                    found = True
+                if a in adpositions:
+                    if found:
+                        suffix_string += " "
+                    suffix_string = suffix_string + adpositions[a]
                     found = True
             suffix_string += ")"
             if found:
