@@ -45,6 +45,7 @@ prefix_map_plural = {
 suffix_map = {
     "fkeyk": "state of",
     "yu": "person who",
+    "tswo": "ability to",
     "ur": "to",
     "ru": "to",
     "r": "to",
