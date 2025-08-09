@@ -908,7 +908,7 @@ def format_translation(words, languageCode: str) -> str:
                         prefix_string += " "
                     prefix_string = prefix_string + prefix_map_plural[a]
                     found = True
-            prefix_string += ")"
+            prefix_string += ") "
             if found:
                 definition_clean = prefix_string + definition_clean
         if infixes is not None:
@@ -920,12 +920,12 @@ def format_translation(words, languageCode: str) -> str:
                         infix_string += " "
                     infix_string += infix_map[a]
                     found = True
-            infix_string += ")"
+            infix_string += ") "
             if found:
                 definition_clean = infix_string + definition_clean
         if suffixes is not None:
             found = False
-            suffix_string = "("
+            suffix_string = " ("
             for a in suffixes:
                 if a in suffix_map:
                     if found:
