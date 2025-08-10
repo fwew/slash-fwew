@@ -134,7 +134,7 @@ async def search_classic(inter,
                             description="the Na'vi word(s) to look up"),
                         lang=Param(description="Language for results",
                             default=None,
-                            choices=languages),):
+                            choices=languages)):
     """
     search words english -> na'vi
 
@@ -143,6 +143,8 @@ async def search_classic(inter,
     words: the english word(s) to look up
     lang: the two-letter language-code for results (default: en)
     """
+    if lang is None:
+        lang = get_language(inter)
     await inter.response.send_message(get_translation(words, lang))
 
 
