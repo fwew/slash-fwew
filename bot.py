@@ -130,8 +130,11 @@ async def search_classic(inter,
 
 @fwew_bot.slash_command(name="translate", description="Concise sentence-like translations")
 async def search_classic(inter,
-                         words=Param(
-                             description="the Na'vi word(s) to look up")):
+                        words=Param(
+                            description="the Na'vi word(s) to look up"),
+                        lang=Param(description="Language for results",
+                            default=None,
+                            choices=languages),):
     """
     search words english -> na'vi
 
@@ -140,7 +143,7 @@ async def search_classic(inter,
     words: the english word(s) to look up
     lang: the two-letter language-code for results (default: en)
     """
-    await inter.response.send_message(get_translation(words))
+    await inter.response.send_message(get_translation(words, lang))
 
 
 @fwew_bot.slash_command(name="search", description="search word(s) any direction")
