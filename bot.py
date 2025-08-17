@@ -129,7 +129,7 @@ async def search_classic(inter,
 
 
 @fwew_bot.slash_command(name="translate", description="Concise sentence-like translations")
-async def search_classic(inter,
+async def translate(inter,
                         words=Param(
                             description="the Na'vi word(s) to look up"),
                         lang=Param(description="Language for results",
