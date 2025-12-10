@@ -25,21 +25,30 @@ char_limit = 2000
 global_onset = ["", ""]
 
 prefix_map_singular = {
+    "sna": "group of",
+    "munsna": "pair of",
     "fì": "this",
     "tsa": "that",
     "fra": "every",
     "fne": "kind of",
+    "pe": "what/which",
 }
 
 prefix_map_plural = {
     "fay": "these",
     "tsay": "those",
     "fray": "all",
+    "me": "two",
+    "pxe": "three",
+    "ay": "plural",
+    "pay": "what/which plural",
+    "pepe": "what/which three",
 }
 
 suffix_map = {
     "fkeyk": "state of",
     "yu": "person who",
+    "tswo": "ability to",
     "ur": "to",
     "ru": "to",
     "r": "to",
@@ -47,6 +56,61 @@ suffix_map = {
     "ìri": "regarding",
     "yä": "of",
     "ä": "of",
+    "pe": "what/which",
+    "o": "some",
+    "tsyìp": "little"
+}
+
+adpositions = {
+    "äo": "under, below",
+    "eo": "before, in front of (place)",
+    "fa": "with, by means of",
+    "few": "across, aiming for the opposite side of",
+    "fkip": "up among",
+    "fpi": "for the sake of, for the benefit of",
+    "ftu": "from (direction)",
+    "ftumfa": "out of, from inside",
+    "ftuopa": "from behind",
+    "hu": "with (accompaniment)",
+    "io": "over, above",
+    "ìlä": "by, via, following, according to",
+    "ka": "across, covering thoroughly",
+    "kam": "ago",
+    "kay": "from now (in the future)",
+    "ken": "despite, inspite of",
+    "kip": "among",
+    "krrka": "during",
+    "kxamlä": "through (via the middle of)",
+    "lisre": "by, before, up to but not after",
+    "lok": "close to",
+    "luke": "without",
+    "maw": "after (time)",
+    "mì": "in, on",
+    "mìkam": "between",
+    "mungwrr": "except",
+    "na": "like, as",
+    "ne": "to, towards (direction)",
+    "nemfa": "into, inside",
+    "nuä": "beyond",
+    "pxaw": "around",
+    "pxel": "like, as",
+    "pximaw": "right after",
+    "pxisre": "right before",
+    "raw": "down to",
+    "ro": "at (locative)",
+    "rofa": "beside, alongside",
+    "sìn": "on, onto",
+    "sko": "something as, in the capacity of, or in the role of, something else",
+    "sre": "before (time)",
+    "ta": "from (locative), from (temporal sense with other time words)",
+    "tafkip": "from up among",
+    "takip": "from among",
+    "talun": "because of, due to",
+    "teri": "about, concerning",
+    "uo": "behind",
+    "vay": "up to",
+    "wä": "against (as in: fight against)",
+    "yoa": "in exchange for"
 }
 
 infix_map = {
@@ -68,6 +132,19 @@ infix_map = {
     "ats": "supposedly",
     "us": "that does the action of",
     "awn": "that received the action of",
+    "uy": "ceremonial",
+    "ìyev": "would might soon have",
+    "ìly": "soon will complete",
+    "ìry": "soon will be",
+    "ìlm": "will soon have",
+    "ìrm": "will soon be",
+    "ilv": "might have",
+    "irv": "might be doing",
+    "imv": "might have (past)",
+    "aly": "will complete",
+    "ary": "will be",
+    "alm": "have completed",
+    "arm": "was doing",
 }
 
 
@@ -188,7 +265,7 @@ def format_prefixes(word: dict) -> str:
             if k != 0:
                 results += ", "
             if prefix in len_pre_list:
-                results += f"**{prefix}**+"
+                results += f"**{prefix}**"
             else:
                 results += f"**{prefix}**-"
         results += "\n"
@@ -876,58 +953,70 @@ def format_translation(words, languageCode: str) -> str:
     if isinstance(words, dict) and "message" in words:
         return "(?)"
     results = ""
-    root_index = -1
     first = True
-    for i, word in enumerate(words):
-        # Skip the first thing.  That's just the header
-        if first:
-            first = False
+    
+    for i in range(len(words)):
+        word = words[i]
+        if i == 0:
             continue
-        prefixes = word['Affixes']['Prefix']
-        infixes = word['Affixes']['Infix']
-        suffixes = word['Affixes']['Suffix']
-        lenition = word['Affixes']['Lenition']
-        if prefixes is None and infixes is None and suffixes is None and lenition is None:
-            root_index = i
-            break
-    if root_index != -1:
-        word = words[root_index]
         definition = f"{word[languageCode.upper()]}"
         definition_clean = re.sub(paren_pattern, "", definition)
-        results += f"{definition_clean}"
-    else:
-        for i in range(len(words)):
-            word = words[i]
-            if i != 0 & len(results) > 1:
-                results += " / "
-            definition = f"{word[languageCode.upper()]}"
-            definition_clean = re.sub(paren_pattern, "", definition)
-            prefixes = word['Affixes']['Prefix']
-            suffixes = word['Affixes']['Suffix']
-            infixes = word['Affixes']['Infix']
-            # Find the fixes and stuff in the maps
-            if prefixes is not None:
-                for a in prefixes:
-                    if a in prefix_map_singular:
-                        definition_clean = prefix_map_singular[a] + \
-                            " " + definition_clean
-                        break
-                    if a in prefix_map_plural:
-                        definition_clean = prefix_map_plural[a] + \
-                            " " + get_naive_plural_en(definition_clean)
-                        break
-            if suffixes is not None:
-                for a in suffixes:
-                    if a in suffix_map:
-                        definition_clean = suffix_map[a] + \
-                            " " + definition_clean
-                        break
-            if infixes is not None:
-                for a in infixes:
-                    if a in infix_map:
-                        definition_clean = "(" + \
-                            infix_map[a] + ") " + definition_clean
+        definition_clean = definition_clean.strip()
+        prefixes = word['Affixes']['Prefix']
+        suffixes = word['Affixes']['Suffix']
+        infixes = word['Affixes']['Infix']
+        # Find the fixes and stuff in the maps
+        if prefixes is not None:
+            found = False
+            prefix_string = "("
+            for a in prefixes:
+                if a in prefix_map_singular:
+                    if found:
+                        prefix_string += " "
+                    prefix_string = prefix_string + prefix_map_singular[a]
+                    found = True
+                if a in prefix_map_plural:
+                    if found:
+                        prefix_string += " "
+                    prefix_string = prefix_string + prefix_map_plural[a]
+                    found = True
+            prefix_string += ") "
+            if found:
+                definition_clean = prefix_string + definition_clean
+        if infixes is not None:
+            found = False
+            infix_string = "("
+            for a in infixes:
+                if a in infix_map:
+                    if found:
+                        infix_string += " "
+                    infix_string += infix_map[a]
+                    found = True
+            infix_string += ") "
+            if found:
+                definition_clean = infix_string + definition_clean
+        if suffixes is not None:
+            found = False
+            suffix_string = " ("
+            for a in suffixes:
+                if a in suffix_map:
+                    if found:
+                        suffix_string += " "
+                    suffix_string = suffix_string + suffix_map[a]
+                    found = True
+                if a in adpositions:
+                    if found:
+                        suffix_string += " "
+                    suffix_string = suffix_string + adpositions[a]
+                    found = True
+            suffix_string += ")"
+            if found:
+                definition_clean = definition_clean + suffix_string
+        if first:
             results += f"{definition_clean}"
+            first = False
+        else:
+            results += f" / {definition_clean}"
     return results + " **|** "
 
 # Discord right-click menu translator

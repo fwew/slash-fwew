@@ -130,6 +130,26 @@ async def search_classic(inter,
     await Paginator.Simple().start(inter, pages=get_fwew_reverse(lang, words, showIPA))
 
 
+@fwew_bot.slash_command(name="translate", description="Concise sentence-like translations")
+async def translate(inter,
+                        words=Param(
+                            description="the Na'vi word(s) to look up"),
+                        lang=Param(description="Language for results",
+                            default=None,
+                            choices=languages)):
+    """
+    search words english -> na'vi
+
+    Parameters
+    ----------
+    words: the english word(s) to look up
+    lang: the two-letter language-code for results (default: en)
+    """
+    if lang is None:
+        lang = get_language(inter)
+    await inter.response.send_message(get_translation(words, lang))
+
+
 @fwew_bot.slash_command(name="search", description="search word(s) any direction")
 async def search(inter,
                  words=Param(description="the word(s) to look up"),
