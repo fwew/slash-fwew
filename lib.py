@@ -865,40 +865,10 @@ def get_list(languageCode: str, args: str, showIPA: bool, check_digraphs: bool) 
     return embeds
 
 
-def get_list_help() -> str:
-    help = """
-        Commands formats for /list:
+def get_list_help(languageCode: str) -> str:
+    res = requests.get(f"{api_url}/list-help/{languageCode}")
 
-        pos <string command 1> yourstring
-        pos <string command 1 or 2> yourstring
-        words <"first", "last"> <number>
-        syllables <number command> <number>
-        stress <number command> <number>
-        length <number command> <number>
-
-        string commands
-        ```
-        |    1     |     2     |
-        |==========|===========|
-        |starts    |starts-any |
-        |ends      |starts-all |
-        |is        |starts-none|
-        |has       |ends-any   |
-        |like      |ends-all   |
-        |not-starts|ends-none  |
-        |not-ends  |has-any    |
-        |not-is    |has-all    |
-        |not-has   |has-none   |
-        |not-like  |like-any   |
-        |          |like-all   |
-        |          |like-none  |
-        |          |matches    |
-        ```
-        Number commands:
-        <, <=, =, >=, >, !=
-    """
-
-    return help
+    return json.loads(res.text)
 
 
 def get_random(languageCode: str, n: int, showIPA: bool) -> str:

@@ -308,7 +308,10 @@ async def list(inter,
     await Paginator.Simple().start(inter, pages=get_list(lang, where, ipa, check_digraphs))
 
 @fwew_bot.slash_command(name="list-help", description="Show what can go into the command /list or .random")
-async def list_help(inter):
+async def list_help(inter,
+                    lang=Param(description="Language for results",
+                          default=None,
+                          choices=languages)):
     """
     list all the commands that can go into /list or /random
 
@@ -320,8 +323,7 @@ async def list_help(inter):
     """
     if lang is None:
         lang = get_language(inter)
-    await inter.response.send_message(get_list_help())
-    return
+    await inter.response.send_message(get_list_help(lang))
 
 
 @fwew_bot.slash_command(name="random", description="get given number of random entries with certain characteristics")
