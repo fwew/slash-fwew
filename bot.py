@@ -307,6 +307,22 @@ async def list(inter,
         lang = get_language(inter)
     await Paginator.Simple().start(inter, pages=get_list(lang, where, ipa, check_digraphs))
 
+@fwew_bot.slash_command(name="list-help", description="Show what can go into the command /list or .random")
+async def list_help(inter):
+    """
+    list all the commands that can go into /list or /random
+
+    Parameters
+    ----------
+    where: characteristics of the word, such as part of speech, number of syllables, etc.
+    lang: the two-letter language-code for results (default: en)
+    check_digraphs: Should it pay attention to just the letters or what digraphs they represent, too?
+    """
+    if lang is None:
+        lang = get_language(inter)
+    await inter.response.send_message(get_list_help())
+    return
+
 
 @fwew_bot.slash_command(name="random", description="get given number of random entries with certain characteristics")
 async def random(inter,
