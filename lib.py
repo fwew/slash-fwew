@@ -866,6 +866,12 @@ def get_list(languageCode: str, args: str, showIPA: bool, check_digraphs: bool) 
     return embeds
 
 
+def get_list_help(languageCode: str) -> str:
+    res = requests.get(f"{api_url}/list-help/{languageCode}")
+
+    return json.loads(res.text)
+
+
 def get_random(languageCode: str, n: int, showIPA: bool) -> str:
     res = requests.get(f"{api_url}/random2/{n}/True")
     text = res.text
