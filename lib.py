@@ -180,6 +180,7 @@ def get_language(inter):
         1065673594354548757: "ru",
         1063774395748847648: "ru",
         1215999922470653982: "ru",
+        1471564289788608532: "uk",
     }
     if inter.guild is None:
         return "en"
