@@ -1269,7 +1269,7 @@ ts → s
 '  → (disappears, except before ll or rr)
 
 leniting prefixes: me+, pxe+, ay+, pe+
-leniting adpositions: fpi, ìlä, lisre, mì, nuä, pxisre, ro, sko, sre, wä
+leniting adpositions: fpi, ìlä, lisre, mì, nuä, pxisre, ro, sko, sre, sru, wä
 ```"""
 
 
@@ -1281,7 +1281,7 @@ kx, px, tx -> k, p, t
          ' -> (disappears, except before ll or rr)
 
 leniting prefixes: me+, pxe+, ay+, pe+
-leniting adpositions: fpi, ìlä, lisre, mì, nuä, pxisre, ro, sko, sre, wä
+leniting adpositions: fpi, ìlä, lisre, mì, nuä, pxisre, ro, sko, sre, sru, wä
 ```"""
 
 
