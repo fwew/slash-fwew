@@ -300,7 +300,7 @@ async def list(inter,
                           default=None,
                           choices=languages),
                check_digraphs=Param(description="Are the things that look like digraphs in the query actually digraphs?",
-                                    default="true",
+                                    default="maybe",
                                     choices=["true", "maybe", "false"])):
     """
     list all words with certain characteristics
