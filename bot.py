@@ -348,7 +348,7 @@ async def random(inter,
                             default=None,
                             choices=languages),
                  check_digraphs=Param(description="Are the things that look like digraphs in the query actually digraphs?",
-                                      default="true",
+                                      default="maybe",
                                       choices=["true", "maybe", "false"])):
     """
     get given number of random entries with certain characteristics
