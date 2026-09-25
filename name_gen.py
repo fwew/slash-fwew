@@ -2,6 +2,7 @@
 # Web-based Na'vi Name Generator! by Uniltìrantokx te Skxawng aka Irtaviš Ačankif
 # Translated into Python3 by Tirea Aean
 
+
 # For use with the commands "name", "name-alu" and "name-single"
 def valid(n, s_arr) -> bool:
     """
@@ -10,8 +11,10 @@ def valid(n, s_arr) -> bool:
     1 ≤ n ≤ 50 (more than that and you might exceed the 2000 character limit)
     1 ≤ any value in s_srr ≤ 4
     """
+
     def is_set(x):
         return x is not None and x != ""
+
     # n, s1, s2, s3, not set, usually a fresh referral from index.php
     # Requiring at least n=1 s1=1 s2=1 s3=1 is so lame. So having unset n, s1, s2, s3, is valid
     # Also happens if any or all elements in form are not selected and submitted. Should also be valid
@@ -23,7 +26,7 @@ def valid(n, s_arr) -> bool:
         if is_set(s):
             set_syllables = True
             break
-    
+
     # Most common case is no numbers specified
     if not is_set(n) and not set_syllables:
         return True
