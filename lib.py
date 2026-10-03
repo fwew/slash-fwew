@@ -1287,15 +1287,15 @@ leniting adpositions: fpi, ìlä, lisre, mì, nuä, pxisre, ro, sko, sre, sru, w
 
 def get_all_thats() -> str:
     return """```
-Case|Noun |   Clause wrapper    |
-    |     |prox.| dist.| answer |
-====|=====|=====|======|========|
-Sub.|Tsaw |Fwa  |Tsawa |Teynga  |
-Agt.|Tsal |Fula |Tsala |Teyngla |
-Pat.|Tsat |Futa |Tsata |Teyngta |
-Gen.|Tseyä| N/A |  N/A |Teyngä  |
-Dat.|Tsar |Fura |Tsara |Teyngra |
-Top.|Tsari|Furia|Tsaria|Teyngria|
+Case|Noun |       Clause wrapper        |
+    |     |prox.| dist.| answer |  how  |
+====|=====|=====|======|========|=======|
+Sub.|Tsaw |Fwa  |Tsawa |Teynga  |Fyawa  |
+Agt.|Tsal |Fula |Tsala |Teyngla |Fyawla |
+Pat.|Tsat |Futa |Tsata |Teyngta |Fyawta |
+Gen.|Tseyä| N/A |  N/A |Teyngä  |Fyawä  |
+Dat.|Tsar |Fura |Tsara |Teyngra |Fyawra |
+Top.|Tsari|Furia|Tsaria|Teyngria|Fyawria|
 
 tsa-      pre.  that
 tsa'u     n.    that (thing)
