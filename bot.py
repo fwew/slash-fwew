@@ -468,7 +468,7 @@ async def name_single(inter,
 @fwew_bot.slash_command(name="name", description="generate Na'vi full names")
 async def name(inter,
                ending=commands.Param(
-                   description="'ite (daughter), 'itan (son) or 'itu (genderless, non-canon)",
+                   description="'ite (daughter), 'itan (son) or 'itu (genderless)",
                    choices=["random", "'ite", "'itan", "'itu"],
                    default="random"),
                n=Param(name="name-count",
@@ -504,7 +504,7 @@ async def name(inter,
     syllables-2: family name number of syllables
     syllables-3: parent's name number of syllables
     dialect: dialect the names would fit into (interdialect, forest, reef)
-    ending: 'ite (daughter), 'itan (son) or 'itu (genderless, non-canon)
+    ending: 'ite (daughter), 'itan (son) or 'itu (genderless)
     name-count: number of names to generate
     """
     await inter.response.send_message(get_name(ending, n, dialect, s1, s2, s3))
