@@ -538,7 +538,7 @@ async def name_single(
 async def name(
     inter,
     ending=commands.Param(
-        description="'ite (daughter), 'itan (son) or 'itu (genderless, non-canon)",
+        description="'ite (daughter), 'itan (son) or 'itu (genderless)",
         choices=["random", "'ite", "'itan", "'itu"],
         default="random",
     ),
