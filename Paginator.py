@@ -25,12 +25,19 @@ class Simple(disnake.ui.View):
         Page to start the pagination on.
     """
 
-    def __init__(self, *,
-                 timeout: int = 60,
-                 PreviousButton: disnake.ui.Button = disnake.ui.Button(emoji=disnake.PartialEmoji(name="\U000025c0")),
-                 NextButton: disnake.ui.Button = disnake.ui.Button(emoji=disnake.PartialEmoji(name="\U000025b6")),
-                 PageCounterStyle: disnake.ButtonStyle = disnake.ButtonStyle.grey,
-                 InitialPage: int = 0) -> None:
+    def __init__(
+        self,
+        *,
+        timeout: int = 60,
+        PreviousButton: disnake.ui.Button = disnake.ui.Button(
+            emoji=disnake.PartialEmoji(name="\U000025c0")
+        ),
+        NextButton: disnake.ui.Button = disnake.ui.Button(
+            emoji=disnake.PartialEmoji(name="\U000025b6")
+        ),
+        PageCounterStyle: disnake.ButtonStyle = disnake.ButtonStyle.grey,
+        InitialPage: int = 0,
+    ) -> None:
         self.PreviousButton = PreviousButton
         self.NextButton = NextButton
         self.PageCounterStyle = PageCounterStyle
@@ -54,9 +61,11 @@ class Simple(disnake.ui.View):
         self.PreviousButton.callback = self.previous_button_callback
         self.NextButton.callback = self.next_button_callback
 
-        self.page_counter = SimplePaginatorPageCounter(style=self.PageCounterStyle,
-                                                       TotalPages=self.total_page_count,
-                                                       InitialPage=self.InitialPage)
+        self.page_counter = SimplePaginatorPageCounter(
+            style=self.PageCounterStyle,
+            TotalPages=self.total_page_count,
+            InitialPage=self.InitialPage,
+        )
 
         self.add_item(self.PreviousButton)
         self.add_item(self.page_counter)
@@ -86,16 +95,20 @@ class Simple(disnake.ui.View):
 
     async def next_button_callback(self, interaction: disnake.Interaction):
         if interaction.user != self.ctx.author:
-            embed = disnake.Embed(description="You cannot control this pagination because you did not execute it.",
-                                  color=disnake.Colour.red())
+            embed = disnake.Embed(
+                description="You cannot control this pagination because you did not execute it.",
+                color=disnake.Colour.red(),
+            )
             return await interaction.response.send_message(embed=embed, ephemeral=True)
         await interaction.response.defer()
         await self.next()
 
     async def previous_button_callback(self, interaction: disnake.Interaction):
         if interaction.user != self.ctx.author:
-            embed = disnake.Embed(description="You cannot control this pagination because you did not execute it.",
-                                  color=disnake.Colour.red())
+            embed = disnake.Embed(
+                description="You cannot control this pagination because you did not execute it.",
+                color=disnake.Colour.red(),
+            )
             return await interaction.response.send_message(embed=embed, ephemeral=True)
         await interaction.response.defer()
         await self.previous()
@@ -103,4 +116,6 @@ class Simple(disnake.ui.View):
 
 class SimplePaginatorPageCounter(disnake.ui.Button):
     def __init__(self, style: disnake.ButtonStyle, TotalPages, InitialPage):
-        super().__init__(label=f"{InitialPage + 1}/{TotalPages}", style=style, disabled=True)
+        super().__init__(
+            label=f"{InitialPage + 1}/{TotalPages}", style=style, disabled=True
+        )

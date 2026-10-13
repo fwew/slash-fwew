@@ -1,13 +1,8 @@
 services:
   bot:
     build: .
-    networks:
-      - fwew
+    restart: always
+
   api:
     image: tirea/fwew-api
-    networks:
-      - fwew
-networks:
-  fwew:
-    name: fwew
-    driver: bridge
+    restart: always
