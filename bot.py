@@ -359,9 +359,22 @@ async def list(
     """
     if lang is None:
         lang = get_language(inter)
-    await Paginator.Simple().start(
-        inter, pages=get_list(lang, where, ipa, check_digraphs)
-    )
+    what = ["pos", "word", "words", "syllables", "stress"]
+    
+    
+    found = False
+    # Find conditions
+    for word in where.lower().split():
+        if word in what:
+            found = True
+    if found:
+        # Only do this if valid conditions are found
+        await Paginator.Simple().start(
+            inter, pages=get_list(lang, where, ipa, check_digraphs)
+        )
+    else:
+        # For no valid conditions found
+        await inter.response.send_message(get_list_help(lang))
 
 
 @fwew_bot.slash_command(
@@ -538,7 +551,7 @@ async def name_single(
 async def name(
     inter,
     ending=commands.Param(
-        description="'ite (daughter), 'itan (son) or 'itu (genderless, non-canon)",
+        description="'ite (daughter), 'itan (son) or 'itu (genderless)",
         choices=["random", "'ite", "'itan", "'itu"],
         default="random",
     ),
@@ -586,7 +599,7 @@ async def name(
     syllables-2: family name number of syllables
     syllables-3: parent's name number of syllables
     dialect: dialect the names would fit into (interdialect, forest, reef)
-    ending: 'ite (daughter), 'itan (son) or 'itu (genderless, non-canon)
+    ending: 'ite (daughter), 'itan (son) or 'itu (genderless)
     name-count: number of names to generate
     """
     await inter.response.send_message(get_name(ending, n, dialect, s1, s2, s3))
