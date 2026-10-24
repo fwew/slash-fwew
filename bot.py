@@ -359,6 +359,25 @@ async def list(
     """
     if lang is None:
         lang = get_language(inter)
+    what = ["pos", "word", "words", "syllables", "stress"]
+    
+    if len(where) > 1:
+        found = False
+        # Find conditions
+        for word in where.lower().split():
+            if word in what:
+                found = True
+        if found:
+            # Only do this if valid conditions are found
+            await Paginator.Simple().start(
+                inter, pages=get_list(lang, where, ipa, check_digraphs)
+            )
+            return
+        else:
+            # For no valid conditions found
+            await inter.response.send_message(get_list_help(lang))
+            return
+    # No conditions
     await Paginator.Simple().start(
         inter, pages=get_list(lang, where, ipa, check_digraphs)
     )
