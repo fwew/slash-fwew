@@ -47,7 +47,7 @@ authorized_servers = [
 ]
 
 intents = Intents.default()
-intents.message_content = True
+
 flags = commands.CommandSyncFlags.default()
 flags.sync_commands_debug = True
 fwew_bot = commands.Bot(
