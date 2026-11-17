@@ -7,7 +7,7 @@ charset-normalizer==3.4.9
 disnake==2.12.1
 frozenlist==1.8.0
 idna==3.18
-multidict==6.7.1
+multidict==6.9.1
 python-dotenv==1.2.2
 requests==2.34.2
 urllib3==2.7.0
